@@ -384,7 +384,13 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
         <div style={{ padding: '20px 24px', borderTop: '1px solid var(--border-color)', backgroundColor: 'rgba(15, 17, 26, 0.95)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block', fontWeight: 600 }}>Calculated Custom Price</span>
-            <span className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{calculateTotal()}</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
+              <span className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{calculateTotal()}</span>
+              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                (Base ₹{selectedBase?.price || 0} + Sauce ₹{selectedSauce?.price || 0} + Cheese ₹{selectedCheese?.price || 0}
+                {selectedVeggies.length > 0 ? ` + Veggies ₹${selectedVeggies.reduce((s, v) => s + v.price, 0)}` : ''})
+              </span>
+            </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
