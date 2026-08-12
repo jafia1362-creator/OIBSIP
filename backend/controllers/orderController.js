@@ -53,6 +53,8 @@ const createRazorpayOrder = async (req, res) => {
   }
 };
 
+const { checkAndNotifyLowStock } = require('../utils/cronJobs');
+
 // Confirm Payment & Create Order + Decrement Stock in MongoDB
 const placeOrder = async (req, res) => {
   try {
@@ -66,6 +68,17 @@ const placeOrder = async (req, res) => {
       razorpayPaymentId,
     } = req.body;
 
+    // 1. Idempotency Check: Prevent duplicate order processing / double decrements
+    if (razorpayOrderId) {
+      const existingOrder = await Order.findOne({ razorpayOrderId });
+      if (existingOrder) {
+        return res.status(200).json({
+          message: 'Order already processed.',
+          order: existingOrder,
+        });
+      }
+    }
+
     const formattedItems = (items || []).map((item) => ({
       name: item.name || item.customName || 'Custom Artisan Pizza',
       customName: item.customName || item.name || 'Custom Artisan Pizza',
@@ -77,6 +90,72 @@ const placeOrder = async (req, res) => {
       veggies: item.veggies || [],
     }));
 
+    if (formattedItems.length === 0) {
+      return res.status(400).json({ message: 'Order must contain at least one item.' });
+    }
+
+    // 2. Aggregate all ingredient requirements across the entire order
+    const requiredIngredients = new Map();
+
+    for (const item of formattedItems) {
+      const qty = item.quantity || 1;
+
+      if (item.base?.name) {
+        const key = `base:${item.base.name}`;
+        requiredIngredients.set(key, {
+          name: item.base.name,
+          category: 'base',
+          neededQty: (requiredIngredients.get(key)?.neededQty || 0) + qty,
+        });
+      }
+
+      if (item.sauce?.name) {
+        const key = `sauce:${item.sauce.name}`;
+        requiredIngredients.set(key, {
+          name: item.sauce.name,
+          category: 'sauce',
+          neededQty: (requiredIngredients.get(key)?.neededQty || 0) + qty,
+        });
+      }
+
+      if (item.cheese?.name) {
+        const key = `cheese:${item.cheese.name}`;
+        requiredIngredients.set(key, {
+          name: item.cheese.name,
+          category: 'cheese',
+          neededQty: (requiredIngredients.get(key)?.neededQty || 0) + qty,
+        });
+      }
+
+      if (Array.isArray(item.veggies)) {
+        for (const veg of item.veggies) {
+          if (veg?.name) {
+            const key = `veggie:${veg.name}`;
+            requiredIngredients.set(key, {
+              name: veg.name,
+              category: 'veggie',
+              neededQty: (requiredIngredients.get(key)?.neededQty || 0) + qty,
+            });
+          }
+        }
+      }
+    }
+
+    // 3. Check stock availability for all required ingredients in MongoDB
+    for (const reqItem of requiredIngredients.values()) {
+      const invDoc = await Inventory.findOne({
+        name: reqItem.name,
+        category: reqItem.category,
+      });
+
+      if (invDoc && invDoc.stockQuantity < reqItem.neededQty) {
+        return res.status(400).json({
+          message: `Insufficient stock for "${reqItem.name}". Only ${invDoc.stockQuantity} remaining (requested ${reqItem.neededQty}). Please choose another option or reduce quantity.`,
+        });
+      }
+    }
+
+    // 4. Create and persist the Order in MongoDB
     const orderData = {
       customerName: customerName || req.user?.name || 'Valued Customer',
       customerEmail: customerEmail || req.user?.email || 'customer@slicecraft.com',
@@ -93,52 +172,35 @@ const placeOrder = async (req, res) => {
       orderData.user = req.user._id;
     }
 
-    // Save permanently in MongoDB
     const savedOrder = await Order.create(orderData);
 
-    // Decrement stock in MongoDB inventory
-    for (const item of formattedItems) {
-      const qty = item.quantity || 1;
+    // 5. Decrement stock atomically and prevent negative values
+    for (const reqItem of requiredIngredients.values()) {
       try {
-        if (item.base?.name) {
-          await Inventory.findOneAndUpdate(
-            { name: item.base.name, category: 'base' },
-            { $inc: { stockQuantity: -qty } }
-          );
-        }
-        if (item.sauce?.name) {
-          await Inventory.findOneAndUpdate(
-            { name: item.sauce.name, category: 'sauce' },
-            { $inc: { stockQuantity: -qty } }
-          );
-        }
-        if (item.cheese?.name) {
-          await Inventory.findOneAndUpdate(
-            { name: item.cheese.name, category: 'cheese' },
-            { $inc: { stockQuantity: -qty } }
-          );
-        }
-        if (Array.isArray(item.veggies)) {
-          for (const veg of item.veggies) {
-            if (veg?.name) {
-              await Inventory.findOneAndUpdate(
-                { name: veg.name, category: 'veggie' },
-                { $inc: { stockQuantity: -qty } }
-              );
-            }
-          }
-        }
+        await Inventory.findOneAndUpdate(
+          {
+            name: reqItem.name,
+            category: reqItem.category,
+            stockQuantity: { $gte: reqItem.neededQty },
+          },
+          { $inc: { stockQuantity: -reqItem.neededQty } }
+        );
       } catch (err) {
-        console.error('Inventory decrement warning:', err.message);
+        console.error(`Stock decrement error for ${reqItem.name}:`, err.message);
       }
     }
 
-    // Broadcast Socket Events to Admin and Client trackers
+    // 6. Broadcast Real-Time Events to Admin and Client via Socket.io
     const io = req.app.get('socketio');
     if (io) {
       io.emit('new_order', savedOrder);
       io.emit('stock_updated');
     }
+
+    // 7. Trigger Low Stock Check and Email Notification if any item fell below threshold
+    checkAndNotifyLowStock().catch((e) =>
+      console.error('Background low-stock check error:', e.message)
+    );
 
     res.status(201).json({
       message: 'Order placed successfully and persisted to MongoDB!',
@@ -191,6 +253,13 @@ const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { orderStatus } = req.body;
+
+    const validStatuses = ['Order Received', 'In Kitchen', 'Sent to Delivery', 'Delivered', 'Cancelled'];
+    if (!validStatuses.includes(orderStatus)) {
+      return res.status(400).json({
+        message: `Invalid order status. Allowed statuses: ${validStatuses.join(', ')}`,
+      });
+    }
 
     const updatedOrder = await Order.findByIdAndUpdate(
       id,
