@@ -37,12 +37,12 @@ function AppContent() {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', backgroundColor: '#0F111A', color: '#FFF' }}>
-      <div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#0F111A', color: '#FFF' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Render Customer Navbar ONLY on customer-facing routes */}
         {!isAdminRoute && <Navbar openBuilder={() => setIsBuilderOpen(true)} />}
 
-        <main>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <Routes>
             <Route
               path="/"
@@ -182,13 +182,10 @@ function AppContent() {
         <footer className="admin-footer">
           <div className="site-container">
             <div className="admin-footer-inner">
-              <div>© 2026 SliceCraft Admin Portal. All rights reserved.</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <span style={{ color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span> System Status: Operational
-                </span>
-                <span>•</span>
-                <span>v2.4 Production SaaS</span>
+              <div className="admin-footer-copy">© 2026 SliceCraft Admin Portal</div>
+              <div className="admin-footer-tag">Secure Operations Center</div>
+              <div className="admin-footer-status">
+                <span className="live-status-dot"></span> System Operational
               </div>
             </div>
           </div>
