@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Razorpay = require('razorpay');
 const Order = require('../models/Order');
 const Inventory = require('../models/Inventory');
+const connectDB = require('../config/db');
 
 const getRazorpayInstance = () => {
   const key_id = process.env.RAZORPAY_KEY_ID;
@@ -58,6 +59,7 @@ const { checkAndNotifyLowStock } = require('../utils/cronJobs');
 // Confirm Payment & Create Order + Decrement Stock in MongoDB
 const placeOrder = async (req, res) => {
   try {
+    await connectDB();
     const {
       customerName,
       customerEmail,
