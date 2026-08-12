@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import PizzaBuilder from '../components/PizzaBuilder';
@@ -49,6 +49,57 @@ const DEFAULT_SIGNATURE_PRESETS = [
   },
 ];
 
+// Reusable smooth numeric counter with cubic easing
+function AnimatedCounter({ end, duration = 1600, decimals = 0, suffix = '' }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasStarted) {
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [hasStarted]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+    let startTime = null;
+    let animationFrame;
+
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      // Smooth cubic ease out
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      const current = easeProgress * end;
+      setCount(current);
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(step);
+      } else {
+        setCount(end);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [hasStarted, end, duration]);
+
+  return (
+    <span ref={ref}>
+      {decimals > 0 ? count.toFixed(decimals) : Math.floor(count)}
+      {suffix}
+    </span>
+  );
+}
+
 export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
   const { API_BASE_URL } = useContext(AuthContext);
   const [presets, setPresets] = useState(DEFAULT_SIGNATURE_PRESETS);
@@ -61,6 +112,25 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
   useEffect(() => {
     fetchPresets();
   }, []);
+
+  // Lightweight IntersectionObserver for scroll-reveal animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
+    );
+
+    const elements = document.querySelectorAll('.scroll-reveal');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [presets]);
 
   const fetchPresets = async () => {
     try {
@@ -113,33 +183,33 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       <section style={{ position: 'relative', overflow: 'hidden' }}>
         <div className="site-container">
           <div className="hero-grid">
-            {/* Left Content */}
+            {/* Left Content with Staggered Entrances */}
             <div className="hero-left">
-              {/* Fresh Badge */}
-              <div className="badge badge-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>
-                <Flame style={{ width: '16px', height: '16px', color: '#F7254F' }} />
+              {/* Fresh Badge with Subtle Pulse & Glow */}
+              <div className="badge badge-primary badge-fresh-pulsing hero-animate-badge" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>
+                <Flame className="flame-icon-pulse" style={{ width: '16px', height: '16px', color: '#F7254F' }} />
                 <span>FRESHLY BAKED & DELIVERED HOT</span>
               </div>
 
               {/* Main Heading */}
-              <h1 className="hero-title">
+              <h1 className="hero-title hero-animate-title">
                 Craft Your Perfect <br />
                 <span className="gradient-text">Artisan Pizza</span> Today
               </h1>
 
               {/* Description */}
-              <p className="hero-desc">
+              <p className="hero-desc hero-animate-desc">
                 Choose from premium ingredients and build your perfect pizza with our interactive 4-step custom pizza builder. Stone-baked freshness delivered directly to your door in 30 minutes.
               </p>
 
               {/* Action Buttons */}
-              <div className="hero-actions">
+              <div className="hero-actions hero-animate-actions">
                 <button
                   onClick={() => setIsBuilderOpen(true)}
                   className="btn-primary"
                   style={{ padding: '14px 32px', fontSize: '1rem' }}
                 >
-                  <Sparkles style={{ width: '18px', height: '18px' }} /> Start Custom Pizza Builder
+                  <Sparkles className="btn-icon-sparkle" style={{ width: '18px', height: '18px' }} /> Start Custom Pizza Builder
                 </button>
                 <button
                   onClick={scrollToMenu}
@@ -150,25 +220,31 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
                 </button>
               </div>
 
-              {/* Trust Indicators */}
-              <div className="hero-stats">
+              {/* Trust Indicators with Smooth Stat Counters */}
+              <div className="hero-stats hero-animate-stats">
                 <div className="hero-stat-item">
-                  <h4 style={{ color: '#FFF' }}>5+</h4>
+                  <h4 style={{ color: '#FFF' }}>
+                    <AnimatedCounter end={5} suffix="+" />
+                  </h4>
                   <p>Crust Bases</p>
                 </div>
                 <div className="hero-stat-item">
-                  <h4 style={{ color: '#F7254F' }}>30 Min</h4>
+                  <h4 style={{ color: '#F7254F' }}>
+                    <AnimatedCounter end={30} suffix=" Min" />
+                  </h4>
                   <p>Express Delivery</p>
                 </div>
                 <div className="hero-stat-item">
-                  <h4 style={{ color: '#FF8A00' }}>4.9 ★</h4>
+                  <h4 style={{ color: '#FF8A00' }}>
+                    <AnimatedCounter end={4.9} decimals={1} suffix=" ★" />
+                  </h4>
                   <p>Customer Rating</p>
                 </div>
               </div>
             </div>
 
             {/* Right Graphic / Hero Pizza Visual */}
-            <div className="hero-right">
+            <div className="hero-right hero-animate-image">
               {/* Background Glow */}
               <div
                 style={{
@@ -181,8 +257,8 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
                 }}
               ></div>
 
-              {/* Floating Hero Pizza Image Card */}
-              <div className="animate-float" style={{ position: 'relative' }}>
+              {/* Continuous Floating Hero Pizza Image Card */}
+              <div className="hero-pizza-floating-wrap" style={{ position: 'relative' }}>
                 <div className="hero-image-card">
                   <img
                     src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=85"
@@ -191,7 +267,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
                 </div>
 
                 {/* Floating Badge 1 (Speed) */}
-                <div className="hero-floating-badge hero-badge-top">
+                <div className="hero-floating-badge hero-badge-top hero-badge-speed">
                   <div style={{ padding: '8px', borderRadius: '12px', background: 'rgba(255,138,0,0.2)', color: '#FF8A00' }}>
                     <Zap style={{ width: '18px', height: '18px' }} />
                   </div>
@@ -202,7 +278,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
                 </div>
 
                 {/* Floating Badge 2 (Rating) */}
-                <div className="hero-floating-badge hero-badge-bottom">
+                <div className="hero-floating-badge hero-badge-bottom hero-badge-quality">
                   <div style={{ padding: '8px', borderRadius: '12px', background: 'rgba(247,37,79,0.2)', color: '#F7254F' }}>
                     <Star style={{ width: '18px', height: '18px', fill: '#F7254F' }} />
                   </div>
@@ -218,10 +294,10 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       </section>
 
       {/* 2. FEATURE SECTION */}
-      <section className="site-container">
+      <section className="site-container scroll-reveal">
         <div className="features-grid">
           {/* Card 1 */}
-          <div className="glass-panel glass-panel-hover feature-card">
+          <div className="glass-panel glass-panel-hover feature-card stagger-1">
             <div className="feature-icon-box" style={{ background: 'rgba(247,37,79,0.15)', color: '#F7254F', border: '1px solid rgba(247,37,79,0.25)' }}>
               <Pizza style={{ width: '24px', height: '24px' }} />
             </div>
@@ -232,7 +308,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
           </div>
 
           {/* Card 2 */}
-          <div className="glass-panel glass-panel-hover feature-card">
+          <div className="glass-panel glass-panel-hover feature-card stagger-2">
             <div className="feature-icon-box" style={{ background: 'rgba(255,138,0,0.15)', color: '#FF8A00', border: '1px solid rgba(255,138,0,0.25)' }}>
               <Zap style={{ width: '24px', height: '24px' }} />
             </div>
@@ -243,7 +319,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
           </div>
 
           {/* Card 3 */}
-          <div className="glass-panel glass-panel-hover feature-card">
+          <div className="glass-panel glass-panel-hover feature-card stagger-3">
             <div className="feature-icon-box" style={{ background: 'rgba(16,185,129,0.15)', color: '#10B981', border: '1px solid rgba(16,185,129,0.25)' }}>
               <ChefHat style={{ width: '24px', height: '24px' }} />
             </div>
@@ -254,7 +330,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
           </div>
 
           {/* Card 4 */}
-          <div className="glass-panel glass-panel-hover feature-card">
+          <div className="glass-panel glass-panel-hover feature-card stagger-4">
             <div className="feature-icon-box" style={{ background: 'rgba(168,85,247,0.15)', color: '#A855F7', border: '1px solid rgba(168,85,247,0.25)' }}>
               <Truck style={{ width: '24px', height: '24px' }} />
             </div>
@@ -267,7 +343,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       </section>
 
       {/* 3. SIGNATURE MENU SECTION */}
-      <section id="menu" className="site-container" style={{ scrollMarginTop: '100px' }}>
+      <section id="menu" className="site-container scroll-reveal" style={{ scrollMarginTop: '100px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '24px', marginBottom: '36px' }}>
           <div>
             <div className="badge badge-primary" style={{ marginBottom: '8px' }}>
@@ -296,8 +372,8 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
           </div>
         ) : (
           <div className="menu-grid">
-            {presets.map((preset) => (
-              <div key={preset._id} className="glass-panel glass-panel-hover menu-card">
+            {presets.map((preset, pIdx) => (
+              <div key={preset._id} className={`glass-panel glass-panel-hover menu-card stagger-${(pIdx % 3) + 1}`}>
                 {/* Image */}
                 <div className="menu-card-image">
                   <img
@@ -351,7 +427,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       </section>
 
       {/* 4. CUSTOM PIZZA CALL-TO-ACTION BANNER */}
-      <section className="site-container">
+      <section className="site-container scroll-reveal">
         <div className="custom-cta-banner">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div className="badge badge-primary" style={{ alignSelf: 'flex-start' }}>
@@ -369,14 +445,14 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
                 className="btn-primary"
                 style={{ padding: '14px 32px', fontSize: '1rem' }}
               >
-                <Sparkles style={{ width: '18px', height: '18px' }} /> Build My Pizza Now
+                <Sparkles className="btn-icon-sparkle" style={{ width: '18px', height: '18px' }} /> Build My Pizza Now
               </button>
             </div>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div
-              className="animate-float"
+              className="hero-pizza-floating-wrap"
               style={{
                 width: '240px',
                 height: '240px',
@@ -397,7 +473,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       </section>
 
       {/* 5. HOW IT WORKS SECTION */}
-      <section id="how-it-works" className="site-container" style={{ scrollMarginTop: '100px' }}>
+      <section id="how-it-works" className="site-container scroll-reveal" style={{ scrollMarginTop: '100px' }}>
         <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 40px auto' }}>
           <div className="badge badge-warning" style={{ marginBottom: '8px' }}>
             <Clock style={{ width: '14px', height: '14px' }} /> Simple 4-Step Process
@@ -416,10 +492,10 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
             { step: '02', title: 'Customize It', desc: 'Pick your preferred crust, sauce base, cheese blend and toppings.', icon: ChefHat, color: '#FF8A00', bg: 'rgba(255,138,0,0.15)' },
             { step: '03', title: 'Place Your Order', desc: 'Secure checkout with Razorpay and instant payment confirmation.', icon: CheckCircle2, color: '#10B981', bg: 'rgba(16,185,129,0.15)' },
             { step: '04', title: 'Get It Delivered', desc: 'Watch real-time live order tracking as our driver arrives at your door.', icon: Truck, color: '#A855F7', bg: 'rgba(168,85,247,0.15)' },
-          ].map((item) => {
+          ].map((item, sIdx) => {
             const Icon = item.icon;
             return (
-              <div key={item.step} className="glass-panel step-card">
+              <div key={item.step} className={`glass-panel step-card stagger-${sIdx + 1}`}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ padding: '12px', borderRadius: '14px', background: item.bg, color: item.color }}>
                     <Icon style={{ width: '24px', height: '24px' }} />
@@ -439,7 +515,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       </section>
 
       {/* 6. ABOUT SECTION */}
-      <section id="about" className="site-container" style={{ scrollMarginTop: '100px' }}>
+      <section id="about" className="site-container scroll-reveal" style={{ scrollMarginTop: '100px' }}>
         <div className="glass-panel" style={{ padding: '48px', borderRadius: '28px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -486,7 +562,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       </section>
 
       {/* 7. TESTIMONIALS SECTION */}
-      <section className="site-container">
+      <section className="site-container scroll-reveal">
         <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 40px auto' }}>
           <div className="badge badge-primary" style={{ marginBottom: '8px' }}>
             <Star style={{ width: '14px', height: '14px', fill: '#F7254F' }} /> Customer Reviews
@@ -523,7 +599,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
               avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
             },
           ].map((review, idx) => (
-            <div key={idx} className="glass-panel glass-panel-hover testimonial-card">
+            <div key={idx} className={`glass-panel glass-panel-hover testimonial-card stagger-${idx + 1}`}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div style={{ display: 'flex', gap: '4px', color: '#FF8A00' }}>
                   {[...Array(review.rating)].map((_, i) => (
@@ -552,7 +628,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       </section>
 
       {/* 8. CONTACT & LOCATION SECTION */}
-      <section id="contact" className="site-container" style={{ scrollMarginTop: '100px' }}>
+      <section id="contact" className="site-container scroll-reveal" style={{ scrollMarginTop: '100px' }}>
         <div className="glass-panel" style={{ padding: '48px', borderRadius: '28px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
