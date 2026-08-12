@@ -463,144 +463,143 @@ export default function AdminDashboard() {
       />
 
       <div className="site-container py-8 space-y-8 animate-fade-in" style={{ flex: 1 }}>
-        {/* 2. Top Header & KPI Summary */}
-        <div className="admin-header-card">
-          <div className="admin-header-top">
-            <div className="admin-brand-info">
-              <div className="admin-icon-badge">
-                <ShieldCheck style={{ width: '28px', height: '28px' }} />
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                  <span className="badge badge-warning" style={{ fontSize: '11px', padding: '2px 10px' }}>
-                    Live MongoDB Sync
-                  </span>
-                  <span style={{ fontSize: '12px', color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span> Socket.io Live
-                  </span>
-                </div>
-                <h1 style={{ fontSize: '1.85rem', fontWeight: 900, color: '#FFFFFF', margin: 0 }}>
-                  SliceCraft <span className="gradient-text">Operations Command Center</span>
-                </h1>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-                  Real-time administration, kitchen dispatching, user directories, and inventory automation.
-                </p>
-              </div>
-            </div>
-
-            <div className="admin-header-actions">
-              <button onClick={handleRefreshAll} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.82rem' }}>
-                <RefreshCw style={{ width: '14px', height: '14px' }} /> Sync MongoDB
-              </button>
-            </div>
-          </div>
-
-          {/* 8 KPI CARDS (Including Today's Performance) */}
-          <div className="admin-kpi-grid">
-            {/* Today's Orders */}
-            <div className="admin-kpi-card" onClick={() => { setActiveTab('orders'); setOrderDateFilter('TODAY'); }} style={{ cursor: 'pointer', borderColor: 'rgba(255, 138, 0, 0.4)' }}>
-              <div className="admin-kpi-top">
-                <span className="admin-kpi-label" style={{ color: '#FF8A00' }}>Today's Orders</span>
-                <div className="admin-kpi-icon" style={{ background: 'rgba(255, 138, 0, 0.15)', color: '#FF8A00' }}>
-                  <Calendar style={{ width: '20px', height: '20px' }} />
-                </div>
-              </div>
-              <div className="admin-kpi-value" style={{ color: '#FF8A00' }}>{todayOrdersCount}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Orders placed today</div>
-            </div>
-
-            {/* Today's Revenue */}
-            <div className="admin-kpi-card" onClick={() => setActiveTab('analytics')} style={{ cursor: 'pointer', borderColor: 'rgba(16, 185, 129, 0.4)' }}>
-              <div className="admin-kpi-top">
-                <span className="admin-kpi-label" style={{ color: '#10B981' }}>Today's Revenue</span>
-                <div className="admin-kpi-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10B981' }}>
-                  <DollarSign style={{ width: '20px', height: '20px' }} />
-                </div>
-              </div>
-              <div className="admin-kpi-value" style={{ color: '#10B981' }}>₹{todayRevenue.toLocaleString()}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Gross today</div>
-            </div>
-
-            {/* Total All-Time Orders */}
-            <div className="admin-kpi-card" onClick={() => { setActiveTab('orders'); setOrderDateFilter('ALL'); }} style={{ cursor: 'pointer' }}>
-              <div className="admin-kpi-top">
-                <span className="admin-kpi-label">All-Time Orders</span>
-                <div className="admin-kpi-icon" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA' }}>
-                  <ShoppingBag style={{ width: '20px', height: '20px' }} />
-                </div>
-              </div>
-              <div className="admin-kpi-value">{totalOrders}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Permanent in DB</div>
-            </div>
-
-            {/* All-Time Revenue */}
-            <div className="admin-kpi-card" onClick={() => setActiveTab('analytics')} style={{ cursor: 'pointer' }}>
-              <div className="admin-kpi-top">
-                <span className="admin-kpi-label">All-Time Revenue</span>
-                <div className="admin-kpi-icon" style={{ background: 'rgba(255, 138, 0, 0.15)', color: '#FF8A00' }}>
-                  <TrendingUp style={{ width: '20px', height: '20px' }} />
-                </div>
-              </div>
-              <div className="admin-kpi-value" style={{ color: '#FF8A00' }}>₹{totalRevenue.toLocaleString()}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Total sales</div>
-            </div>
-
-            {/* Pending Orders */}
-            <div className="admin-kpi-card" onClick={() => setActiveTab('kanban')} style={{ cursor: 'pointer' }}>
-              <div className="admin-kpi-top">
-                <span className="admin-kpi-label">Pending</span>
-                <div className="admin-kpi-icon" style={{ background: 'rgba(255, 138, 0, 0.15)', color: '#FF8A00' }}>
-                  <Clock style={{ width: '20px', height: '20px' }} />
-                </div>
-              </div>
-              <div className="admin-kpi-value" style={{ color: '#FF8A00' }}>{pendingOrders}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Order Received</div>
-            </div>
-
-            {/* In Kitchen */}
-            <div className="admin-kpi-card" onClick={() => setActiveTab('kanban')} style={{ cursor: 'pointer' }}>
-              <div className="admin-kpi-top">
-                <span className="admin-kpi-label">In Kitchen</span>
-                <div className="admin-kpi-icon" style={{ background: 'rgba(247, 37, 79, 0.15)', color: '#F7254F' }}>
-                  <ChefHat style={{ width: '20px', height: '20px' }} />
-                </div>
-              </div>
-              <div className="admin-kpi-value" style={{ color: '#F7254F' }}>{inKitchenOrders}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Baking in oven</div>
-            </div>
-
-            {/* Out for Delivery */}
-            <div className="admin-kpi-card" onClick={() => setActiveTab('kanban')} style={{ cursor: 'pointer' }}>
-              <div className="admin-kpi-top">
-                <span className="admin-kpi-label">Out for Delivery</span>
-                <div className="admin-kpi-icon" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#C084FC' }}>
-                  <Bike style={{ width: '20px', height: '20px' }} />
-                </div>
-              </div>
-              <div className="admin-kpi-value" style={{ color: '#C084FC' }}>{outForDeliveryOrders}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Riders dispatched</div>
-            </div>
-
-            {/* Completed */}
-            <div className="admin-kpi-card" onClick={() => { setActiveTab('orders'); setOrderStatusFilter('Delivered'); }} style={{ cursor: 'pointer' }}>
-              <div className="admin-kpi-top">
-                <span className="admin-kpi-label">Completed</span>
-                <div className="admin-kpi-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399' }}>
-                  <CheckCircle2 style={{ width: '20px', height: '20px' }} />
-                </div>
-              </div>
-              <div className="admin-kpi-value" style={{ color: '#34D399' }}>{completedOrders}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Delivered</div>
-            </div>
-          </div>
-        </div>
-
-
         {/* ========================================================
-            TAB 1: OVERVIEW
+            TAB 1: OVERVIEW & OPERATIONS COMMAND CENTER
             ======================================================== */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-fade-in">
+            {/* Top Header & 8 KPI Cards */}
+            <div className="admin-header-card">
+              <div className="admin-header-top">
+                <div className="admin-brand-info">
+                  <div className="admin-icon-badge">
+                    <ShieldCheck style={{ width: '28px', height: '28px' }} />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <span className="badge badge-warning" style={{ fontSize: '11px', padding: '2px 10px' }}>
+                        Live MongoDB Sync
+                      </span>
+                      <span style={{ fontSize: '12px', color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span> Socket.io Live
+                      </span>
+                    </div>
+                    <h1 style={{ fontSize: '1.85rem', fontWeight: 900, color: '#FFFFFF', margin: 0 }}>
+                      SliceCraft <span className="gradient-text">Operations Command Center</span>
+                    </h1>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                      Real-time administration, kitchen dispatching, user directories, and inventory automation.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="admin-header-actions">
+                  <button onClick={handleRefreshAll} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.82rem' }}>
+                    <RefreshCw style={{ width: '14px', height: '14px' }} /> Sync MongoDB
+                  </button>
+                </div>
+              </div>
+
+              {/* 8 KPI CARDS */}
+              <div className="admin-kpi-grid">
+                {/* Today's Orders */}
+                <div className="admin-kpi-card" onClick={() => { setActiveTab('orders'); setOrderDateFilter('TODAY'); }} style={{ cursor: 'pointer', borderColor: 'rgba(255, 138, 0, 0.4)' }}>
+                  <div className="admin-kpi-top">
+                    <span className="admin-kpi-label" style={{ color: '#FF8A00' }}>Today's Orders</span>
+                    <div className="admin-kpi-icon" style={{ background: 'rgba(255, 138, 0, 0.15)', color: '#FF8A00' }}>
+                      <Calendar style={{ width: '20px', height: '20px' }} />
+                    </div>
+                  </div>
+                  <div className="admin-kpi-value" style={{ color: '#FF8A00' }}>{todayOrdersCount}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Orders placed today</div>
+                </div>
+
+                {/* Today's Revenue */}
+                <div className="admin-kpi-card" onClick={() => setActiveTab('analytics')} style={{ cursor: 'pointer', borderColor: 'rgba(16, 185, 129, 0.4)' }}>
+                  <div className="admin-kpi-top">
+                    <span className="admin-kpi-label" style={{ color: '#10B981' }}>Today's Revenue</span>
+                    <div className="admin-kpi-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10B981' }}>
+                      <DollarSign style={{ width: '20px', height: '20px' }} />
+                    </div>
+                  </div>
+                  <div className="admin-kpi-value" style={{ color: '#10B981' }}>₹{todayRevenue.toLocaleString()}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Gross today</div>
+                </div>
+
+                {/* Total All-Time Orders */}
+                <div className="admin-kpi-card" onClick={() => { setActiveTab('orders'); setOrderDateFilter('ALL'); }} style={{ cursor: 'pointer' }}>
+                  <div className="admin-kpi-top">
+                    <span className="admin-kpi-label">All-Time Orders</span>
+                    <div className="admin-kpi-icon" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA' }}>
+                      <ShoppingBag style={{ width: '20px', height: '20px' }} />
+                    </div>
+                  </div>
+                  <div className="admin-kpi-value">{totalOrders}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Permanent in DB</div>
+                </div>
+
+                {/* All-Time Revenue */}
+                <div className="admin-kpi-card" onClick={() => setActiveTab('analytics')} style={{ cursor: 'pointer' }}>
+                  <div className="admin-kpi-top">
+                    <span className="admin-kpi-label">All-Time Revenue</span>
+                    <div className="admin-kpi-icon" style={{ background: 'rgba(255, 138, 0, 0.15)', color: '#FF8A00' }}>
+                      <TrendingUp style={{ width: '20px', height: '20px' }} />
+                    </div>
+                  </div>
+                  <div className="admin-kpi-value" style={{ color: '#FF8A00' }}>₹{totalRevenue.toLocaleString()}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Total sales</div>
+                </div>
+
+                {/* Pending Orders */}
+                <div className="admin-kpi-card" onClick={() => setActiveTab('kanban')} style={{ cursor: 'pointer' }}>
+                  <div className="admin-kpi-top">
+                    <span className="admin-kpi-label">Pending</span>
+                    <div className="admin-kpi-icon" style={{ background: 'rgba(255, 138, 0, 0.15)', color: '#FF8A00' }}>
+                      <Clock style={{ width: '20px', height: '20px' }} />
+                    </div>
+                  </div>
+                  <div className="admin-kpi-value" style={{ color: '#FF8A00' }}>{pendingOrders}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Order Received</div>
+                </div>
+
+                {/* In Kitchen */}
+                <div className="admin-kpi-card" onClick={() => setActiveTab('kanban')} style={{ cursor: 'pointer' }}>
+                  <div className="admin-kpi-top">
+                    <span className="admin-kpi-label">In Kitchen</span>
+                    <div className="admin-kpi-icon" style={{ background: 'rgba(247, 37, 79, 0.15)', color: '#F7254F' }}>
+                      <ChefHat style={{ width: '20px', height: '20px' }} />
+                    </div>
+                  </div>
+                  <div className="admin-kpi-value" style={{ color: '#F7254F' }}>{inKitchenOrders}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Baking in oven</div>
+                </div>
+
+                {/* Out for Delivery */}
+                <div className="admin-kpi-card" onClick={() => setActiveTab('kanban')} style={{ cursor: 'pointer' }}>
+                  <div className="admin-kpi-top">
+                    <span className="admin-kpi-label">Out for Delivery</span>
+                    <div className="admin-kpi-icon" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#C084FC' }}>
+                      <Bike style={{ width: '20px', height: '20px' }} />
+                    </div>
+                  </div>
+                  <div className="admin-kpi-value" style={{ color: '#C084FC' }}>{outForDeliveryOrders}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Riders dispatched</div>
+                </div>
+
+                {/* Completed */}
+                <div className="admin-kpi-card" onClick={() => { setActiveTab('orders'); setOrderStatusFilter('Delivered'); }} style={{ cursor: 'pointer' }}>
+                  <div className="admin-kpi-top">
+                    <span className="admin-kpi-label">Completed</span>
+                    <div className="admin-kpi-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399' }}>
+                      <CheckCircle2 style={{ width: '20px', height: '20px' }} />
+                    </div>
+                  </div>
+                  <div className="admin-kpi-value" style={{ color: '#34D399' }}>{completedOrders}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Delivered</div>
+                </div>
+              </div>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px' }}>
               {/* Recent Active Orders */}
               <div className="glass-panel" style={{ borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>

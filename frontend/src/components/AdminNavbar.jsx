@@ -32,13 +32,18 @@ export default function AdminNavbar({
     navigate('/admin/login');
   };
 
+  const handleTabSelect = (tabKey) => {
+    setActiveTab(tabKey);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <header
       style={{
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        backgroundColor: 'rgba(15, 17, 26, 0.92)',
+        backgroundColor: 'rgba(15, 17, 26, 0.95)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid rgba(255, 138, 0, 0.2)',
@@ -48,7 +53,7 @@ export default function AdminNavbar({
       <div className="site-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
         {/* Brand & Admin Badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => handleTabSelect('overview')}>
             <div
               style={{
                 background: 'linear-gradient(135deg, #F7254F 0%, #FF8A00 100%)',
@@ -93,7 +98,7 @@ export default function AdminNavbar({
         {/* Dedicated Admin Navigation Links */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto' }}>
           <button
-            onClick={() => setActiveTab('overview')}
+            onClick={() => handleTabSelect('overview')}
             className={`admin-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
           >
             <Layers style={{ width: '15px', height: '15px' }} />
@@ -101,7 +106,7 @@ export default function AdminNavbar({
           </button>
 
           <button
-            onClick={() => setActiveTab('kanban')}
+            onClick={() => handleTabSelect('kanban')}
             className={`admin-nav-item ${activeTab === 'kanban' ? 'active' : ''}`}
           >
             <Kanban style={{ width: '15px', height: '15px' }} />
@@ -109,7 +114,7 @@ export default function AdminNavbar({
           </button>
 
           <button
-            onClick={() => setActiveTab('orders')}
+            onClick={() => handleTabSelect('orders')}
             className={`admin-nav-item ${activeTab === 'orders' ? 'active' : ''}`}
           >
             <ShoppingBag style={{ width: '15px', height: '15px' }} />
@@ -118,7 +123,7 @@ export default function AdminNavbar({
           </button>
 
           <button
-            onClick={() => setActiveTab('inventory')}
+            onClick={() => handleTabSelect('inventory')}
             className={`admin-nav-item ${activeTab === 'inventory' ? 'active' : ''}`}
           >
             <Package style={{ width: '15px', height: '15px' }} />
@@ -127,7 +132,7 @@ export default function AdminNavbar({
           </button>
 
           <button
-            onClick={() => setActiveTab('users')}
+            onClick={() => handleTabSelect('users')}
             className={`admin-nav-item ${activeTab === 'users' ? 'active' : ''}`}
           >
             <Users style={{ width: '15px', height: '15px' }} />
@@ -136,7 +141,7 @@ export default function AdminNavbar({
           </button>
 
           <button
-            onClick={() => setActiveTab('analytics')}
+            onClick={() => handleTabSelect('analytics')}
             className={`admin-nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
           >
             <BarChart3 style={{ width: '15px', height: '15px' }} />
@@ -144,7 +149,7 @@ export default function AdminNavbar({
           </button>
 
           <button
-            onClick={() => setActiveTab('settings')}
+            onClick={() => handleTabSelect('settings')}
             className={`admin-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
           >
             <Settings style={{ width: '15px', height: '15px' }} />
