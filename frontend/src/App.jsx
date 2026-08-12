@@ -63,6 +63,7 @@ function AppContent() {
                 </ProtectedAdminRoute>
               }
             />
+            <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
             <Route
               path="/my-orders"
               element={
