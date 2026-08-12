@@ -22,10 +22,37 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
+const DEFAULT_SIGNATURE_PRESETS = [
+  {
+    _id: 'p1',
+    name: 'Margherita Supreme',
+    category: 'pizza_preset',
+    price: 299,
+    description: 'Classic Thin Crust with Italian Tomato Sauce and Double Mozzarella',
+    image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    _id: 'p2',
+    name: 'Farmhouse Feast',
+    category: 'pizza_preset',
+    price: 399,
+    description: 'Loaded with Capsicum, Onion, Mushroom & Fresh Tomatoes',
+    image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    _id: 'p3',
+    name: 'Fiery Jalapeno Special',
+    category: 'pizza_preset',
+    price: 449,
+    description: 'Spicy Schezwan base with Jalapenos, Black Olives & Golden Corn',
+    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80',
+  },
+];
+
 export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
   const { API_BASE_URL } = useContext(AuthContext);
-  const [presets, setPresets] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [presets, setPresets] = useState(DEFAULT_SIGNATURE_PRESETS);
+  const [loading, setLoading] = useState(false);
 
   const [selectedPizzaForItem, setSelectedPizzaForItem] = useState(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -37,11 +64,13 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
 
   const fetchPresets = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/inventory/options`);
-      setPresets(res.data.presets || []);
+      const res = await axios.get(`${API_BASE_URL}/inventory/options`, { timeout: 4000 });
+      if (res.data?.presets && res.data.presets.length > 0) {
+        setPresets(res.data.presets);
+      }
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching presets:', err);
+      console.warn('Using default presets due to network latency:', err.message);
       setLoading(false);
     }
   };

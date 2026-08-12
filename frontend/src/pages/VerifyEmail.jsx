@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, ArrowRight, Pizza } from 'lucide-react';
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -18,7 +18,7 @@ export default function VerifyEmail() {
         .get(`${API_BASE_URL}/auth/verify-email?token=${token}`)
         .then((res) => {
           setStatus('success');
-          setMessage(res.data.message || 'Email verified successfully!');
+          setMessage(res.data.message || 'Email verified successfully! You can now log in.');
         })
         .catch((err) => {
           setStatus('error');
@@ -31,33 +31,62 @@ export default function VerifyEmail() {
   }, [token, API_BASE_URL]);
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center p-4">
-      <div className="glass-panel w-full max-w-md p-8 rounded-2xl border border-white/10 text-center space-y-4">
+    <div className="auth-page">
+      {/* Dynamic Ambient Glow Backdrops */}
+      <div className="auth-glow auth-glow-1" />
+      <div className="auth-glow auth-glow-2" />
+      <div className="auth-grid-overlay" />
+
+      {/* Card */}
+      <div className="auth-card animate-fade-in" style={{ textAlign: 'center' }}>
+        <div className="auth-header" style={{ marginBottom: '16px' }}>
+          <div className="auth-icon-badge">
+            <Pizza style={{ width: '26px', height: '26px', color: '#FFFFFF' }} />
+          </div>
+        </div>
+
         {status === 'verifying' && (
-          <div>
-            <div className="animate-spin w-10 h-10 border-4 border-rose-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <h3 className="text-xl font-bold text-white">Verifying Email Address...</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '20px 0' }}>
+            <Loader2 className="animate-spin" style={{ width: '42px', height: '42px', color: '#F7254F' }} />
+            <h2 className="auth-title" style={{ fontSize: '1.4rem' }}>
+              Verifying Email Address...
+            </h2>
+            <p className="auth-subtitle">Please wait while we confirm your account details.</p>
           </div>
         )}
 
         {status === 'success' && (
-          <div className="space-y-4">
-            <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto" />
-            <h3 className="text-2xl font-bold text-white">Email Verified!</h3>
-            <p className="text-sm text-slate-300">{message}</p>
-            <Link to="/login" className="btn-primary w-full py-3 inline-block">
-              Proceed to Sign In
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <CheckCircle2 style={{ width: '56px', height: '56px', color: '#10B981' }} />
+            <h2 className="auth-title" style={{ fontSize: '1.6rem' }}>
+              Email <span className="gradient-text">Verified!</span>
+            </h2>
+            <p className="auth-subtitle">{message}</p>
+            <Link
+              to="/login"
+              className="auth-submit-btn"
+              style={{ textDecoration: 'none', width: '100%', marginTop: '12px' }}
+            >
+              <span>Proceed to Sign In</span>
+              <ArrowRight style={{ width: '18px', height: '18px' }} />
             </Link>
           </div>
         )}
 
         {status === 'error' && (
-          <div className="space-y-4">
-            <XCircle className="w-16 h-16 text-rose-500 mx-auto" />
-            <h3 className="text-2xl font-bold text-white">Verification Failed</h3>
-            <p className="text-sm text-rose-300">{message}</p>
-            <Link to="/register" className="btn-secondary w-full py-3 inline-block">
-              Back to Registration
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <XCircle style={{ width: '56px', height: '56px', color: '#F7254F' }} />
+            <h2 className="auth-title" style={{ fontSize: '1.6rem', color: '#F87171' }}>
+              Verification Failed
+            </h2>
+            <p className="auth-subtitle" style={{ color: '#FDA4AF' }}>{message}</p>
+            <Link
+              to="/register"
+              className="auth-submit-btn"
+              style={{ textDecoration: 'none', width: '100%', marginTop: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+            >
+              <span>Back to Registration</span>
+              <ArrowRight style={{ width: '18px', height: '18px' }} />
             </Link>
           </div>
         )}

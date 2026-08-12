@@ -1,13 +1,14 @@
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { User, Mail, Lock, CheckCircle, AlertCircle, ArrowRight, Pizza } from 'lucide-react';
+import { User, Mail, Lock, CheckCircle, AlertCircle, ArrowRight, Pizza, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function Register() {
   const { register, loading } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [error, setError] = useState('');
 
@@ -15,118 +16,177 @@ export default function Register() {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
+
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+
     try {
-      const res = await register(name, email, password);
+      const res = await register(name.trim(), email.trim(), password);
       setSuccessMsg(res.message || 'Registration successful! Verification email sent.');
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      setError(err.message || 'Registration failed. Please try again.');
     }
   };
 
   return (
-    <div className="min-h-[75vh] flex items-center justify-center p-4 py-12">
-      <div
-        style={{
-          background: 'rgba(21, 24, 38, 0.9)',
-          boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px rgba(247, 37, 79, 0.15)',
-        }}
-        className="glass-panel w-full max-w-md p-8 sm:p-10 rounded-3xl border border-white/10 space-y-6 animate-fade-in"
-      >
-        <div className="text-center space-y-3">
-          <div
-            style={{
-              background: 'linear-gradient(135deg, #F7254F 0%, #FF8A00 100%)',
-            }}
-            className="inline-flex p-3 rounded-2xl shadow-lg"
-          >
-            <Pizza className="w-7 h-7 text-white" />
+    <div className="auth-page">
+      {/* Dynamic Ambient Glow Backdrops */}
+      <div className="auth-glow auth-glow-1" />
+      <div className="auth-glow auth-glow-2" />
+      <div className="auth-grid-overlay" />
+
+      {/* Card */}
+      <div className="auth-card animate-fade-in">
+        {/* Header */}
+        <div className="auth-header">
+          <div className="auth-icon-badge">
+            <Pizza style={{ width: '26px', height: '26px', color: '#FFFFFF' }} />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Create an Account</h2>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <h1 className="auth-title">
+            Create an <span className="gradient-text">Account</span>
+          </h1>
+          <p className="auth-subtitle">
             Join SliceCraft to build custom artisan pizzas with live tracking
           </p>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <div className="p-3.5 bg-rose-500/15 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="auth-error-alert" role="alert">
+            <AlertCircle style={{ width: '18px', height: '18px', flexShrink: 0 }} />
             <span>{error}</span>
           </div>
         )}
 
+        {/* Success Alert / Form */}
         {successMsg ? (
-          <div className="p-6 bg-emerald-500/15 border border-emerald-500/30 rounded-2xl text-center space-y-4">
-            <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto" />
-            <h4 className="text-lg font-bold text-white">Verification Link Sent</h4>
-            <p className="text-xs text-slate-300 leading-relaxed">{successMsg}</p>
-            <p className="text-xs text-slate-400 italic">
+          <div className="auth-success-alert">
+            <CheckCircle style={{ width: '48px', height: '48px', color: '#10B981' }} />
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+              Verification Link Sent
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#CBD5E1', margin: 0, lineHeight: 1.5 }}>
+              {successMsg}
+            </p>
+            <p style={{ fontSize: '0.78rem', color: '#94A3B8', fontStyle: 'italic', margin: 0 }}>
               Please check your inbox or server console to verify your email before signing in.
             </p>
-            <Link to="/login" className="btn-primary w-full py-3 text-xs font-bold no-underline block">
-              Go to Login Page
+            <Link
+              to="/login"
+              className="auth-submit-btn"
+              style={{ textDecoration: 'none', width: '100%', marginTop: '12px' }}
+            >
+              <span>Go to Login Page</span>
+              <ArrowRight style={{ width: '18px', height: '18px' }} />
             </Link>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-group">
-              <label className="text-xs font-semibold text-slate-300">Full Name</label>
-              <div className="relative">
+          <form onSubmit={handleSubmit} className="auth-form" noValidate>
+            {/* Full Name */}
+            <div className="auth-input-group">
+              <label className="auth-label" htmlFor="register-name">
+                Full Name
+              </label>
+              <div className="auth-input-wrapper">
+                <User className="auth-input-icon" />
                 <input
+                  id="register-name"
                   type="text"
                   required
-                  className="form-control w-full pl-10 text-sm"
+                  autoComplete="name"
+                  className="auth-input-field"
                   placeholder="e.g. Alex Johnson"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
                 />
-                <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="text-xs font-semibold text-slate-300">Email Address</label>
-              <div className="relative">
+            {/* Email Address */}
+            <div className="auth-input-group">
+              <label className="auth-label" htmlFor="register-email">
+                Email Address
+              </label>
+              <div className="auth-input-wrapper">
+                <Mail className="auth-input-icon" />
                 <input
+                  id="register-email"
                   type="email"
                   required
-                  className="form-control w-full pl-10 text-sm"
+                  autoComplete="email"
+                  className="auth-input-field"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                 />
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="text-xs font-semibold text-slate-300">Password</label>
-              <div className="relative">
+            {/* Password */}
+            <div className="auth-input-group">
+              <label className="auth-label" htmlFor="register-password">
+                Password
+              </label>
+              <div className="auth-input-wrapper">
+                <Lock className="auth-input-icon" />
                 <input
-                  type="password"
+                  id="register-password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   minLength={6}
-                  className="form-control w-full pl-10 text-sm"
+                  autoComplete="new-password"
+                  className="auth-input-field"
                   placeholder="At least 6 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                 />
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                <button
+                  type="button"
+                  className="auth-password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeOff style={{ width: '18px', height: '18px' }} />
+                  ) : (
+                    <Eye style={{ width: '18px', height: '18px' }} />
+                  )}
+                </button>
               </div>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full py-3.5 text-sm font-bold mt-2"
+              className="auth-submit-btn"
             >
-              {loading ? 'Creating Account...' : 'Complete Registration'} <ArrowRight className="w-4 h-4" />
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" style={{ width: '18px', height: '18px' }} />
+                  <span>Creating Account...</span>
+                </>
+              ) : (
+                <>
+                  <span>Complete Registration</span>
+                  <ArrowRight style={{ width: '18px', height: '18px' }} />
+                </>
+              )}
             </button>
           </form>
         )}
 
-        <div className="text-center text-xs text-slate-400 pt-4 border-t border-white/10 flex items-center justify-center gap-1.5">
+        {/* Footer Note */}
+        <div className="auth-footer-note">
           <span>Already have an account?</span>
-          <Link to="/login" className="text-rose-400 font-bold hover:text-rose-300 no-underline">
+          <Link to="/login" className="auth-footer-link">
             Sign In
           </Link>
         </div>

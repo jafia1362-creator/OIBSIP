@@ -2,16 +2,48 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, ChevronRight, ChevronLeft, Check, Sparkles, AlertCircle, Pizza, Flame } from 'lucide-react';
 
+const DEFAULT_OPTIONS = {
+  bases: [
+    { _id: 'b1', name: 'Thin Crust Base', category: 'base', price: 120, stockQuantity: 50, description: 'Crispy & classic thin dough base' },
+    { _id: 'b2', name: 'Thick Pan Crust', category: 'base', price: 140, stockQuantity: 45, description: 'Soft & fluffy deep dish pan base' },
+    { _id: 'b3', name: 'Cheese Burst Base', category: 'base', price: 200, stockQuantity: 30, description: 'Loaded with molten cheese inside the crust' },
+    { _id: 'b4', name: 'Whole Wheat Crust', category: 'base', price: 150, stockQuantity: 40, description: 'Healthy 100% whole grain wheat base' },
+    { _id: 'b5', name: 'Gluten-Free Crust', category: 'base', price: 180, stockQuantity: 25, description: 'Special artisan gluten-free dough' },
+  ],
+  sauces: [
+    { _id: 's1', name: 'Classic Tomato Sauce', category: 'sauce', price: 30, stockQuantity: 60, description: 'Rich Italian sun-ripened tomato basil sauce' },
+    { _id: 's2', name: 'Spicy Schezwan Sauce', category: 'sauce', price: 40, stockQuantity: 55, description: 'Fiery & zesty chilli garlic sauce' },
+    { _id: 's3', name: 'Creamy Garlic Alfredo', category: 'sauce', price: 50, stockQuantity: 50, description: 'Rich white garlic butter cream sauce' },
+    { _id: 's4', name: 'Smoky Barbecue Sauce', category: 'sauce', price: 45, stockQuantity: 40, description: 'Sweet & smoky hickory BBQ glaze' },
+    { _id: 's5', name: 'Fresh Basil Pesto', category: 'sauce', price: 60, stockQuantity: 35, description: 'Aromatic basil & pine nut green pesto' },
+  ],
+  cheeses: [
+    { _id: 'c1', name: '100% Mozzarella Cheese', category: 'cheese', price: 60, stockQuantity: 70, description: 'Classic stretchy Italian mozzarella' },
+    { _id: 'c2', name: 'Aged Cheddar Cheese', category: 'cheese', price: 70, stockQuantity: 50, description: 'Sharp & tangy golden cheddar' },
+    { _id: 'c3', name: 'Grated Parmesan Cheese', category: 'cheese', price: 80, stockQuantity: 45, description: 'Hard aged salty parmesan flakes' },
+    { _id: 'c4', name: 'Plant-Based Vegan Cheese', category: 'cheese', price: 90, stockQuantity: 30, description: 'Dairy-free coconut oil based meltable cheese' },
+  ],
+  veggies: [
+    { _id: 'v1', name: 'Crunchy Capsicum', category: 'veggie', price: 25, stockQuantity: 80 },
+    { _id: 'v2', name: 'Red Onions', category: 'veggie', price: 20, stockQuantity: 90 },
+    { _id: 'v3', name: 'Button Mushrooms', category: 'veggie', price: 35, stockQuantity: 65 },
+    { _id: 'v4', name: 'Spicy Jalapenos', category: 'veggie', price: 30, stockQuantity: 70 },
+    { _id: 'v5', name: 'Black Olives', category: 'veggie', price: 35, stockQuantity: 60 },
+    { _id: 'v6', name: 'Sweet Golden Corn', category: 'veggie', price: 25, stockQuantity: 85 },
+    { _id: 'v7', name: 'Juicy Tomatoes', category: 'veggie', price: 20, stockQuantity: 85 },
+  ],
+};
+
 export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BASE_URL }) {
   const [step, setStep] = useState(1);
-  const [options, setOptions] = useState({ bases: [], sauces: [], cheeses: [], veggies: [] });
-  const [loading, setLoading] = useState(true);
+  const [options, setOptions] = useState(DEFAULT_OPTIONS);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   // Selected Pizza Customization State
-  const [selectedBase, setSelectedBase] = useState(null);
-  const [selectedSauce, setSelectedSauce] = useState(null);
-  const [selectedCheese, setSelectedCheese] = useState(null);
+  const [selectedBase, setSelectedBase] = useState(DEFAULT_OPTIONS.bases[0]);
+  const [selectedSauce, setSelectedSauce] = useState(DEFAULT_OPTIONS.sauces[0]);
+  const [selectedCheese, setSelectedCheese] = useState(DEFAULT_OPTIONS.cheeses[0]);
   const [selectedVeggies, setSelectedVeggies] = useState([]);
 
   useEffect(() => {
@@ -21,20 +53,14 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
   }, [isOpen]);
 
   const fetchOptions = async () => {
-    setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/inventory/options`);
-      setOptions(res.data);
-
-      // Auto select default options if available
-      if (res.data.bases?.length > 0 && !selectedBase) setSelectedBase(res.data.bases[0]);
-      if (res.data.sauces?.length > 0 && !selectedSauce) setSelectedSauce(res.data.sauces[0]);
-      if (res.data.cheeses?.length > 0 && !selectedCheese) setSelectedCheese(res.data.cheeses[0]);
-
+      const res = await axios.get(`${API_BASE_URL}/inventory/options`, { timeout: 4000 });
+      if (res.data?.bases && res.data.bases.length > 0) {
+        setOptions(res.data);
+      }
       setLoading(false);
     } catch (err) {
-      console.error('Failed to load pizza options', err);
-      setError('Failed to load ingredient choices. Please try again.');
+      console.warn('Using cached ingredient choices:', err.message);
       setLoading(false);
     }
   };

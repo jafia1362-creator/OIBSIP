@@ -1,5 +1,19 @@
 // Centralized API and Socket.IO configuration
-const RAW_API_URL = import.meta.env.VITE_API_URL || 'https://oibsip-6aid.vercel.app';
+const getBaseApiUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    // Automatically use fast local backend when developing locally
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:5000';
+    }
+  }
+  return 'https://oibsip-6aid.vercel.app';
+};
+
+const RAW_API_URL = getBaseApiUrl();
 const CLEAN_API_URL = RAW_API_URL.replace(/\/+$/, '');
 
 // Ensure /api path is present for REST endpoints without duplicates
