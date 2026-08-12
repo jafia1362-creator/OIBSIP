@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { Clock, ChefHat, Bike, CheckCircle2 } from 'lucide-react';
-
-const SOCKET_URL = 'http://localhost:5000';
+import { SOCKET_URL } from '../config/api';
 
 const STATUS_STEPS = [
   { id: 'Order Received', label: 'Order Received', icon: Clock },
