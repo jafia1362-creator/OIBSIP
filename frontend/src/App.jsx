@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -32,15 +32,23 @@ const ProtectedUserRoute = ({ children }) => {
 function AppContent() {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Check if current route is an Admin route
   const isAdminRoute = location.pathname.startsWith('/admin');
+
+  const handleOpenBuilder = () => {
+    setIsBuilderOpen(true);
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#0F111A', color: '#FFF' }}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Render Customer Navbar ONLY on customer-facing routes */}
-        {!isAdminRoute && <Navbar openBuilder={() => setIsBuilderOpen(true)} />}
+        {!isAdminRoute && <Navbar openBuilder={handleOpenBuilder} />}
 
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <Routes>
