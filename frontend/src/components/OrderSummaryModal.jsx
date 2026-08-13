@@ -207,7 +207,7 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
         <div style={{ padding: '18px 24px', borderTop: '1px solid var(--border-color)', backgroundColor: 'rgba(15, 17, 26, 0.95)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block', fontWeight: 600 }}>Total Amount</span>
-            <span className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{totalAmount}</span>
+            <span key={totalAmount} className="gradient-text price-pop-animation" style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{totalAmount}</span>
           </div>
 
           {user ? (

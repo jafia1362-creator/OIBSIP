@@ -20,6 +20,7 @@ import {
   MapPin,
   Mail,
   ArrowRight,
+  Leaf,
 } from 'lucide-react';
 
 const DEFAULT_SIGNATURE_PRESETS = [
@@ -178,7 +179,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '80px', paddingBottom: '60px' }}>
+    <div className="home-page" style={{ display: 'flex', flexDirection: 'column', gap: '80px', paddingBottom: '60px' }}>
       {/* 1. HERO SECTION */}
       <section style={{ position: 'relative', overflow: 'hidden' }}>
         <div className="site-container">
@@ -256,6 +257,17 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
                   zIndex: -1,
                 }}
               ></div>
+
+              {/* Decorative Floating Ingredients */}
+              <div className="floating-food-1">
+                <Leaf size={28} style={{ transform: 'rotate(25deg)' }} />
+              </div>
+              <div className="floating-food-2">
+                <Flame size={24} />
+              </div>
+              <div className="floating-food-3">
+                <Leaf size={22} style={{ transform: 'rotate(-40deg)' }} />
+              </div>
 
               {/* Continuous Floating Hero Pizza Image Card */}
               <div className="hero-pizza-floating-wrap" style={{ position: 'relative' }}>
@@ -451,22 +463,49 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div
-              className="hero-pizza-floating-wrap"
-              style={{
-                width: '240px',
-                height: '240px',
-                borderRadius: '50%',
-                overflow: 'hidden',
-                border: '4px solid rgba(247,37,79,0.4)',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-              }}
-            >
-              <img
-                src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=500&q=80"
-                alt="Custom Pizza Builder Demo"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+            <div style={{ position: 'relative' }}>
+              <div
+                className="hero-pizza-floating-wrap"
+                style={{
+                  width: '240px',
+                  height: '240px',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: '4px solid rgba(247,37,79,0.4)',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+                }}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=500&q=80"
+                  alt="Custom Pizza Builder Demo"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+
+              {/* Promo Discount Badge overlay */}
+              <div
+                className="promo-badge-pulse"
+                style={{
+                  position: 'absolute',
+                  top: '-10px',
+                  right: '-10px',
+                  background: 'linear-gradient(135deg, #FF8A00 0%, #FFC107 100%)',
+                  color: '#0F111A',
+                  fontSize: '0.75rem',
+                  fontWeight: 900,
+                  padding: '8px 12px',
+                  borderRadius: '12px',
+                  boxShadow: '0 8px 20px rgba(255, 138, 0, 0.4)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  zIndex: 2,
+                }}
+              >
+                <span style={{ fontSize: '0.6rem', opacity: 0.8, fontWeight: 700 }}>WEEKEND SPECIAL</span>
+                <span>SAVE 15%</span>
+              </div>
             </div>
           </div>
         </div>

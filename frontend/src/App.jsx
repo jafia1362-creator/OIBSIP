@@ -78,7 +78,7 @@ function AppContent() {
 
       {/* Render Customer Footer ONLY on customer-facing routes */}
       {!isAdminRoute && (
-        <footer style={{ borderTop: '1px solid var(--border-color)', backgroundColor: '#0A0C13', marginTop: '80px', paddingTop: '60px', paddingBottom: '40px' }}>
+        <footer className="scroll-reveal" style={{ borderTop: '1px solid var(--border-color)', backgroundColor: '#0A0C13', marginTop: '80px', paddingTop: '60px', paddingBottom: '40px' }}>
           <div className="site-container">
             <div className="footer-grid" style={{ paddingBottom: '48px', borderBottom: '1px solid var(--border-color)' }}>
               {/* Col 1: Brand Info */}

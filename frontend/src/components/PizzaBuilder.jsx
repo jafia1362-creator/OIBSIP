@@ -125,34 +125,47 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
           </button>
         </div>
 
-        {/* Step Wizard Tabs */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', borderBottom: '1px solid var(--border-color)', backgroundColor: '#0A0C13' }}>
-          {[
-            { id: 1, title: '1. Crust Base (5)' },
-            { id: 2, title: '2. Sauce (5)' },
-            { id: 3, title: '3. Cheese' },
-            { id: 4, title: '4. Veggies' },
-          ].map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setStep(s.id)}
-              style={{
-                padding: '14px 8px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                border: 'none',
-                borderRight: s.id !== 4 ? '1px solid var(--border-color)' : 'none',
-                background: step === s.id ? 'rgba(247, 37, 79, 0.15)' : 'transparent',
-                color: step === s.id ? '#F7254F' : step > s.id ? '#10B981' : '#94A3B8',
-                fontWeight: step === s.id ? 800 : 600,
-                fontSize: '0.8rem',
-                borderBottom: step === s.id ? '2px solid #F7254F' : '2px solid transparent',
-                transition: 'var(--transition)',
-              }}
-            >
-              {s.title}
-            </button>
-          ))}
+        {/* Step Wizard Tabs & Progress Line */}
+        <div style={{ position: 'relative', backgroundColor: '#0A0C13', borderBottom: '1px solid var(--border-color)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            {[
+              { id: 1, title: '1. Crust Base (5)' },
+              { id: 2, title: '2. Sauce (5)' },
+              { id: 3, title: '3. Cheese' },
+              { id: 4, title: '4. Veggies' },
+            ].map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setStep(s.id)}
+                style={{
+                  padding: '14px 8px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  border: 'none',
+                  borderRight: s.id !== 4 ? '1px solid var(--border-color)' : 'none',
+                  background: step === s.id ? 'rgba(247, 37, 79, 0.08)' : 'transparent',
+                  color: step === s.id ? '#F7254F' : step > s.id ? '#10B981' : '#94A3B8',
+                  fontWeight: step === s.id ? 800 : 600,
+                  fontSize: '0.8rem',
+                  transition: 'var(--transition)',
+                }}
+              >
+                {s.title}
+              </button>
+            ))}
+          </div>
+          {/* Progress Indicator line */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              height: '3px',
+              width: `${(step / 4) * 100}%`,
+              background: 'linear-gradient(90deg, #F7254F 0%, #FF8A00 100%)',
+              transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          ></div>
         </div>
 
         {/* Content Body */}
@@ -170,7 +183,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
             <div>
               {/* STEP 1: PIZZA BASES */}
               {step === 1 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="builder-step-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFF' }}>Choose Your Crust Base</h3>
                     <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Select 1 of 5 signature artisan crust options:</p>
@@ -183,6 +196,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                         <div
                           key={base._id}
                           onClick={() => !isOutOfStock && setSelectedBase(base)}
+                          className={`ingredient-card ${isSelected ? 'selected' : ''} ${isOutOfStock ? 'out-of-stock' : ''}`}
                           style={{
                             padding: '16px',
                             borderRadius: '16px',
@@ -190,7 +204,6 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                             background: isSelected ? 'rgba(247, 37, 79, 0.12)' : 'rgba(255, 255, 255, 0.03)',
                             cursor: isOutOfStock ? 'not-allowed' : 'pointer',
                             opacity: isOutOfStock ? 0.4 : 1,
-                            transition: 'var(--transition)',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
@@ -223,7 +236,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
 
               {/* STEP 2: SAUCES */}
               {step === 2 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="builder-step-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFF' }}>Choose Your Sauce Base</h3>
                     <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Select 1 of 5 freshly prepared gourmet sauces:</p>
@@ -236,6 +249,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                         <div
                           key={sauce._id}
                           onClick={() => !isOutOfStock && setSelectedSauce(sauce)}
+                          className={`ingredient-card ${isSelected ? 'selected' : ''} ${isOutOfStock ? 'out-of-stock' : ''}`}
                           style={{
                             padding: '16px',
                             borderRadius: '16px',
@@ -243,7 +257,6 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                             background: isSelected ? 'rgba(247, 37, 79, 0.12)' : 'rgba(255, 255, 255, 0.03)',
                             cursor: isOutOfStock ? 'not-allowed' : 'pointer',
                             opacity: isOutOfStock ? 0.4 : 1,
-                            transition: 'var(--transition)',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
@@ -274,7 +287,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
 
               {/* STEP 3: CHEESE TYPE */}
               {step === 3 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="builder-step-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFF' }}>Choose Primary Cheese</h3>
                     <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Select 100% natural gourmet dairy or vegan cheese:</p>
@@ -287,6 +300,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                         <div
                           key={cheese._id}
                           onClick={() => !isOutOfStock && setSelectedCheese(cheese)}
+                          className={`ingredient-card ${isSelected ? 'selected' : ''} ${isOutOfStock ? 'out-of-stock' : ''}`}
                           style={{
                             padding: '16px',
                             borderRadius: '16px',
@@ -294,7 +308,6 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                             background: isSelected ? 'rgba(247, 37, 79, 0.12)' : 'rgba(255, 255, 255, 0.03)',
                             cursor: isOutOfStock ? 'not-allowed' : 'pointer',
                             opacity: isOutOfStock ? 0.4 : 1,
-                            transition: 'var(--transition)',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
@@ -325,7 +338,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
 
               {/* STEP 4: VEGETABLES */}
               {step === 4 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="builder-step-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFF' }}>Choose Vegetables & Toppings</h3>
                     <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Pick multiple fresh toppings (select all that you love):</p>
@@ -338,6 +351,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                         <div
                           key={veg._id}
                           onClick={() => !isOutOfStock && toggleVeggie(veg)}
+                          className={`ingredient-card ${isSelected ? 'selected-veggie' : ''} ${isOutOfStock ? 'out-of-stock' : ''}`}
                           style={{
                             padding: '14px',
                             borderRadius: '16px',
@@ -345,7 +359,6 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                             background: isSelected ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.03)',
                             cursor: isOutOfStock ? 'not-allowed' : 'pointer',
                             opacity: isOutOfStock ? 0.4 : 1,
-                            transition: 'var(--transition)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
@@ -385,7 +398,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
           <div>
             <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block', fontWeight: 600 }}>Calculated Custom Price</span>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
-              <span className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{calculateTotal()}</span>
+              <span key={calculateTotal()} className="gradient-text price-pop-animation" style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{calculateTotal()}</span>
               <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
                 (Base ₹{selectedBase?.price || 0} + Sauce ₹{selectedSauce?.price || 0} + Cheese ₹{selectedCheese?.price || 0}
                 {selectedVeggies.length > 0 ? ` + Veggies ₹${selectedVeggies.reduce((s, v) => s + v.price, 0)}` : ''})

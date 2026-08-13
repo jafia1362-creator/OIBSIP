@@ -36,7 +36,7 @@ export default function Navbar({ openBuilder }) {
 
   return (
     <header
-      className="nav-header"
+      className={`nav-header ${isScrolled ? 'scrolled' : ''}`}
       style={{
         backgroundColor: isScrolled ? 'rgba(15, 17, 26, 0.96)' : 'rgba(15, 17, 26, 0.85)',
         backdropFilter: 'blur(16px)',
@@ -67,8 +67,8 @@ export default function Navbar({ openBuilder }) {
 
           {/* Desktop Navigation Links */}
           <nav className="nav-menu-desktop">
-            <Link to="/" className="nav-link-item">Home</Link>
-            <button onClick={() => handleNavClick('menu')} className="nav-link-item">Menu</button>
+            <Link to="/" className={`nav-link-item ${location.pathname === '/' && !location.hash ? 'active' : ''}`}>Home</Link>
+            <button onClick={() => handleNavClick('menu')} className={`nav-link-item ${location.hash === '#menu' ? 'active' : ''}`}>Menu</button>
             <button
               onClick={openBuilder}
               className="nav-link-item"
@@ -76,9 +76,9 @@ export default function Navbar({ openBuilder }) {
             >
               <Sparkles style={{ width: '16px', height: '16px' }} /> Custom Pizza
             </button>
-            <button onClick={() => handleNavClick('how-it-works')} className="nav-link-item">How It Works</button>
-            <button onClick={() => handleNavClick('about')} className="nav-link-item">About</button>
-            <button onClick={() => handleNavClick('contact')} className="nav-link-item">Contact</button>
+            <button onClick={() => handleNavClick('how-it-works')} className={`nav-link-item ${location.hash === '#how-it-works' ? 'active' : ''}`}>How It Works</button>
+            <button onClick={() => handleNavClick('about')} className={`nav-link-item ${location.hash === '#about' ? 'active' : ''}`}>About</button>
+            <button onClick={() => handleNavClick('contact')} className={`nav-link-item ${location.hash === '#contact' ? 'active' : ''}`}>Contact</button>
           </nav>
 
           {/* Desktop Right Actions */}
@@ -234,7 +234,7 @@ export default function Navbar({ openBuilder }) {
             flexDirection: 'column',
             gap: '16px',
           }}
-          className="animate-fade-in"
+          className="mobile-nav-drawer"
         >
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="nav-link-item">Home</Link>
           <button onClick={() => handleNavClick('menu')} className="nav-link-item" style={{ textAlign: 'left' }}>Menu</button>
