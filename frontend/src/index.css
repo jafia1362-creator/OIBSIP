@@ -2996,9 +2996,7 @@ a {
   }
 }
 
-.modal-content {
-  animation: modalPopIn 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
+
 
 /* 16. Accessibility / Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
