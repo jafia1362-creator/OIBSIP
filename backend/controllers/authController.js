@@ -3,57 +3,38 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
 
-let memoryUsers = [
-  {
-    _id: 'admin_1',
-    name: 'Super Admin',
-    email: 'admin@pizzadelivery.com',
-    password: 'admin123',
-    role: 'admin',
-    isVerified: true,
-  },
-];
-
 const generateToken = (id, role = 'user') => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET || 'supersecret_pizza_jwt_key_2026', {
     expiresIn: '7d',
   });
 };
 
-
 // Register User
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const verificationToken = crypto.randomBytes(32).toString('hex');
 
-    let user = null;
-    try {
-      const userExists = await User.findOne({ email });
-      if (userExists) {
-        return res.status(400).json({ message: 'User already exists with this email' });
-      }
-
-      user = await User.create({
-        name,
-        email,
-        password,
-        role: 'user',
-        isVerified: false,
-        verificationToken,
-      });
-    } catch (e) {
-      user = {
-        _id: `usr_${Date.now()}`,
-        name,
-        email,
-        password,
-        role: 'user',
-        isVerified: true,
-        verificationToken,
-      };
-      memoryUsers.push(user);
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User already exists with this email' });
+    }
+
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+    const user = await User.create({
+      name,
+      email,
+      password, // hashed automatically by userSchema pre-save hook
+      role: 'user',
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpires,
+    });
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     const verifyUrl = `${clientUrl}/verify-email?token=${verificationToken}`;
@@ -74,6 +55,7 @@ const registerUser = async (req, res) => {
       verificationToken,
     });
   } catch (error) {
+    console.error('Register error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -82,24 +64,27 @@ const registerUser = async (req, res) => {
 const verifyEmail = async (req, res) => {
   try {
     const { token } = req.query;
-    try {
-      const user = await User.findOne({ verificationToken: token });
-      if (user) {
-        user.isVerified = true;
-        user.verificationToken = undefined;
-        await user.save();
-        return res.status(200).json({ message: 'Email verified successfully! You can now log in.' });
-      }
-    } catch (e) {}
-
-    const memUser = memoryUsers.find((u) => u.verificationToken === token);
-    if (memUser) {
-      memUser.isVerified = true;
-      return res.status(200).json({ message: 'Email verified successfully! You can now log in.' });
+    if (!token) {
+      return res.status(400).json({ message: 'Verification token is required.' });
     }
+
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Verification token is invalid or has expired.' });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
 
     res.status(200).json({ message: 'Email verified successfully! You can now log in.' });
   } catch (error) {
+    console.error('Verify email error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -108,26 +93,23 @@ const verifyEmail = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    let user = null;
 
-    try {
-      user = await User.findOne({ email });
-    } catch (e) {}
-
-    if (!user) {
-      user = memoryUsers.find((u) => u.email === email);
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
+    const user = await User.findOne({ email });
     if (!user) {
-      // Auto-create user for demo if not existing
-      user = {
-        _id: `usr_${Date.now()}`,
-        name: email.split('@')[0],
-        email,
-        role: 'user',
-        isVerified: true,
-      };
-      memoryUsers.push(user);
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    if (!user.isVerified) {
+      return res.status(400).json({ message: 'Please verify your email before logging in.' });
     }
 
     res.json({
@@ -138,6 +120,7 @@ const loginUser = async (req, res) => {
       token: generateToken(user._id, user.role || 'user'),
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -146,21 +129,18 @@ const loginUser = async (req, res) => {
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    let user = null;
 
-    try {
-      user = await User.findOne({ email, role: 'admin' });
-    } catch (e) {}
-
-    if (!user) {
-      user = memoryUsers.find((u) => u.email === email && u.role === 'admin');
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    if (!user && (email === 'admin@pizzadelivery.com' || email.includes('admin'))) {
-      user = memoryUsers[0];
+    const user = await User.findOne({ email, role: 'admin' });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid admin credentials' });
     }
 
-    if (!user) {
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
       return res.status(401).json({ message: 'Invalid admin credentials' });
     }
 
@@ -172,23 +152,41 @@ const adminLogin = async (req, res) => {
       token: generateToken(user._id, 'admin'),
     });
   } catch (error) {
+    console.error('Admin login error:', error);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Forgot Password
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found with this email' });
+    }
+
     const resetToken = crypto.randomBytes(32).toString('hex');
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiry
+    await user.save();
+
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     const resetUrl = `${clientUrl}/reset-password?token=${resetToken}`;
 
     await sendEmail({
       to: email,
       subject: 'Reset Password - SliceCraft Pizza',
-      html: `<p>Reset your password using this link: <a href="${resetUrl}">${resetUrl}</a></p>`,
+      html: `
+        <h3>Reset Password Request</h3>
+        <p>You requested a password reset. Please use the link below to set a new password:</p>
+        <a href="${resetUrl}">${resetUrl}</a>
+        <p>This link will expire in 1 hour.</p>
+      `,
       text: `Reset password URL: ${resetUrl}`,
     });
 
@@ -197,36 +195,48 @@ const forgotPassword = async (req, res) => {
       resetToken,
     });
   } catch (error) {
+    console.error('Forgot password error:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
 // Reset Password
 const resetPassword = async (req, res) => {
-  res.status(200).json({ message: 'Password reset successful! You can now log in with your new password.' });
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ message: 'Token and password are required' });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Password reset token is invalid or has expired.' });
+    }
+
+    user.password = password; // hashes automatically on pre-save
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successful! You can now log in with your new password.' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // Admin: Get All Registered Users
 const getAllUsers = async (req, res) => {
   try {
-    let users = [];
-    try {
-      users = await User.find({}).select('-password').sort({ createdAt: -1 });
-    } catch (e) {}
-
-    if (!users || users.length === 0) {
-      users = memoryUsers.map((u) => ({
-        _id: u._id,
-        name: u.name,
-        email: u.email,
-        role: u.role || 'user',
-        isVerified: u.isVerified || false,
-        createdAt: u.createdAt || new Date(),
-      }));
-    }
-
+    const users = await User.find({}).select('-password').sort({ createdAt: -1 });
     res.json(users);
   } catch (error) {
+    console.error('Get all users error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -240,4 +250,3 @@ module.exports = {
   resetPassword,
   getAllUsers,
 };
-

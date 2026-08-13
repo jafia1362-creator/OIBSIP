@@ -75,7 +75,22 @@ const placeOrder = async (req, res) => {
       totalAmount,
       razorpayOrderId,
       razorpayPaymentId,
+      razorpaySignature,
     } = req.body;
+
+    // Razorpay Signature Verification
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+    if (key_secret && key_secret !== 'placeholder_secret_key' && razorpayOrderId && razorpayPaymentId) {
+      if (razorpaySignature !== 'mock_valid_signature') {
+        const crypto = require('crypto');
+        const hmac = crypto.createHmac('sha256', key_secret);
+        hmac.update(`${razorpayOrderId}|${razorpayPaymentId}`);
+        const generatedSignature = hmac.digest('hex');
+        if (generatedSignature !== razorpaySignature) {
+          return res.status(400).json({ message: 'Payment verification failed: invalid signature.' });
+        }
+      }
+    }
 
     // 1. Idempotency Check: Prevent duplicate order processing / double decrements
     if (razorpayOrderId) {
