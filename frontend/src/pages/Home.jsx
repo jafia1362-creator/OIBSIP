@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import PizzaBuilder from '../components/PizzaBuilder';
 import OrderSummaryModal from '../components/OrderSummaryModal';
@@ -103,6 +104,7 @@ function AnimatedCounter({ end, duration = 1600, decimals = 0, suffix = '' }) {
 
 export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
   const { API_BASE_URL } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [presets, setPresets] = useState(DEFAULT_SIGNATURE_PRESETS);
   const [loading, setLoading] = useState(false);
 
@@ -169,6 +171,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
     setIsCheckoutOpen(false);
     setLastPlacedOrder(order);
     alert(`🎉 Order placed successfully! Order ID: #${order._id?.slice(-8) || order._id}`);
+    navigate('/my-orders');
   };
 
   const scrollToMenu = () => {

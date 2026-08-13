@@ -4,15 +4,53 @@ import { AuthContext } from '../context/AuthContext';
 import OrderTracker from '../components/OrderTracker';
 import { ShoppingBag, RefreshCw, Sparkles, MapPin, Calendar, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { io } from 'socket.io-client';
+import { SOCKET_URL } from '../config/api';
 
 export default function UserOrders() {
-  const { API_BASE_URL } = useContext(AuthContext);
+  const { user, API_BASE_URL } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUserOrders();
   }, []);
+
+  useEffect(() => {
+    const socket = io(SOCKET_URL);
+
+    // Real-time listener for newly placed orders
+    socket.on('new_order', (newOrder) => {
+      const isUserOrder =
+        (user && newOrder.user === user._id) ||
+        (user && newOrder.customerEmail === user.email);
+
+      if (isUserOrder) {
+        setOrders((prevOrders) => {
+          // Avoid duplicate entries
+          if (prevOrders.some((o) => o._id === newOrder._id)) {
+            return prevOrders;
+          }
+          return [newOrder, ...prevOrders];
+        });
+      }
+    });
+
+    // Real-time listener for status updates
+    socket.on('order_status_updated', (data) => {
+      setOrders((prevOrders) =>
+        prevOrders.map((o) =>
+          o._id === data.orderId
+            ? { ...o, orderStatus: data.orderStatus, updatedAt: data.updatedAt }
+            : o
+        )
+      );
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [user, API_BASE_URL]);
 
   const fetchUserOrders = async () => {
     setLoading(true);
