@@ -116,8 +116,13 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
     fetchPresets();
   }, []);
 
-  // Lightweight IntersectionObserver for scroll-reveal animations
+  // Lightweight IntersectionObserver for scroll-reveal animations with safety fallback
   useEffect(() => {
+    const elements = document.querySelectorAll('.scroll-reveal');
+    elements.forEach((el) => el.classList.add('is-revealed'));
+
+    if (!('IntersectionObserver' in window)) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -126,10 +131,9 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
           }
         });
       },
-      { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
+      { threshold: 0.05 }
     );
 
-    const elements = document.querySelectorAll('.scroll-reveal');
     elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
