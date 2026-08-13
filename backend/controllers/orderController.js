@@ -197,7 +197,6 @@ const placeOrder = async (req, res) => {
 
     // 4. Create and persist the Order
     const orderData = {
-      _id: `ord_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       customerName: customerName || req.user?.name || 'Valued Customer',
       customerEmail: customerEmail || req.user?.email || 'customer@slicecraft.com',
       deliveryAddress: deliveryAddress || 'Artisan Foodie District',
@@ -207,8 +206,6 @@ const placeOrder = async (req, res) => {
       orderStatus: 'Order Received',
       razorpayOrderId: razorpayOrderId || `order_rzp_${Date.now()}`,
       razorpayPaymentId: razorpayPaymentId || `pay_mock_${Date.now()}`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     if (req.user?._id && mongoose.Types.ObjectId.isValid(req.user._id)) {
@@ -225,7 +222,12 @@ const placeOrder = async (req, res) => {
     }
 
     if (!savedOrder) {
-      savedOrder = orderData;
+      savedOrder = {
+        _id: `ord_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+        ...orderData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       memoryOrders.unshift(savedOrder);
     }
 
