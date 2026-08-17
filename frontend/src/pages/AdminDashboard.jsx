@@ -314,6 +314,60 @@ export default function AdminDashboard() {
     }
   };
 
+  // User CRUD States & Handlers
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'user',
+  });
+
+  const handleUpdateUserRole = async (userId, currentRole) => {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    try {
+      await axios.put(`${API_BASE_URL}/auth/admin/users/${userId}/role`, { role: newRole }, getAuthHeader());
+      addToast(`User role updated to ${newRole.toUpperCase()}`, 'success');
+      fetchUsers();
+    } catch (err) {
+      addToast(`Failed to update role: ${err.response?.data?.message || err.message}`, 'error');
+    }
+  };
+
+  const handleToggleUserVerify = async (userId) => {
+    try {
+      const res = await axios.put(`${API_BASE_URL}/auth/admin/users/${userId}/verify`, {}, getAuthHeader());
+      addToast(res.data.message || 'Verification status updated', 'success');
+      fetchUsers();
+    } catch (err) {
+      addToast(`Failed to update verification: ${err.response?.data?.message || err.message}`, 'error');
+    }
+  };
+
+  const handleDeleteUser = async (userId, name) => {
+    if (!window.confirm(`Are you sure you want to permanently delete user "${name}"?`)) return;
+    try {
+      const res = await axios.delete(`${API_BASE_URL}/auth/admin/users/${userId}`, getAuthHeader());
+      addToast(res.data.message || `User "${name}" deleted`, 'success');
+      fetchUsers();
+    } catch (err) {
+      addToast(`Failed to delete user: ${err.response?.data?.message || err.message}`, 'error');
+    }
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API_BASE_URL}/auth/admin/users`, newUser, getAuthHeader());
+      addToast(`User "${newUser.name}" created successfully!`, 'success');
+      setIsAddUserOpen(false);
+      setNewUser({ name: '', email: '', password: '', role: 'user' });
+      fetchUsers();
+    } catch (err) {
+      addToast(`Failed to create user: ${err.response?.data?.message || err.message}`, 'error');
+    }
+  };
+
   // Save Settings
   const handleSaveSettings = (e) => {
     e.preventDefault();
@@ -1269,12 +1323,17 @@ export default function AdminDashboard() {
                   Registered Users & Customer Directory
                 </h2>
                 <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-                  Manage platform users, verify customer accounts, and inspect administrative permissions.
+                  Manage platform users, update access permissions, verify accounts, and perform user CRUD administration.
                 </p>
               </div>
-              <button onClick={fetchUsers} className="btn-secondary" style={{ padding: '8px 14px', fontSize: '0.8rem' }}>
-                <RefreshCw style={{ width: '13px', height: '13px' }} /> Sync Users
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button onClick={() => setIsAddUserOpen(true)} className="btn-primary" style={{ padding: '8px 14px', fontSize: '0.8rem' }}>
+                  <Plus style={{ width: '14px', height: '14px' }} /> Add New User
+                </button>
+                <button onClick={fetchUsers} className="btn-secondary" style={{ padding: '8px 14px', fontSize: '0.8rem' }}>
+                  <RefreshCw style={{ width: '13px', height: '13px' }} /> Sync Users
+                </button>
+              </div>
             </div>
 
             {/* Users Filter Bar */}
@@ -1318,7 +1377,7 @@ export default function AdminDashboard() {
                     <th>System Role</th>
                     <th>Verification</th>
                     <th>Registered Date</th>
-                    <th>User ID</th>
+                    <th style={{ textAlign: 'center' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1410,9 +1469,56 @@ export default function AdminDashboard() {
                           </span>
                         </td>
                         <td>
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                            #{String(u._id).slice(-8)}
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            {/* Role Toggle Button */}
+                            <button
+                              onClick={() => handleUpdateUserRole(u._id, u.role)}
+                              className="btn-secondary"
+                              style={{
+                                padding: '4px 8px',
+                                fontSize: '0.72rem',
+                                color: u.role === 'admin' ? '#FF8A00' : '#60A5FA',
+                                borderColor: u.role === 'admin' ? 'rgba(255, 138, 0, 0.4)' : 'rgba(96, 165, 250, 0.4)',
+                              }}
+                              title={u.role === 'admin' ? 'Change role to Customer' : 'Promote to Admin'}
+                            >
+                              {u.role === 'admin' ? 'To Customer' : 'Make Admin'}
+                            </button>
+
+                            {/* Verification Toggle Button */}
+                            <button
+                              onClick={() => handleToggleUserVerify(u._id)}
+                              className="btn-secondary"
+                              style={{
+                                padding: '4px 8px',
+                                fontSize: '0.72rem',
+                                color: u.isVerified ? '#F59E0B' : '#10B981',
+                                borderColor: u.isVerified ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)',
+                              }}
+                              title={u.isVerified ? 'Mark as Unverified' : 'Verify Account'}
+                            >
+                              {u.isVerified ? 'Unverify' : 'Verify'}
+                            </button>
+
+                            {/* Delete User Button */}
+                            <button
+                              onClick={() => handleDeleteUser(u._id, u.name)}
+                              style={{
+                                background: 'rgba(247, 37, 79, 0.1)',
+                                border: '1px solid rgba(247, 37, 79, 0.3)',
+                                color: '#F7254F',
+                                padding: '5px 8px',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                              title="Delete User"
+                            >
+                              <Trash2 style={{ width: '13px', height: '13px' }} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -1797,6 +1903,79 @@ export default function AdminDashboard() {
                 </button>
                 <button type="submit" className="btn-primary" style={{ padding: '8px 20px' }}>
                   Create Item
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================
+          ADD NEW USER MODAL
+          ======================================================== */}
+      {isAddUserOpen && (
+        <div className="admin-modal-overlay" onClick={() => setIsAddUserOpen(false)}>
+          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+            <div className="admin-modal-header">
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#FFF', margin: 0 }}>
+                Add New User Account
+              </h3>
+              <button onClick={() => setIsAddUserOpen(false)} className="admin-modal-close">
+                <X style={{ width: '18px', height: '18px' }} />
+              </button>
+            </div>
+            <form onSubmit={handleCreateUser} className="admin-modal-body space-y-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Full Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Alex Mercer"
+                  value={newUser.name}
+                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                  className="input-field"
+                  required
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Email Address</label>
+                <input
+                  type="email"
+                  placeholder="alex@example.com"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  className="input-field"
+                  required
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••••••"
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  className="input-field"
+                  required
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>System Role</label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                  className="admin-select"
+                  style={{ width: '100%' }}
+                >
+                  <option value="user">Customer</option>
+                  <option value="admin">Administrator</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '10px' }}>
+                <button type="button" onClick={() => setIsAddUserOpen(false)} className="btn-secondary" style={{ padding: '8px 16px' }}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-primary" style={{ padding: '8px 20px' }}>
+                  Create User
                 </button>
               </div>
             </form>

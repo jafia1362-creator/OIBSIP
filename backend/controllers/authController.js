@@ -246,6 +246,105 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// Admin: Update User Role
+const updateUserRole = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    if (!['admin', 'user'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role specified' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.role = role;
+    await user.save();
+
+    res.json({ message: `User role updated to ${role} successfully`, user });
+  } catch (error) {
+    console.error('Update user role error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin: Toggle User Verification
+const toggleUserVerification = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.isVerified = !user.isVerified;
+    await user.save();
+
+    res.json({
+      message: `User verification status updated to ${user.isVerified ? 'Verified' : 'Pending'}`,
+      isVerified: user.isVerified,
+    });
+  } catch (error) {
+    console.error('Toggle user verification error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin: Delete User
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (String(req.user._id) === String(userId)) {
+      return res.status(400).json({ message: 'You cannot delete your own admin account!' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await User.findByIdAndDelete(userId);
+    res.json({ message: `User "${user.name}" (${user.email}) deleted successfully` });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin: Create User
+const createUserByAdmin = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email, and password are required' });
+    }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User already exists with this email' });
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: role || 'user',
+      isVerified: true,
+    });
+
+    res.status(201).json({ message: 'User created successfully', user });
+  } catch (error) {
+    console.error('Create user error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyEmail,
@@ -254,4 +353,8 @@ module.exports = {
   forgotPassword,
   resetPassword,
   getAllUsers,
+  updateUserRole,
+  toggleUserVerification,
+  deleteUser,
+  createUserByAdmin,
 };
