@@ -31,7 +31,7 @@ const registerUser = async (req, res) => {
       email,
       password, // hashed automatically by userSchema pre-save hook
       role: 'user',
-      isVerified: false,
+      isVerified: true,
       verificationToken,
       verificationTokenExpires,
     });
@@ -39,7 +39,8 @@ const registerUser = async (req, res) => {
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     const verifyUrl = `${clientUrl}/verify-email?token=${verificationToken}`;
 
-    await sendEmail({
+    // Send email asynchronously without blocking registration flow
+    sendEmail({
       to: email,
       subject: 'Verify Your Pizza Delivery Account Email',
       html: `
@@ -48,10 +49,10 @@ const registerUser = async (req, res) => {
         <a href="${verifyUrl}">${verifyUrl}</a>
       `,
       text: `Verify your email: ${verifyUrl}`,
-    });
+    }).catch((e) => console.warn('Email notification skipped/failed:', e.message));
 
     res.status(201).json({
-      message: 'Registration successful! Verification email sent (check email / console log).',
+      message: 'Registration successful! Your account is active and verified.',
       verificationToken,
     });
   } catch (error) {
@@ -108,8 +109,12 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    // Auto-verify account upon valid password entry if not already verified
     if (!user.isVerified) {
-      return res.status(400).json({ message: 'Please verify your email before logging in.' });
+      user.isVerified = true;
+      user.verificationToken = undefined;
+      user.verificationTokenExpires = undefined;
+      await user.save();
     }
 
     res.json({
