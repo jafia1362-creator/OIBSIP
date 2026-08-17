@@ -395,6 +395,7 @@ export default function AdminDashboard() {
       const res = await axios.delete(`${API_BASE_URL}/auth/admin/users/${userId}`, getAuthHeader());
       addToast(res.data.message || `User "${name}" deleted from database.`, 'success');
       fetchUsers();
+      fetchOrders();
     } catch (err) {
       addToast(`Failed to delete user: ${err.response?.data?.message || err.message}`, 'error');
     }

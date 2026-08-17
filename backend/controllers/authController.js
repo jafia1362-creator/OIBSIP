@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Order = require('../models/Order');
 const sendEmail = require('../utils/sendEmail');
 
 const generateToken = (id, role = 'user') => {
@@ -294,7 +295,7 @@ const toggleUserVerification = async (req, res) => {
   }
 };
 
-// Admin: Delete User
+// Admin: Delete User (with Cascading Orders Deletion)
 const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -308,8 +309,25 @@ const deleteUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    if (user.email === 'admin@pizzadelivery.com') {
+      return res.status(400).json({ message: 'Primary Super Admin account is protected and cannot be deleted!' });
+    }
+
+    // Professional Cascading Delete: Clean up all orders associated with this user
+    const orderDeleteResult = await Order.deleteMany({
+      $or: [
+        { user: userId },
+        { customerEmail: user.email.toLowerCase() },
+      ],
+    });
+
+    // Delete user account from MongoDB
     await User.findByIdAndDelete(userId);
-    res.json({ message: `User "${user.name}" (${user.email}) deleted successfully` });
+
+    res.json({
+      message: `User "${user.name}" (${user.email}) and ${orderDeleteResult.deletedCount || 0} associated orders deleted successfully!`,
+      deletedOrdersCount: orderDeleteResult.deletedCount || 0,
+    });
   } catch (error) {
     console.error('Delete user error:', error);
     res.status(500).json({ message: error.message });
