@@ -320,8 +320,49 @@ export default function AdminDashboard() {
     name: '',
     email: '',
     password: '',
+    phone: '',
     role: 'user',
+    isVerified: true,
   });
+
+  const [editingUser, setEditingUser] = useState(null);
+  const [editUserData, setEditUserData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: 'user',
+    isVerified: true,
+    password: '',
+  });
+
+  const handleOpenEditUser = (u) => {
+    setEditingUser(u);
+    setEditUserData({
+      name: u.name || '',
+      email: u.email || '',
+      phone: u.phone || '',
+      role: u.role || 'user',
+      isVerified: Boolean(u.isVerified),
+      password: '',
+    });
+  };
+
+  const handleSaveUserUpdate = async (e) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    try {
+      const res = await axios.put(
+        `${API_BASE_URL}/auth/admin/users/${editingUser._id}`,
+        editUserData,
+        getAuthHeader()
+      );
+      addToast(res.data.message || `User "${editUserData.name}" updated successfully!`, 'success');
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err) {
+      addToast(`Failed to update user: ${err.response?.data?.message || err.message}`, 'error');
+    }
+  };
 
   const handleUpdateUserRole = async (userId, currentRole) => {
     const newRole = currentRole === 'admin' ? 'user' : 'admin';
@@ -345,10 +386,14 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteUser = async (userId, name) => {
-    if (!window.confirm(`Are you sure you want to permanently delete user "${name}"?`)) return;
+    if (user && (user._id === userId || user.id === userId)) {
+      addToast('Security Warning: You cannot delete your own active Admin account!', 'error');
+      return;
+    }
+    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
     try {
       const res = await axios.delete(`${API_BASE_URL}/auth/admin/users/${userId}`, getAuthHeader());
-      addToast(res.data.message || `User "${name}" deleted`, 'success');
+      addToast(res.data.message || `User "${name}" deleted from database.`, 'success');
       fetchUsers();
     } catch (err) {
       addToast(`Failed to delete user: ${err.response?.data?.message || err.message}`, 'error');
@@ -357,11 +402,15 @@ export default function AdminDashboard() {
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
+    if (!newUser.name || !newUser.email || !newUser.password) {
+      addToast('Name, email, and password are required!', 'error');
+      return;
+    }
     try {
-      await axios.post(`${API_BASE_URL}/auth/admin/users`, newUser, getAuthHeader());
-      addToast(`User "${newUser.name}" created successfully!`, 'success');
+      const res = await axios.post(`${API_BASE_URL}/auth/admin/users`, newUser, getAuthHeader());
+      addToast(res.data.message || `User "${newUser.name}" created successfully!`, 'success');
       setIsAddUserOpen(false);
-      setNewUser({ name: '', email: '', password: '', role: 'user' });
+      setNewUser({ name: '', email: '', password: '', phone: '', role: 'user', isVerified: true });
       fetchUsers();
     } catch (err) {
       addToast(`Failed to create user: ${err.response?.data?.message || err.message}`, 'error');
@@ -1374,6 +1423,7 @@ export default function AdminDashboard() {
                   <tr>
                     <th>User Profile</th>
                     <th>Email Address</th>
+                    <th>Phone</th>
                     <th>System Role</th>
                     <th>Verification</th>
                     <th>Registered Date</th>
@@ -1383,13 +1433,13 @@ export default function AdminDashboard() {
                 <tbody>
                   {loadingUsers ? (
                     <tr>
-                      <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                         Loading users from MongoDB...
                       </td>
                     </tr>
                   ) : filteredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                         No registered users found.
                       </td>
                     </tr>
@@ -1419,6 +1469,11 @@ export default function AdminDashboard() {
                         </td>
                         <td>
                           <span style={{ color: '#CBD5E1' }}>{u.email}</span>
+                        </td>
+                        <td>
+                          <span style={{ fontSize: '0.8rem', color: u.phone ? '#94A3B8' : '#64748B' }}>
+                            {u.phone || 'N/A'}
+                          </span>
                         </td>
                         <td>
                           {u.role === 'admin' ? (
@@ -1470,6 +1525,25 @@ export default function AdminDashboard() {
                         </td>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            {/* Full Edit Button */}
+                            <button
+                              onClick={() => handleOpenEditUser(u)}
+                              style={{
+                                background: 'rgba(59, 130, 246, 0.12)',
+                                border: '1px solid rgba(59, 130, 246, 0.35)',
+                                color: '#60A5FA',
+                                padding: '5px 8px',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                              title="Edit User Details"
+                            >
+                              <Edit3 style={{ width: '13px', height: '13px' }} />
+                            </button>
+
                             {/* Role Toggle Button */}
                             <button
                               onClick={() => handleUpdateUserRole(u._id, u.role)}
@@ -1926,7 +2000,7 @@ export default function AdminDashboard() {
             </div>
             <form onSubmit={handleCreateUser} className="admin-modal-body space-y-4">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Full Name</label>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Full Name *</label>
                 <input
                   type="text"
                   placeholder="e.g. Alex Mercer"
@@ -1937,7 +2011,7 @@ export default function AdminDashboard() {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Email Address</label>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Email Address *</label>
                 <input
                   type="email"
                   placeholder="alex@example.com"
@@ -1947,28 +2021,54 @@ export default function AdminDashboard() {
                   required
                 />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Password</label>
-                <input
-                  type="password"
-                  placeholder="••••••••••••"
-                  value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                  className="input-field"
-                  required
-                />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Password *</label>
+                  <input
+                    type="password"
+                    placeholder="••••••••••••"
+                    value={newUser.password}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    className="input-field"
+                    required
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Phone Number</label>
+                  <input
+                    type="tel"
+                    placeholder="+1 (555) 019-2834"
+                    value={newUser.phone}
+                    onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                    className="input-field"
+                  />
+                </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>System Role</label>
-                <select
-                  value={newUser.role}
-                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                  className="admin-select"
-                  style={{ width: '100%' }}
-                >
-                  <option value="user">Customer</option>
-                  <option value="admin">Administrator</option>
-                </select>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>System Role</label>
+                  <select
+                    value={newUser.role}
+                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                    className="admin-select"
+                    style={{ width: '100%' }}
+                  >
+                    <option value="user">Customer</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Verification Status</label>
+                  <select
+                    value={newUser.isVerified ? 'true' : 'false'}
+                    onChange={(e) => setNewUser({ ...newUser, isVerified: e.target.value === 'true' })}
+                    className="admin-select"
+                    style={{ width: '100%' }}
+                  >
+                    <option value="true">Verified Account</option>
+                    <option value="false">Pending Verification</option>
+                  </select>
+                </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '10px' }}>
                 <button type="button" onClick={() => setIsAddUserOpen(false)} className="btn-secondary" style={{ padding: '8px 16px' }}>
@@ -1976,6 +2076,102 @@ export default function AdminDashboard() {
                 </button>
                 <button type="submit" className="btn-primary" style={{ padding: '8px 20px' }}>
                   Create User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================
+          EDIT USER MODAL
+          ======================================================== */}
+      {editingUser && (
+        <div className="admin-modal-overlay" onClick={() => setEditingUser(null)}>
+          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+            <div className="admin-modal-header">
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#FFF', margin: 0 }}>
+                Edit User: {editingUser.name}
+              </h3>
+              <button onClick={() => setEditingUser(null)} className="admin-modal-close">
+                <X style={{ width: '18px', height: '18px' }} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveUserUpdate} className="admin-modal-body space-y-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Full Name *</label>
+                <input
+                  type="text"
+                  value={editUserData.name}
+                  onChange={(e) => setEditUserData({ ...editUserData, name: e.target.value })}
+                  className="input-field"
+                  required
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Email Address *</label>
+                <input
+                  type="email"
+                  value={editUserData.email}
+                  onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })}
+                  className="input-field"
+                  required
+                />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Phone Number</label>
+                  <input
+                    type="tel"
+                    placeholder="+1 (555) 019-2834"
+                    value={editUserData.phone}
+                    onChange={(e) => setEditUserData({ ...editUserData, phone: e.target.value })}
+                    className="input-field"
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Reset Password (Optional)</label>
+                  <input
+                    type="password"
+                    placeholder="Leave blank to keep current"
+                    value={editUserData.password}
+                    onChange={(e) => setEditUserData({ ...editUserData, password: e.target.value })}
+                    className="input-field"
+                  />
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>System Role</label>
+                  <select
+                    value={editUserData.role}
+                    onChange={(e) => setEditUserData({ ...editUserData, role: e.target.value })}
+                    className="admin-select"
+                    style={{ width: '100%' }}
+                  >
+                    <option value="user">Customer</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Verification Status</label>
+                  <select
+                    value={editUserData.isVerified ? 'true' : 'false'}
+                    onChange={(e) => setEditUserData({ ...editUserData, isVerified: e.target.value === 'true' })}
+                    className="admin-select"
+                    style={{ width: '100%' }}
+                  >
+                    <option value="true">Verified Account</option>
+                    <option value="false">Pending Verification</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '10px' }}>
+                <button type="button" onClick={() => setEditingUser(null)} className="btn-secondary" style={{ padding: '8px 16px' }}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-primary" style={{ padding: '8px 20px' }}>
+                  Save User Changes
                 </button>
               </div>
             </form>

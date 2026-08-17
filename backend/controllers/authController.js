@@ -316,26 +316,61 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Admin: Edit / Update User
+const updateUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, email, phone, role, isVerified, password } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (email && email.toLowerCase() !== user.email) {
+      const emailExists = await User.findOne({ email: email.toLowerCase() });
+      if (emailExists && String(emailExists._id) !== String(userId)) {
+        return res.status(400).json({ message: 'Another user already exists with this email' });
+      }
+      user.email = email.toLowerCase();
+    }
+
+    if (name) user.name = name;
+    if (phone !== undefined) user.phone = phone;
+    if (role && ['admin', 'user'].includes(role)) user.role = role;
+    if (typeof isVerified === 'boolean') user.isVerified = isVerified;
+    if (password && password.trim() !== '') user.password = password;
+
+    await user.save();
+
+    res.json({ message: `User "${user.name}" updated successfully`, user });
+  } catch (error) {
+    console.error('Update user error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Admin: Create User
 const createUserByAdmin = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, phone, role, isVerified } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Name, email, and password are required' });
     }
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: email.toLowerCase() });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
     const user = await User.create({
       name,
-      email,
+      email: email.toLowerCase(),
       password,
+      phone: phone || '',
       role: role || 'user',
-      isVerified: true,
+      isVerified: typeof isVerified === 'boolean' ? isVerified : true,
     });
 
     res.status(201).json({ message: 'User created successfully', user });
@@ -357,4 +392,5 @@ module.exports = {
   toggleUserVerification,
   deleteUser,
   createUserByAdmin,
+  updateUser,
 };
