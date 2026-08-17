@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import axios from 'axios';
 import { X, ChevronRight, ChevronLeft, Check, Sparkles, AlertCircle, Pizza, Flame } from 'lucide-react';
 
@@ -48,8 +49,14 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
 
   useEffect(() => {
     if (isOpen) {
+      document.body.style.overflow = 'hidden';
       fetchOptions();
+    } else {
+      document.body.style.overflow = 'unset';
     }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   const fetchOptions = async () => {
@@ -103,7 +110,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
 
   if (!isOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <div className="modal-overlay animate-fade-in">
       <div className="modal-content">
         {/* Modal Header */}
@@ -427,6 +434,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

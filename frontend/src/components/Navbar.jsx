@@ -3,34 +3,59 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Pizza, ShoppingBag, ShieldCheck, LogOut, User, Sparkles, Menu as MenuIcon, X } from 'lucide-react';
 
-export default function Navbar({ openBuilder }) {
+export default function Navbar({ openBuilder, isBuilderOpen }) {
   const { user, logout } = useContext(AuthContext);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      setIsScrolled(window.scrollY > 20);
+
+      if (location.pathname === '/' && !isBuilderOpen) {
+        const sections = ['contact', 'about', 'how-it-works', 'menu'];
+        let current = 'home';
+        const scrollPosition = window.scrollY + 250;
+
+        for (const sectionId of sections) {
+          const el = document.getElementById(sectionId);
+          if (el && el.offsetTop <= scrollPosition) {
+            current = sectionId;
+            break;
+          }
+        }
+        setActiveSection(current);
       }
     };
+
     window.addEventListener('scroll', handleScroll);
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [location.pathname, isBuilderOpen]);
 
   const handleNavClick = (sectionId) => {
     setIsMobileMenuOpen(false);
+    setActiveSection(sectionId);
     if (location.pathname !== '/') {
       navigate(`/#${sectionId}`);
     } else {
       const element = document.getElementById(sectionId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
+        window.history.replaceState(null, '', `/#${sectionId}`);
       }
+    }
+  };
+
+  const handleHomeClick = () => {
+    setIsMobileMenuOpen(false);
+    setActiveSection('home');
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.history.replaceState(null, '', '/');
     }
   };
 
@@ -46,7 +71,7 @@ export default function Navbar({ openBuilder }) {
       <div className="site-container">
         <div className="nav-container">
           {/* Brand Logo */}
-          <Link to="/" className="nav-brand">
+          <Link to="/" onClick={handleHomeClick} className="nav-brand">
             <div
               style={{
                 background: 'linear-gradient(135deg, #F7254F 0%, #FF8A00 100%)',
@@ -67,18 +92,44 @@ export default function Navbar({ openBuilder }) {
 
           {/* Desktop Navigation Links */}
           <nav className="nav-menu-desktop">
-            <Link to="/" className={`nav-link-item ${location.pathname === '/' && !location.hash ? 'active' : ''}`}>Home</Link>
-            <button onClick={() => handleNavClick('menu')} className={`nav-link-item ${location.hash === '#menu' ? 'active' : ''}`}>Menu</button>
+            <Link
+              to="/"
+              onClick={handleHomeClick}
+              className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'home' ? 'active' : ''}`}
+            >
+              Home
+            </Link>
+            <button
+              onClick={() => handleNavClick('menu')}
+              className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'menu' ? 'active' : ''}`}
+            >
+              Menu
+            </button>
             <button
               onClick={openBuilder}
-              className="nav-link-item"
-              style={{ color: '#F7254F', display: 'flex', alignItems: 'center', gap: '6px' }}
+              className={`nav-link-item ${isBuilderOpen ? 'active' : ''}`}
+              style={{ color: isBuilderOpen ? '#FFF' : '#F7254F', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Sparkles style={{ width: '16px', height: '16px' }} /> Custom Pizza
             </button>
-            <button onClick={() => handleNavClick('how-it-works')} className={`nav-link-item ${location.hash === '#how-it-works' ? 'active' : ''}`}>How It Works</button>
-            <button onClick={() => handleNavClick('about')} className={`nav-link-item ${location.hash === '#about' ? 'active' : ''}`}>About</button>
-            <button onClick={() => handleNavClick('contact')} className={`nav-link-item ${location.hash === '#contact' ? 'active' : ''}`}>Contact</button>
+            <button
+              onClick={() => handleNavClick('how-it-works')}
+              className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'how-it-works' ? 'active' : ''}`}
+            >
+              How It Works
+            </button>
+            <button
+              onClick={() => handleNavClick('about')}
+              className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'about' ? 'active' : ''}`}
+            >
+              About
+            </button>
+            <button
+              onClick={() => handleNavClick('contact')}
+              className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'contact' ? 'active' : ''}`}
+            >
+              Contact
+            </button>
           </nav>
 
           {/* Desktop Right Actions */}
@@ -236,21 +287,51 @@ export default function Navbar({ openBuilder }) {
           }}
           className="mobile-nav-drawer"
         >
-          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="nav-link-item">Home</Link>
-          <button onClick={() => handleNavClick('menu')} className="nav-link-item" style={{ textAlign: 'left' }}>Menu</button>
+          <Link
+            to="/"
+            onClick={handleHomeClick}
+            className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'home' ? 'active' : ''}`}
+          >
+            Home
+          </Link>
+          <button
+            onClick={() => handleNavClick('menu')}
+            className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'menu' ? 'active' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
+            Menu
+          </button>
           <button
             onClick={() => {
               setIsMobileMenuOpen(false);
               openBuilder();
             }}
-            className="nav-link-item"
-            style={{ color: '#F7254F', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}
+            className={`nav-link-item ${isBuilderOpen ? 'active' : ''}`}
+            style={{ color: isBuilderOpen ? '#FFF' : '#F7254F', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             <Sparkles style={{ width: '16px', height: '16px' }} /> Custom Pizza Builder
           </button>
-          <button onClick={() => handleNavClick('how-it-works')} className="nav-link-item" style={{ textAlign: 'left' }}>How It Works</button>
-          <button onClick={() => handleNavClick('about')} className="nav-link-item" style={{ textAlign: 'left' }}>About SliceCraft</button>
-          <button onClick={() => handleNavClick('contact')} className="nav-link-item" style={{ textAlign: 'left' }}>Contact Us</button>
+          <button
+            onClick={() => handleNavClick('how-it-works')}
+            className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'how-it-works' ? 'active' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
+            How It Works
+          </button>
+          <button
+            onClick={() => handleNavClick('about')}
+            className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'about' ? 'active' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
+            About SliceCraft
+          </button>
+          <button
+            onClick={() => handleNavClick('contact')}
+            className={`nav-link-item ${location.pathname === '/' && !isBuilderOpen && activeSection === 'contact' ? 'active' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
+            Contact Us
+          </button>
 
           <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {user ? (

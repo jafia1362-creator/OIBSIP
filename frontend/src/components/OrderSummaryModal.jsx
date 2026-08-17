@@ -1,4 +1,5 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -10,6 +11,17 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
   const [address, setAddress] = useState('123 Artisan Street, Foodie Bay, Suite 4B');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   if (!isOpen || !pizzaItem) return null;
 
@@ -110,7 +122,7 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
     }
   };
 
-  return (
+  return ReactDOM.createPortal(
     <div className="modal-overlay animate-fade-in">
       <div className="modal-content" style={{ maxWidth: '540px' }}>
         {/* Header */}
@@ -233,6 +245,7 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

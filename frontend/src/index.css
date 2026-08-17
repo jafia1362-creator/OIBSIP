@@ -2842,7 +2842,7 @@ a {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -2884,6 +2884,7 @@ a {
   cursor: pointer;
   background: transparent;
   border: none;
+  outline: none;
   position: relative;
 }
 

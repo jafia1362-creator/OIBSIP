@@ -48,7 +48,7 @@ function AppContent() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#0F111A', color: '#FFF' }}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Render Customer Navbar ONLY on customer-facing routes */}
-        {!isAdminRoute && <Navbar openBuilder={handleOpenBuilder} />}
+        {!isAdminRoute && <Navbar openBuilder={handleOpenBuilder} isBuilderOpen={isBuilderOpen} />}
 
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <Routes>
