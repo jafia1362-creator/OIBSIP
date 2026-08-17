@@ -337,7 +337,17 @@ const updateUser = async (req, res) => {
 
     if (name) user.name = name;
     if (phone !== undefined) user.phone = phone;
-    if (role && ['admin', 'user'].includes(role)) user.role = role;
+    if (role && ['admin', 'user'].includes(role)) {
+      if (role === 'user') {
+        if (String(userId) === String(req.user._id)) {
+          return res.status(400).json({ message: 'Security Warning: You cannot demote your own active Admin account!' });
+        }
+        if (user.email === 'admin@pizzadelivery.com') {
+          return res.status(400).json({ message: 'Primary Super Admin role is protected and cannot be demoted!' });
+        }
+      }
+      user.role = role;
+    }
     if (typeof isVerified === 'boolean') user.isVerified = isVerified;
     if (password && password.trim() !== '') user.password = password;
 

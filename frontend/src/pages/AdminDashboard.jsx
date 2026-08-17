@@ -2129,15 +2129,26 @@ export default function AdminDashboard() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>System Role</label>
-                  <select
-                    value={editUserData.role}
-                    onChange={(e) => setEditUserData({ ...editUserData, role: e.target.value })}
-                    className="admin-select"
-                    style={{ width: '100%' }}
-                  >
-                    <option value="user">Customer</option>
-                    <option value="admin">Administrator</option>
-                  </select>
+                  {editingUser && (editingUser.email === 'admin@pizzadelivery.com' || (user && (user._id === editingUser._id || user.id === editingUser._id))) ? (
+                    <input
+                      type="text"
+                      value="👑 Administrator (Protected)"
+                      disabled
+                      className="input-field"
+                      style={{ opacity: 0.8, cursor: 'not-allowed', color: '#F7254F', fontWeight: 800, background: 'rgba(247, 37, 79, 0.1)', borderColor: 'rgba(247, 37, 79, 0.3)' }}
+                      title="Super Admin role is protected to prevent lockout"
+                    />
+                  ) : (
+                    <select
+                      value={editUserData.role}
+                      onChange={(e) => setEditUserData({ ...editUserData, role: e.target.value })}
+                      className="admin-select"
+                      style={{ width: '100%' }}
+                    >
+                      <option value="user">Customer</option>
+                      <option value="admin">Administrator</option>
+                    </select>
+                  )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>Verification Status</label>
