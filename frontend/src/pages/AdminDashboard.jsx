@@ -1525,38 +1525,22 @@ export default function AdminDashboard() {
                         </td>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                            {/* Full Edit Button */}
+                            {/* Edit User Button */}
                             <button
                               onClick={() => handleOpenEditUser(u)}
-                              style={{
-                                background: 'rgba(59, 130, 246, 0.12)',
-                                border: '1px solid rgba(59, 130, 246, 0.35)',
-                                color: '#60A5FA',
-                                padding: '5px 8px',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}
-                              title="Edit User Details"
-                            >
-                              <Edit3 style={{ width: '13px', height: '13px' }} />
-                            </button>
-
-                            {/* Role Toggle Button */}
-                            <button
-                              onClick={() => handleUpdateUserRole(u._id, u.role)}
                               className="btn-secondary"
                               style={{
-                                padding: '4px 8px',
-                                fontSize: '0.72rem',
-                                color: u.role === 'admin' ? '#FF8A00' : '#60A5FA',
-                                borderColor: u.role === 'admin' ? 'rgba(255, 138, 0, 0.4)' : 'rgba(96, 165, 250, 0.4)',
+                                padding: '5px 10px',
+                                fontSize: '0.75rem',
+                                color: '#60A5FA',
+                                borderColor: 'rgba(96, 165, 250, 0.4)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
                               }}
-                              title={u.role === 'admin' ? 'Change role to Customer' : 'Promote to Admin'}
+                              title="Edit Customer Details"
                             >
-                              {u.role === 'admin' ? 'To Customer' : 'Make Admin'}
+                              <Edit3 style={{ width: '13px', height: '13px' }} /> Edit
                             </button>
 
                             {/* Verification Toggle Button */}
@@ -1564,8 +1548,8 @@ export default function AdminDashboard() {
                               onClick={() => handleToggleUserVerify(u._id)}
                               className="btn-secondary"
                               style={{
-                                padding: '4px 8px',
-                                fontSize: '0.72rem',
+                                padding: '5px 10px',
+                                fontSize: '0.75rem',
                                 color: u.isVerified ? '#F59E0B' : '#10B981',
                                 borderColor: u.isVerified ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)',
                               }}
@@ -1578,19 +1562,21 @@ export default function AdminDashboard() {
                             <button
                               onClick={() => handleDeleteUser(u._id, u.name)}
                               style={{
-                                background: 'rgba(247, 37, 79, 0.1)',
-                                border: '1px solid rgba(247, 37, 79, 0.3)',
+                                background: 'rgba(247, 37, 79, 0.12)',
+                                border: '1px solid rgba(247, 37, 79, 0.35)',
                                 color: '#F7254F',
-                                padding: '5px 8px',
-                                borderRadius: '6px',
+                                padding: '5px 10px',
+                                borderRadius: '8px',
                                 cursor: 'pointer',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center',
+                                gap: '4px',
                               }}
-                              title="Delete User"
+                              title="Delete Customer Account"
                             >
-                              <Trash2 style={{ width: '13px', height: '13px' }} />
+                              <Trash2 style={{ width: '13px', height: '13px' }} /> Delete
                             </button>
                           </div>
                         </td>
