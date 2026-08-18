@@ -54,12 +54,20 @@ a {
   transition: var(--transition);
 }
 
-/* Site Container */
+/* Site Container - Equal Left & Right Padding Across All Website Sections */
 .site-container {
   width: 100%;
-  max-width: 1240px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+@media (max-width: 768px) {
+  .site-container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 
 /* Typography & Gradient Utilities */
@@ -2985,15 +2993,48 @@ a {
   z-index: 1;
 }
 
-@keyframes modalPopIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+/* 16. Status Pills Styling */
+.status-pill {
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: capitalize;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.status-pill.order-received {
+  background: rgba(255, 138, 0, 0.15);
+  color: #FF8A00;
+  border: 1px solid rgba(255, 138, 0, 0.35);
+}
+
+.status-pill.in-kitchen {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60A5FA;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.status-pill.sent-to-delivery {
+  background: rgba(168, 85, 247, 0.15);
+  color: #C084FC;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.status-pill.delivered {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.status-pill.cancelled {
+  background: rgba(247, 37, 79, 0.15);
+  color: #F7254F;
+  border: 1px solid rgba(247, 37, 79, 0.35);
 }
 
 

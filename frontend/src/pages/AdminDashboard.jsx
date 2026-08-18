@@ -726,34 +726,43 @@ export default function AdminDashboard() {
                   <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)' }}>No orders recorded yet.</div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {orders.slice(0, 5).map((order) => (
-                      <div
-                        key={order._id}
-                        onClick={() => setSelectedOrder(order)}
-                        style={{
-                          background: 'rgba(15, 17, 26, 0.6)',
-                          border: '1px solid var(--border-color)',
-                          borderRadius: '12px',
-                          padding: '12px 16px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff' }}>
-                            #{order._id?.slice(-8) || order._id} &bull; {order.customerName}
-                          </span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                            {order.items?.length || 1} Item(s) &bull; ₹{order.totalAmount}
+                    {orders.slice(0, 5).map((order) => {
+                      const firstItemName = order.items?.[0]?.customName || order.items?.[0]?.name || 'Artisan Custom Pizza';
+                      const extraCount = (order.items?.length || 1) - 1;
+                      const itemSummary = extraCount > 0 ? `${firstItemName} +${extraCount} more` : firstItemName;
+
+                      return (
+                        <div
+                          key={order._id}
+                          onClick={() => setSelectedOrder(order)}
+                          style={{
+                            background: 'rgba(15, 17, 26, 0.6)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '12px',
+                            padding: '12px 18px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            cursor: 'pointer',
+                            gap: '14px',
+                            minWidth: 0,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0, flex: 1 }}>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              <span style={{ color: '#FF8A00', fontFamily: 'monospace' }}>#{order._id?.slice(-8) || order._id}</span> &bull; {order.customerName || 'Guest'}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {itemSummary} &bull; <strong style={{ color: '#10B981' }}>₹{order.totalAmount}</strong>
+                            </div>
+                          </div>
+                          <span className={`status-pill ${getStatusClass(order.orderStatus)}`} style={{ fontSize: '0.7rem', flexShrink: 0 }}>
+                            {order.orderStatus}
                           </span>
                         </div>
-                        <span className={`status-pill ${getStatusClass(order.orderStatus)}`} style={{ fontSize: '0.7rem' }}>
-                          {order.orderStatus}
-                        </span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
