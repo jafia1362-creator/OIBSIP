@@ -32,12 +32,14 @@
   box-sizing: border-box;
 }
 
-body {
+html, body, #root {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -911,7 +913,198 @@ a {
    PRODUCTION COMMERCIAL ADMIN DASHBOARD STYLES
    ========================================================================== */
 
-/* Dedicated Admin Navbar */
+/* Dedicated Admin Navbar Header */
+.admin-navbar-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(15, 17, 26, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 138, 0, 0.2);
+  padding: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 1320px;
+}
+
+.admin-navbar-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.admin-brand-icon {
+  background: linear-gradient(135deg, #F7254F 0%, #FF8A00 100%);
+  padding: 7px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(247, 37, 79, 0.3);
+}
+
+.admin-brand-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-brand-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #FFF;
+  line-height: 1;
+}
+
+.admin-brand-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.admin-badge-mini {
+  background: rgba(255, 138, 0, 0.15);
+  color: #FF8A00;
+  border: 1px solid rgba(255, 138, 0, 0.3);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-live-indicator {
+  font-size: 0.62rem;
+  color: #10B981;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+}
+
+.live-dot-sm {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10B981;
+  display: inline-block;
+}
+
+.admin-nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-actions-desktop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-actions-mobile-toggle {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-mobile-hamburger {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
+  color: #FFF;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-mobile-tab-bar {
+  display: none;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 8px;
+  padding-top: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-mobile-tab-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 4px 16px;
+  white-space: nowrap;
+}
+
+.admin-mobile-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.admin-mobile-tab-btn.active {
+  background: rgba(255, 138, 0, 0.18);
+  color: #FF8A00;
+  border-color: rgba(255, 138, 0, 0.4);
+}
+
+.admin-mobile-drawer {
+  background: rgba(15, 17, 26, 0.98);
+  border-bottom: 1px solid rgba(255, 138, 0, 0.3);
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.admin-mobile-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+@media (max-width: 1024px) {
+  .admin-nav-desktop,
+  .admin-actions-desktop {
+    display: none !important;
+  }
+
+  .admin-actions-mobile-toggle,
+  .admin-mobile-tab-bar {
+    display: flex !important;
+  }
+}
+
 .admin-nav-item {
   display: inline-flex;
   align-items: center;
@@ -1716,20 +1909,39 @@ a {
 
 @media (max-width: 768px) {
   .admin-header-card {
-    padding: 20px;
+    padding: 16px !important;
+  }
+  .admin-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
   .admin-kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
   .admin-inv-summary-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
   .admin-kanban-board {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
   .admin-toolbar {
     flex-direction: column;
     align-items: stretch;
+  }
+  .admin-table-container {
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
   }
 }
 

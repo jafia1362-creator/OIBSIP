@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import {
@@ -12,8 +12,8 @@ import {
   LogOut,
   RefreshCw,
   Kanban,
-  ExternalLink,
-  ShieldCheck
+  Menu,
+  X
 } from 'lucide-react';
 
 export default function AdminNavbar({
@@ -25,6 +25,7 @@ export default function AdminNavbar({
   onRefresh,
 }) {
   const { user, logout } = useContext(AuthContext);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -34,131 +35,63 @@ export default function AdminNavbar({
 
   const handleTabSelect = (tabKey) => {
     setActiveTab(tabKey);
+    setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const navItems = [
+    { key: 'overview', label: 'Dashboard', icon: Layers, badge: 0 },
+    { key: 'kanban', label: 'Live Kitchen', icon: Kanban, badge: 0 },
+    { key: 'orders', label: 'Orders', icon: ShoppingBag, badge: ordersCount },
+    { key: 'inventory', label: 'Inventory', icon: Package, badge: invCount },
+    { key: 'users', label: 'Users', icon: Users, badge: usersCount },
+    { key: 'analytics', label: 'Analytics', icon: BarChart3, badge: 0 },
+    { key: 'settings', label: 'Settings', icon: Settings, badge: 0 },
+  ];
+
   return (
-    <header
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        backgroundColor: 'rgba(15, 17, 26, 0.95)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(255, 138, 0, 0.2)',
-        padding: '12px 0',
-      }}
-    >
-      <div className="site-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
+    <header className="admin-navbar-header">
+      <div className="site-container admin-navbar-container">
         {/* Brand & Admin Badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => handleTabSelect('overview')}>
-            <div
-              style={{
-                background: 'linear-gradient(135deg, #F7254F 0%, #FF8A00 100%)',
-                padding: '8px',
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 15px rgba(247, 37, 79, 0.3)',
-              }}
-            >
-              <Pizza style={{ width: '22px', height: '22px', color: '#FFF' }} />
+        <div className="admin-navbar-brand-row">
+          <div className="admin-navbar-brand" onClick={() => handleTabSelect('overview')}>
+            <div className="admin-brand-icon">
+              <Pizza style={{ width: '20px', height: '20px', color: '#FFF' }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#FFF', lineHeight: 1 }}>
+            <div className="admin-brand-text-col">
+              <div className="admin-brand-title">
                 Slice<span className="gradient-text">Craft</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-                <span
-                  style={{
-                    background: 'rgba(255, 138, 0, 0.15)',
-                    color: '#FF8A00',
-                    border: '1px solid rgba(255, 138, 0, 0.3)',
-                    borderRadius: '4px',
-                    padding: '1px 6px',
-                    fontSize: '0.65rem',
-                    fontWeight: 800,
-                    letterSpacing: '0.05em',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Admin Portal
-                </span>
-                <span style={{ fontSize: '0.65rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span> Live
+              <div className="admin-brand-subtitle">
+                <span className="admin-badge-mini">Admin Portal</span>
+                <span className="admin-live-indicator">
+                  <span className="live-dot-sm" /> Live
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Dedicated Admin Navigation Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto' }}>
-          <button
-            onClick={() => handleTabSelect('overview')}
-            className={`admin-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-          >
-            <Layers style={{ width: '15px', height: '15px' }} />
-            Dashboard
-          </button>
-
-          <button
-            onClick={() => handleTabSelect('kanban')}
-            className={`admin-nav-item ${activeTab === 'kanban' ? 'active' : ''}`}
-          >
-            <Kanban style={{ width: '15px', height: '15px' }} />
-            Live Kitchen
-          </button>
-
-          <button
-            onClick={() => handleTabSelect('orders')}
-            className={`admin-nav-item ${activeTab === 'orders' ? 'active' : ''}`}
-          >
-            <ShoppingBag style={{ width: '15px', height: '15px' }} />
-            Orders
-            {ordersCount > 0 && <span className="admin-nav-badge">{ordersCount}</span>}
-          </button>
-
-          <button
-            onClick={() => handleTabSelect('inventory')}
-            className={`admin-nav-item ${activeTab === 'inventory' ? 'active' : ''}`}
-          >
-            <Package style={{ width: '15px', height: '15px' }} />
-            Inventory
-            {invCount > 0 && <span className="admin-nav-badge">{invCount}</span>}
-          </button>
-
-          <button
-            onClick={() => handleTabSelect('users')}
-            className={`admin-nav-item ${activeTab === 'users' ? 'active' : ''}`}
-          >
-            <Users style={{ width: '15px', height: '15px' }} />
-            Users
-            {usersCount > 0 && <span className="admin-nav-badge">{usersCount}</span>}
-          </button>
-
-          <button
-            onClick={() => handleTabSelect('analytics')}
-            className={`admin-nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
-          >
-            <BarChart3 style={{ width: '15px', height: '15px' }} />
-            Analytics
-          </button>
-
-          <button
-            onClick={() => handleTabSelect('settings')}
-            className={`admin-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-          >
-            <Settings style={{ width: '15px', height: '15px' }} />
-            Settings
-          </button>
+        {/* Dedicated Desktop Navigation Links */}
+        <nav className="admin-nav-desktop">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.key}
+                onClick={() => handleTabSelect(item.key)}
+                className={`admin-nav-item ${activeTab === item.key ? 'active' : ''}`}
+              >
+                <Icon style={{ width: '15px', height: '15px' }} />
+                {item.label}
+                {item.badge > 0 && <span className="admin-nav-badge">{item.badge}</span>}
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Admin User Info & Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Desktop Admin User Info & Actions */}
+        <div className="admin-actions-desktop">
           {onRefresh && (
             <button
               onClick={onRefresh}
@@ -193,7 +126,90 @@ export default function AdminNavbar({
             <LogOut style={{ width: '13px', height: '13px' }} /> Logout
           </button>
         </div>
+
+        {/* Mobile Actions Toggle Bar */}
+        <div className="admin-actions-mobile-toggle">
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              className="btn-secondary"
+              title="Refresh Data"
+              style={{ padding: '6px 10px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <RefreshCw style={{ width: '12px', height: '12px' }} /> Sync
+            </button>
+          )}
+
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="admin-mobile-hamburger"
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X style={{ width: '20px', height: '20px' }} /> : <Menu style={{ width: '20px', height: '20px' }} />}
+          </button>
+        </div>
       </div>
+
+      {/* Touch-Friendly Scrollable Tab Strip for Mobile */}
+      <div className="admin-mobile-tab-bar">
+        <div className="admin-mobile-tab-scroll">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.key}
+                onClick={() => handleTabSelect(item.key)}
+                className={`admin-mobile-tab-btn ${activeTab === item.key ? 'active' : ''}`}
+              >
+                <Icon style={{ width: '14px', height: '14px' }} />
+                <span>{item.label}</span>
+                {item.badge > 0 && <span className="admin-nav-badge">{item.badge}</span>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Collapsible Mobile Profile & Logout Drawer */}
+      {mobileMenuOpen && (
+        <div className="admin-mobile-drawer animate-fade-in">
+          <div className="admin-mobile-drawer-inner">
+            <div className="admin-mobile-user-card">
+              <div className="admin-avatar-circle" style={{ width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff' }}>
+                  {user?.name || 'Administrator'}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  {user?.email || 'admin@slicecraft.com'}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', paddingTop: '10px' }}>
+              {onRefresh && (
+                <button
+                  onClick={() => { onRefresh(); setMobileMenuOpen(false); }}
+                  className="btn-secondary"
+                  style={{ flex: 1, padding: '10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                  <RefreshCw style={{ width: '15px', height: '15px' }} /> Sync MongoDB
+                </button>
+              )}
+
+              <button
+                onClick={handleLogout}
+                className="btn-secondary"
+                style={{ flex: 1, padding: '10px', fontSize: '0.85rem', borderColor: 'rgba(239, 68, 68, 0.4)', color: '#F87171', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <LogOut style={{ width: '15px', height: '15px' }} /> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
