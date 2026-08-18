@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Pizza, Lock, Mail, AlertCircle, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 
@@ -12,6 +12,10 @@ export default function Login() {
   const navigate = useNavigate();
 
   // If user is already logged in, redirect immediately without letting back button reopen login
+  if (user) {
+    return <Navigate to={user.role === 'admin' ? '/admin' : '/'} replace />;
+  }
+
   useEffect(() => {
     if (user) {
       if (user.role === 'admin') {

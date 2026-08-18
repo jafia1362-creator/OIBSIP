@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import {
   ShieldCheck,
@@ -25,6 +25,10 @@ export default function AdminLogin() {
   const navigate = useNavigate();
 
   // If admin user is already logged in, redirect immediately without letting back button reopen login
+  if (user && user.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+
   useEffect(() => {
     if (user && user.role === 'admin') {
       navigate('/admin', { replace: true });

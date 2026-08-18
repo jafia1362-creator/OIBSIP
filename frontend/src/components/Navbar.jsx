@@ -189,7 +189,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                 <button
                   onClick={() => {
                     logout();
-                    navigate('/login');
+                    navigate('/login', { replace: true });
                   }}
                   style={{
                     background: 'transparent',
@@ -338,7 +338,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Logged in as: {user.name}</span>
-                  <button onClick={() => { logout(); setIsMobileMenuOpen(false); navigate('/login'); }} style={{ background: 'none', border: 'none', color: '#F7254F', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
+                  <button onClick={() => { logout(); setIsMobileMenuOpen(false); navigate('/login', { replace: true }); }} style={{ background: 'none', border: 'none', color: '#F7254F', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
                 </div>
                 <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                   <ShoppingBag style={{ width: '16px', height: '16px', color: '#F7254F' }} /> View My Orders

@@ -29,7 +29,7 @@ export default function AdminNavbar({
 
   const handleLogout = () => {
     logout();
-    navigate('/admin/login');
+    navigate('/admin/login', { replace: true });
   };
 
   const handleTabSelect = (tabKey) => {
