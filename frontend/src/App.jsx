@@ -53,8 +53,8 @@ function AppContent() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#0F111A', color: '#FFF' }}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Render Customer Navbar ONLY on normal storefront routes */}
-        {!isDedicatedLayout && <Navbar openBuilder={handleOpenBuilder} isBuilderOpen={isBuilderOpen} />}
+        {/* Render Customer Navbar on all customer-facing storefront routes */}
+        {!isAdminRoute && <Navbar openBuilder={handleOpenBuilder} isBuilderOpen={isBuilderOpen} />}
 
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <Routes>

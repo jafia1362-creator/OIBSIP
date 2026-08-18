@@ -3288,26 +3288,83 @@ a {
   }
 }
 
+/* Sticky Sticky Navigation Header */
+.nav-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 74px;
+  width: 100%;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.nav-menu-desktop {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-actions-desktop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link-item {
+  background: none;
+  border: none;
+  color: #CBD5E1;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.nav-link-item:hover,
+.nav-link-item.active {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
+}
+
 /* 17. Premium Split-Screen Authentication Design System */
 .auth-split-wrapper {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100vh - 74px);
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   background-color: #0B0D14;
-  overflow-x: hidden;
-  padding: 24px 20px;
+  padding: 36px 20px;
   box-sizing: border-box;
 }
 
 .auth-split-card {
   width: 100%;
   max-width: 1080px;
-  max-height: min(720px, calc(100vh - 48px));
-  background: rgba(18, 21, 33, 0.82);
+  background: rgba(18, 21, 33, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -3315,22 +3372,20 @@ a {
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 40px rgba(247, 37, 79, 0.1);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  overflow: hidden;
   position: relative;
   z-index: 2;
   transition: all 0.4s ease;
+  overflow: hidden;
 }
 
 /* Left Form Side */
 .auth-form-side {
-  padding: 32px 38px;
+  padding: 36px 36px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
   z-index: 3;
-  overflow-y: auto;
-  max-height: 100%;
 }
 
 .auth-form-side::-webkit-scrollbar {
