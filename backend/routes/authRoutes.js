@@ -5,6 +5,7 @@ const {
   verifyEmail,
   loginUser,
   adminLogin,
+  googleAuth,
   forgotPassword,
   resetPassword,
   getAllUsers,
@@ -20,6 +21,7 @@ router.post('/register', registerUser);
 router.get('/verify-email', verifyEmail);
 router.post('/login', loginUser);
 router.post('/admin/login', adminLogin);
+router.post('/google', googleAuth);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 

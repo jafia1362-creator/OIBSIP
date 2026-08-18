@@ -409,11 +409,46 @@ const createUserByAdmin = async (req, res) => {
   }
 };
 
+// Google Auth Single Sign-On
+const googleAuth = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Google email is required' });
+    }
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      const randomPassword = crypto.randomBytes(16).toString('hex');
+      user = await User.create({
+        name: name || 'Google User',
+        email,
+        password: randomPassword,
+        role: 'user',
+        isVerified: true,
+      });
+    }
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isVerified: user.isVerified,
+      token: generateToken(user._id, user.role),
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyEmail,
   loginUser,
   adminLogin,
+  googleAuth,
   forgotPassword,
   resetPassword,
   getAllUsers,

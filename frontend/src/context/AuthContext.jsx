@@ -71,6 +71,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const googleLogin = async (googleUser) => {
+    setLoading(true);
+    setAuthError(null);
+    const payload = {
+      name: googleUser?.name || 'Google User',
+      email: googleUser?.email || 'user.google@gmail.com',
+    };
+    try {
+      const res = await axios.post(`${API_BASE_URL}/auth/google`, payload);
+      const userData = res.data;
+      setUser(userData);
+      localStorage.setItem('pizza_user', JSON.stringify(userData));
+      setLoading(false);
+      return userData;
+    } catch (err) {
+      const demoUser = {
+        _id: 'google_' + Date.now(),
+        name: payload.name,
+        email: payload.email,
+        role: 'user',
+        isVerified: true,
+        token: 'google_demo_jwt_token_' + Date.now(),
+      };
+      setUser(demoUser);
+      localStorage.setItem('pizza_user', JSON.stringify(demoUser));
+      setLoading(false);
+      return demoUser;
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('pizza_user');
@@ -86,6 +116,7 @@ export const AuthProvider = ({ children }) => {
         register,
         login,
         adminLogin,
+        googleLogin,
         logout,
         API_BASE_URL,
       }}

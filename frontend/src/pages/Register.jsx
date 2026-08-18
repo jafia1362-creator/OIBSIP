@@ -3,9 +3,10 @@ import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { User, Mail, Lock, CheckCircle, AlertCircle, ArrowRight, Pizza, Eye, EyeOff, Loader2, Phone, ArrowLeft, ShieldCheck } from 'lucide-react';
 import AuthVisualPanel from '../components/AuthVisualPanel';
+import GoogleAuthModal from '../components/GoogleAuthModal';
 
 export default function Register() {
-  const { user, register, loading } = useContext(AuthContext);
+  const { user, register, googleLogin, loading } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -16,7 +17,7 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [error, setError] = useState('');
-  const [googleNotice, setGoogleNotice] = useState('');
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
   const navigate = useNavigate();
 
   // Synchronous guard for authenticated users
@@ -113,9 +114,18 @@ export default function Register() {
     }
   };
 
-  const handleGoogleAuth = () => {
-    setGoogleNotice('Google Single Sign-On is connecting... Please register using your SliceCraft account details.');
-    setTimeout(() => setGoogleNotice(''), 4000);
+  const handleGoogleAuthSelect = async (account) => {
+    try {
+      const loggedUser = await googleLogin(account);
+      setIsGoogleModalOpen(false);
+      if (loggedUser?.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
+    } catch (err) {
+      setError(err?.message || 'Google Registration failed. Please try again.');
+    }
   };
 
   return (
@@ -140,7 +150,7 @@ export default function Register() {
           </div>
 
           {/* Google Auth Button */}
-          <button type="button" className="auth-google-btn" onClick={handleGoogleAuth}>
+          <button type="button" className="auth-google-btn" onClick={() => setIsGoogleModalOpen(true)}>
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -149,12 +159,6 @@ export default function Register() {
             </svg>
             <span>Continue with Google</span>
           </button>
-
-          {googleNotice && (
-            <div style={{ marginTop: '10px', fontSize: '0.78rem', color: '#FF8A00', background: 'rgba(255, 138, 0, 0.1)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255, 138, 0, 0.25)' }}>
-              {googleNotice}
-            </div>
-          )}
 
           <div className="auth-divider">
             <span>OR REGISTER WITH EMAIL</span>
@@ -348,6 +352,13 @@ export default function Register() {
         {/* Right Visual Side */}
         <AuthVisualPanel />
       </div>
+
+      {/* Google Sign-In Account Selector Modal */}
+      <GoogleAuthModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        onSelectAccount={handleGoogleAuthSelect}
+      />
     </div>
   );
 }
