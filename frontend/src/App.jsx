@@ -38,8 +38,10 @@ function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Check if current route is an Admin route
+  // Check if current route is an Admin or Auth route
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAuthRoute = ['/login', '/register', '/verify-email', '/forgot-password', '/reset-password', '/admin/login'].includes(location.pathname);
+  const isDedicatedLayout = isAdminRoute || isAuthRoute;
 
   const handleOpenBuilder = () => {
     setIsBuilderOpen(true);
@@ -51,8 +53,8 @@ function AppContent() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#0F111A', color: '#FFF' }}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* Render Customer Navbar ONLY on customer-facing routes */}
-        {!isAdminRoute && <Navbar openBuilder={handleOpenBuilder} isBuilderOpen={isBuilderOpen} />}
+        {/* Render Customer Navbar ONLY on normal storefront routes */}
+        {!isDedicatedLayout && <Navbar openBuilder={handleOpenBuilder} isBuilderOpen={isBuilderOpen} />}
 
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <Routes>
@@ -88,8 +90,8 @@ function AppContent() {
         </main>
       </div>
 
-      {/* Render Customer Footer ONLY on customer-facing routes */}
-      {!isAdminRoute && (
+      {/* Render Customer Footer ONLY on normal storefront routes */}
+      {!isDedicatedLayout && (
         <footer className="scroll-reveal" style={{ borderTop: '1px solid var(--border-color)', backgroundColor: '#0A0C13', marginTop: '80px', paddingTop: '60px', paddingBottom: '40px' }}>
           <div className="site-container">
             <div className="footer-grid" style={{ paddingBottom: '48px', borderBottom: '1px solid var(--border-color)' }}>
