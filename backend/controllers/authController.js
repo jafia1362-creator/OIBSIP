@@ -39,22 +39,41 @@ const registerUser = async (req, res) => {
     });
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-    const verifyUrl = `${clientUrl}/verify-email?token=${verificationToken}`;
 
-    // Send email asynchronously without blocking registration flow
+    // Send account registration confirmation email
     sendEmail({
       to: email,
-      subject: 'Verify Your Pizza Delivery Account Email',
+      subject: '🎉 Welcome to SliceCraft Pizza - Account Registration Confirmed!',
       html: `
-        <h3>Welcome to SliceCraft Pizza, ${name}!</h3>
-        <p>Click below to verify your email address:</p>
-        <a href="${verifyUrl}">${verifyUrl}</a>
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #0F111A; color: #FFFFFF; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(255,255,255,0.1);">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #F7254F; margin: 0; font-size: 28px;">🍕 SliceCraft Pizza</h1>
+            <p style="color: #FF8A00; font-weight: 600; margin-top: 5px;">Handcrafted Artisan Pizza Delivery</p>
+          </div>
+          <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;" />
+          <h2 style="color: #FFFFFF; font-size: 20px;">Welcome to SliceCraft, ${name}! 👋</h2>
+          <p style="color: #CBD5E1; line-height: 1.6; font-size: 15px;">
+            Your SliceCraft account has been <strong>successfully created and confirmed</strong>. You can now log in, build custom gourmet pizzas, track your live orders, and enjoy 30-minute express delivery!
+          </p>
+          <div style="background: rgba(255, 255, 255, 0.05); padding: 15px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #F7254F;">
+            <p style="margin: 4px 0; color: #94A3B8; font-size: 14px;"><strong>Registered Email:</strong> <span style="color: #FFF;">${email}</span></p>
+            <p style="margin: 4px 0; color: #94A3B8; font-size: 14px;"><strong>Account Role:</strong> <span style="color: #FF8A00; font-weight: 700; text-transform: uppercase;">Customer</span></p>
+            <p style="margin: 4px 0; color: #94A3B8; font-size: 14px;"><strong>Account Status:</strong> <span style="color: #10B981; font-weight: 700;">Verified & Active</span></p>
+          </div>
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="${clientUrl}/login" style="background: linear-gradient(135deg, #F7254F 0%, #FF8A00 100%); color: #FFFFFF; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; display: inline-block;">Log In to Your Account</a>
+          </div>
+          <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0 15px 0;" />
+          <p style="color: #64748B; font-size: 12px; text-align: center;">
+            If you did not create this account, please contact our support team immediately.
+          </p>
+        </div>
       `,
-      text: `Verify your email: ${verifyUrl}`,
-    }).catch((e) => console.warn('Email notification skipped/failed:', e.message));
+      text: `Welcome to SliceCraft Pizza, ${name}! Your account (${email}) has been successfully created and confirmed. Log in at ${clientUrl}/login`,
+    }).catch((e) => console.warn('Registration confirmation email failed:', e.message));
 
     res.status(201).json({
-      message: 'Registration successful! Your account is active and verified.',
+      message: `Account created successfully! Confirmation email sent to ${email}.`,
       verificationToken,
     });
   } catch (error) {
@@ -402,7 +421,35 @@ const createUserByAdmin = async (req, res) => {
       isVerified: typeof isVerified === 'boolean' ? isVerified : true,
     });
 
-    res.status(201).json({ message: 'User created successfully', user });
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    sendEmail({
+      to: user.email,
+      subject: `🔑 Your SliceCraft Pizza Account (${user.role.toUpperCase()}) Has Been Created!`,
+      html: `
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #0F111A; color: #FFFFFF; padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(255,255,255,0.1);">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #FF8A00; margin: 0; font-size: 28px;">🍕 SliceCraft Operations</h1>
+            <p style="color: #F7254F; font-weight: 600; margin-top: 5px;">Account Provisioning Notice</p>
+          </div>
+          <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;" />
+          <h2 style="color: #FFFFFF; font-size: 20px;">Hello, ${name}! 👋</h2>
+          <p style="color: #CBD5E1; line-height: 1.6; font-size: 15px;">
+            An account has been created for you on the <strong>SliceCraft Pizza Platform</strong> by an Administrator.
+          </p>
+          <div style="background: rgba(255, 255, 255, 0.05); padding: 15px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #FF8A00;">
+            <p style="margin: 4px 0; color: #94A3B8; font-size: 14px;"><strong>Email:</strong> <span style="color: #FFF;">${user.email}</span></p>
+            <p style="margin: 4px 0; color: #94A3B8; font-size: 14px;"><strong>Role:</strong> <span style="color: #FF8A00; font-weight: 700; text-transform: uppercase;">${user.role}</span></p>
+            <p style="margin: 4px 0; color: #94A3B8; font-size: 14px;"><strong>Temporary Password:</strong> <span style="color: #10B981; font-family: monospace;">${password}</span></p>
+          </div>
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="${clientUrl}/${user.role === 'admin' ? 'admin/login' : 'login'}" style="background: linear-gradient(135deg, #FF8A00 0%, #F7254F 100%); color: #FFFFFF; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; display: inline-block;">Access SliceCraft Portal</a>
+          </div>
+        </div>
+      `,
+      text: `Hello ${name}, an account has been created for you at SliceCraft. Email: ${user.email}, Password: ${password}`,
+    }).catch((e) => console.warn('Admin account creation email failed:', e.message));
+
+    res.status(201).json({ message: `Account for "${user.name}" created successfully! Confirmation email sent to ${user.email}.`, user });
   } catch (error) {
     console.error('Create user error:', error);
     res.status(500).json({ message: error.message });

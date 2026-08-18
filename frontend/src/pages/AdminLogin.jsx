@@ -80,57 +80,38 @@ export default function AdminLogin() {
       <div className="auth-split-card animate-fade-in">
         {/* Left Form Side */}
         <div className="auth-form-side">
-          {/* Return Link */}
-          <Link
-            to="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.8rem',
-              color: '#94A3B8',
-              marginBottom: '20px',
-              fontWeight: 600,
-              textDecoration: 'none'
-            }}
-          >
-            <ArrowLeft style={{ width: '14px', height: '14px' }} /> Return to SliceCraft Storefront
-          </Link>
-
-          {/* Brand Logo Header */}
-          <Link to="/" className="auth-brand-logo">
-            <div className="auth-brand-icon" style={{ background: 'linear-gradient(135deg, #FF8A00 0%, #F7254F 100%)' }}>
-              <Pizza style={{ width: '24px', height: '24px', color: '#FFFFFF' }} />
-            </div>
-            <span className="auth-brand-text">
-              Slice<span className="gradient-text">Craft</span>
-            </span>
-          </Link>
-
-          {/* Header Badges */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, background: '#FF8A00', color: '#000', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              ADMIN PORTAL
-            </span>
-            <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '3px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <Shield style={{ width: '10px', height: '10px' }} /> 256-BIT ENCRYPTED
-            </span>
-          </div>
-
-          {/* Form Header */}
+          {/* Brand Logo Header & Admin Badges */}
           <div className="auth-form-header">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <Link to="/" className="auth-brand-logo">
+                <div className="auth-brand-icon" style={{ background: 'linear-gradient(135deg, #FF8A00 0%, #F7254F 100%)' }}>
+                  <Pizza style={{ width: '20px', height: '20px', color: '#FFFFFF' }} />
+                </div>
+                <span className="auth-brand-text">
+                  Slice<span className="gradient-text">Craft</span>
+                </span>
+              </Link>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: 800, background: '#FF8A00', color: '#000', padding: '2px 7px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  ADMIN PORTAL
+                </span>
+                <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '2px 7px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                  <Shield style={{ width: '10px', height: '10px' }} /> ENCRYPTED
+                </span>
+              </div>
+            </div>
             <h1 className="auth-form-title">
-              Administrator <span style={{ color: '#FF8A00' }}>Login</span>
+              Administrator <span style={{ color: '#FF8A00' }}>Portal</span>
             </h1>
             <p className="auth-form-subtitle">
-              Secure access to your SliceCraft Operations Command Center.
+              Secure authentication for SliceCraft Operations & Management.
             </p>
           </div>
 
           {/* Inline Error Alert */}
           {error && (
-            <div className="auth-error-alert" role="alert" style={{ marginBottom: '18px' }}>
-              <AlertCircle style={{ width: '18px', height: '18px', flexShrink: 0 }} />
+            <div className="auth-error-alert" role="alert" style={{ marginBottom: '14px' }}>
+              <AlertCircle style={{ width: '16px', height: '16px', flexShrink: 0 }} />
               <span>{error}</span>
             </div>
           )}
@@ -214,11 +195,11 @@ export default function AdminLogin() {
               {loading ? (
                 <>
                   <Loader2 className="animate-spin" style={{ width: '20px', height: '20px' }} />
-                  <span>Authenticating...</span>
+                  <span>Authenticating Admin...</span>
                 </>
               ) : (
                 <>
-                  <span>Access Admin Dashboard</span>
+                  <span>Log In to Admin Portal</span>
                   <ShieldCheck style={{ width: '18px', height: '18px' }} />
                 </>
               )}
@@ -226,10 +207,10 @@ export default function AdminLogin() {
           </form>
 
           {/* Customer Portal Link */}
-          <div style={{ marginTop: '24px', fontSize: '0.85rem', color: '#94A3B8', textAlign: 'center' }}>
-            <span>Need Customer Portal? </span>
+          <div style={{ marginTop: '20px', fontSize: '0.85rem', color: '#94A3B8', textAlign: 'center' }}>
+            <span>Not an admin? </span>
             <Link to="/login" className="auth-link">
-              Customer Sign In
+              Go to Customer Sign In
             </Link>
           </div>
         </div>
