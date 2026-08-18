@@ -86,35 +86,16 @@ export default function Login() {
       <div className="auth-split-card animate-fade-in">
         {/* Left Form Side */}
         <div className="auth-form-side">
-          {/* Return to Home */}
-          <Link
-            to="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.8rem',
-              color: '#94A3B8',
-              marginBottom: '20px',
-              fontWeight: 600,
-              textDecoration: 'none'
-            }}
-          >
-            <ArrowLeft style={{ width: '14px', height: '14px' }} /> Return to Home
-          </Link>
-
-          {/* Brand Logo Header */}
-          <Link to="/" className="auth-brand-logo">
-            <div className="auth-brand-icon">
-              <Pizza style={{ width: '24px', height: '24px', color: '#FFFFFF' }} />
-            </div>
-            <span className="auth-brand-text">
-              Slice<span className="gradient-text">Craft</span>
-            </span>
-          </Link>
-
-          {/* Form Header */}
+          {/* Brand & Header */}
           <div className="auth-form-header">
+            <Link to="/" className="auth-brand-logo">
+              <div className="auth-brand-icon">
+                <Pizza style={{ width: '20px', height: '20px', color: '#FFFFFF' }} />
+              </div>
+              <span className="auth-brand-text">
+                Slice<span className="gradient-text">Craft</span>
+              </span>
+            </Link>
             <h1 className="auth-form-title">Welcome Back 👋</h1>
             <p className="auth-form-subtitle">
               Sign in to continue your SliceCraft artisan pizza journey.

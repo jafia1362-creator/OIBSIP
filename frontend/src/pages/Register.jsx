@@ -123,35 +123,16 @@ export default function Register() {
       <div className="auth-split-card animate-fade-in">
         {/* Left Form Side */}
         <div className="auth-form-side">
-          {/* Return to Home */}
-          <Link
-            to="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.8rem',
-              color: '#94A3B8',
-              marginBottom: '16px',
-              fontWeight: 600,
-              textDecoration: 'none'
-            }}
-          >
-            <ArrowLeft style={{ width: '14px', height: '14px' }} /> Return to Home
-          </Link>
-
-          {/* Brand Logo Header */}
-          <Link to="/" className="auth-brand-logo">
-            <div className="auth-brand-icon">
-              <Pizza style={{ width: '24px', height: '24px', color: '#FFFFFF' }} />
-            </div>
-            <span className="auth-brand-text">
-              Slice<span className="gradient-text">Craft</span>
-            </span>
-          </Link>
-
-          {/* Form Header */}
+          {/* Brand & Header */}
           <div className="auth-form-header">
+            <Link to="/" className="auth-brand-logo">
+              <div className="auth-brand-icon">
+                <Pizza style={{ width: '20px', height: '20px', color: '#FFFFFF' }} />
+              </div>
+              <span className="auth-brand-text">
+                Slice<span className="gradient-text">Craft</span>
+              </span>
+            </Link>
             <h1 className="auth-form-title">Create Account 🍕</h1>
             <p className="auth-form-subtitle">
               Join SliceCraft to build custom pizzas with 30-min express delivery.
@@ -181,8 +162,8 @@ export default function Register() {
 
           {/* Inline Error Alert */}
           {error && (
-            <div className="auth-error-alert" role="alert" style={{ marginBottom: '16px' }}>
-              <AlertCircle style={{ width: '18px', height: '18px', flexShrink: 0 }} />
+            <div className="auth-error-alert" role="alert" style={{ marginBottom: '12px' }}>
+              <AlertCircle style={{ width: '16px', height: '16px', flexShrink: 0 }} />
               <span>{error}</span>
             </div>
           )}
@@ -211,148 +192,115 @@ export default function Register() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate>
-              {/* Full Name */}
-              <div className="auth-field-group">
-                <label className="auth-field-label" htmlFor="register-name">
-                  Full Name <span style={{ color: '#F7254F' }}>*</span>
-                </label>
-                <div className="auth-input-box">
-                  <input
-                    id="register-name"
-                    type="text"
-                    required
-                    autoComplete="name"
-                    className="auth-input"
-                    placeholder="e.g. Alex Johnson"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={loading}
-                  />
-                  <User className="auth-field-icon" />
-                </div>
-              </div>
-
-              {/* Email Address */}
-              <div className="auth-field-group">
-                <label className="auth-field-label" htmlFor="register-email">
-                  Email Address <span style={{ color: '#F7254F' }}>*</span>
-                </label>
-                <div className="auth-input-box">
-                  <input
-                    id="register-email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    className="auth-input"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={loading}
-                  />
-                  <Mail className="auth-field-icon" />
-                </div>
-              </div>
-
-              {/* Phone Number (Optional) */}
-              <div className="auth-field-group">
-                <label className="auth-field-label" htmlFor="register-phone">
-                  <span>Phone Number</span>
-                  <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 500 }}>(Optional)</span>
-                </label>
-                <div className="auth-input-box">
-                  <input
-                    id="register-phone"
-                    type="tel"
-                    autoComplete="tel"
-                    className="auth-input"
-                    placeholder="+1 (555) 000-0000"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    disabled={loading}
-                  />
-                  <Phone className="auth-field-icon" />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div className="auth-field-group">
-                <div className="auth-field-label">
-                  <label htmlFor="register-password">
-                    Password <span style={{ color: '#F7254F' }}>*</span>
+              {/* Row 1: Full Name & Email Address */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="auth-field-group">
+                  <label className="auth-field-label" htmlFor="register-name">
+                    Full Name <span style={{ color: '#F7254F' }}>*</span>
                   </label>
-                  {password && (
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: pwdStrength.color }}>
-                      {pwdStrength.label} Password
-                    </span>
-                  )}
-                </div>
-                <div className="auth-input-box">
-                  <input
-                    id="register-password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    minLength={6}
-                    autoComplete="new-password"
-                    className="auth-input"
-                    placeholder="At least 6 characters"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={loading}
-                  />
-                  <Lock className="auth-field-icon" />
-                  <button
-                    type="button"
-                    className="auth-pwd-toggle"
-                    onClick={() => setShowPassword(!showPassword)}
-                    title={showPassword ? 'Hide password' : 'Show password'}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff style={{ width: '18px', height: '18px' }} /> : <Eye style={{ width: '18px', height: '18px' }} />}
-                  </button>
+                  <div className="auth-input-box">
+                    <input
+                      id="register-name"
+                      type="text"
+                      required
+                      autoComplete="name"
+                      className="auth-input"
+                      placeholder="e.g. Alex Johnson"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      disabled={loading}
+                    />
+                    <User className="auth-field-icon" />
+                  </div>
                 </div>
 
-                {/* Password Strength Indicator Bar */}
-                {password && (
-                  <div style={{ width: '100%', height: '4px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '2px', marginTop: '6px', overflow: 'hidden' }}>
-                    <div
-                      style={{
-                        width: `${pwdStrength.score}%`,
-                        height: '100%',
-                        backgroundColor: pwdStrength.color,
-                        transition: 'all 0.3s ease'
-                      }}
+                <div className="auth-field-group">
+                  <label className="auth-field-label" htmlFor="register-email">
+                    Email Address <span style={{ color: '#F7254F' }}>*</span>
+                  </label>
+                  <div className="auth-input-box">
+                    <input
+                      id="register-email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      className="auth-input"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={loading}
                     />
+                    <Mail className="auth-field-icon" />
                   </div>
-                )}
+                </div>
               </div>
 
-              {/* Confirm Password */}
-              <div className="auth-field-group">
-                <label className="auth-field-label" htmlFor="register-confirm-password">
-                  Confirm Password <span style={{ color: '#F7254F' }}>*</span>
-                </label>
-                <div className="auth-input-box">
-                  <input
-                    id="register-confirm-password"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    required
-                    autoComplete="new-password"
-                    className="auth-input"
-                    placeholder="Re-enter password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    disabled={loading}
-                  />
-                  <Lock className="auth-field-icon" />
-                  <button
-                    type="button"
-                    className="auth-pwd-toggle"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    title={showConfirmPassword ? 'Hide password' : 'Show password'}
-                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showConfirmPassword ? <EyeOff style={{ width: '18px', height: '18px' }} /> : <Eye style={{ width: '18px', height: '18px' }} />}
-                  </button>
+              {/* Row 2: Password & Confirm Password */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="auth-field-group">
+                  <div className="auth-field-label">
+                    <label htmlFor="register-password">
+                      Password <span style={{ color: '#F7254F' }}>*</span>
+                    </label>
+                    {password && (
+                      <span style={{ fontSize: '0.7rem', fontWeight: 800, color: pwdStrength.color }}>
+                        {pwdStrength.label}
+                      </span>
+                    )}
+                  </div>
+                  <div className="auth-input-box">
+                    <input
+                      id="register-password"
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      autoComplete="new-password"
+                      className="auth-input"
+                      placeholder="At least 6 chars"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
+                    />
+                    <Lock className="auth-field-icon" />
+                    <button
+                      type="button"
+                      className="auth-pwd-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff style={{ width: '16px', height: '16px' }} /> : <Eye style={{ width: '16px', height: '16px' }} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="auth-field-group">
+                  <label className="auth-field-label" htmlFor="register-confirm-password">
+                    Confirm Password <span style={{ color: '#F7254F' }}>*</span>
+                  </label>
+                  <div className="auth-input-box">
+                    <input
+                      id="register-confirm-password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      required
+                      autoComplete="new-password"
+                      className="auth-input"
+                      placeholder="Re-enter password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      disabled={loading}
+                    />
+                    <Lock className="auth-field-icon" />
+                    <button
+                      type="button"
+                      className="auth-pwd-toggle"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      title={showConfirmPassword ? 'Hide password' : 'Show password'}
+                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showConfirmPassword ? <EyeOff style={{ width: '16px', height: '16px' }} /> : <Eye style={{ width: '16px', height: '16px' }} />}
+                    </button>
+                  </div>
                 </div>
               </div>
 
