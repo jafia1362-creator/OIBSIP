@@ -33,6 +33,7 @@ const ProtectedUserRoute = ({ children }) => {
 };
 
 function AppContent() {
+  const { user } = useContext(AuthContext);
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
