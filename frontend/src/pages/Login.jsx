@@ -1,42 +1,60 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Pizza, Lock, Mail, AlertCircle, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Pizza, Lock, Mail, AlertCircle, ArrowRight, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
   const { user, login, loading } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // If user is already logged in, redirect immediately without letting back button reopen login
+  // Restore remembered email on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('slicecraft_remember_email');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+  // Synchronous guard for authenticated users
   if (user) {
     return <Navigate to={user.role === 'admin' ? '/admin' : '/'} replace />;
   }
-
-  useEffect(() => {
-    if (user) {
-      if (user.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate('/', { replace: true });
-      }
-    }
-  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!email.trim() || !password.trim()) {
-      setError('Please enter both your email address and password.');
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError('Please enter your email address.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError('Please enter a valid email address (e.g. name@domain.com).');
+      return;
+    }
+
+    if (!password) {
+      setError('Please enter your password.');
       return;
     }
 
     try {
-      const loggedUser = await login(email.trim(), password);
+      if (rememberMe) {
+        localStorage.setItem('slicecraft_remember_email', trimmedEmail);
+      } else {
+        localStorage.removeItem('slicecraft_remember_email');
+      }
+
+      const loggedUser = await login(trimmedEmail, password);
       if (loggedUser?.role === 'admin') {
         navigate('/admin', { replace: true });
       } else {
@@ -49,7 +67,7 @@ export default function Login() {
         errMsg.toLowerCase().includes('failed to fetch') ||
         errMsg.toLowerCase().includes('econnrefused')
       ) {
-        setError('Unable to connect to the server. Please try again.');
+        setError('Unable to connect to the authentication server. Please try again.');
       } else {
         setError(errMsg || 'Invalid email or password.');
       }
@@ -65,6 +83,24 @@ export default function Login() {
 
       {/* Login Card */}
       <div className="auth-card animate-fade-in">
+        {/* Back to Home Link */}
+        <Link
+          to="/"
+          className="auth-back-link"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '0.8rem',
+            color: 'var(--text-muted)',
+            marginBottom: '16px',
+            fontWeight: 600,
+            transition: 'var(--transition)'
+          }}
+        >
+          <ArrowLeft style={{ width: '14px', height: '14px' }} /> Return to Home
+        </Link>
+
         {/* Header */}
         <div className="auth-header">
           <div className="auth-icon-badge">
@@ -149,6 +185,26 @@ export default function Login() {
                 )}
               </button>
             </div>
+          </div>
+
+          {/* Remember Me */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.82rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={loading}
+                style={{
+                  accentColor: '#F7254F',
+                  width: '16px',
+                  height: '16px',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              />
+              Remember my email
+            </label>
           </div>
 
           {/* Submit Button */}

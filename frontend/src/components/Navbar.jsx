@@ -144,24 +144,39 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
 
             {user ? (
               <div className="nav-auth-group">
-                <Link
-                  to="/my-orders"
-                  className="btn-secondary"
-                  style={{ padding: '8px 16px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <ShoppingBag style={{ width: '15px', height: '15px', color: '#F7254F' }} />
-                  <span>My Orders</span>
-                </Link>
-
-                {user.role === 'admin' && (
+                {/* CUSTOMER ONLY NAVIGATION */}
+                {user.role === 'customer' && (
                   <Link
-                    to="/admin"
-                    className="btn-orange"
+                    to="/my-orders"
+                    className="btn-secondary"
                     style={{ padding: '8px 16px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                   >
-                    <ShieldCheck style={{ width: '15px', height: '15px' }} />
-                    <span>Admin Panel</span>
+                    <ShoppingBag style={{ width: '15px', height: '15px', color: '#F7254F' }} />
+                    <span>My Orders</span>
                   </Link>
+                )}
+
+                {/* ADMIN ONLY NAVIGATION */}
+                {user.role === 'admin' && (
+                  <>
+                    <Link
+                      to="/admin"
+                      className="btn-secondary"
+                      style={{ padding: '8px 16px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <ShoppingBag style={{ width: '15px', height: '15px', color: '#FF8A00' }} />
+                      <span>Orders</span>
+                    </Link>
+
+                    <Link
+                      to="/admin"
+                      className="btn-orange"
+                      style={{ padding: '8px 16px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <ShieldCheck style={{ width: '15px', height: '15px' }} />
+                      <span>Admin Panel</span>
+                    </Link>
+                  </>
                 )}
 
                 <div
@@ -340,13 +355,20 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                   <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Logged in as: {user.name}</span>
                   <button onClick={() => { logout(); setIsMobileMenuOpen(false); navigate('/login', { replace: true }); }} style={{ background: 'none', border: 'none', color: '#F7254F', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
                 </div>
-                <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                  <ShoppingBag style={{ width: '16px', height: '16px', color: '#F7254F' }} /> View My Orders
-                </Link>
-                {user.role === 'admin' && (
-                  <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="btn-orange" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                    <ShieldCheck style={{ width: '16px', height: '16px' }} /> Open Admin Panel
+                {user.role === 'customer' && (
+                  <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                    <ShoppingBag style={{ width: '16px', height: '16px', color: '#F7254F' }} /> View My Orders
                   </Link>
+                )}
+                {user.role === 'admin' && (
+                  <>
+                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <ShoppingBag style={{ width: '16px', height: '16px', color: '#FF8A00' }} /> Manage Customer Orders
+                    </Link>
+                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="btn-orange" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <ShieldCheck style={{ width: '16px', height: '16px' }} /> Open Admin Panel
+                    </Link>
+                  </>
                 )}
               </>
             ) : (

@@ -13,7 +13,7 @@ const generateToken = (id, role = 'user') => {
 // Register User
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -31,6 +31,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password, // hashed automatically by userSchema pre-save hook
+      phone: phone || '',
       role: 'user',
       isVerified: true,
       verificationToken,

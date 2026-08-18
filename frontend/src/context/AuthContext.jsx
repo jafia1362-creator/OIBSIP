@@ -20,11 +20,11 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, phone = '') => {
     setLoading(true);
     setAuthError(null);
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/register`, { name, email, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/register`, { name, email, password, phone });
       setLoading(false);
       return res.data;
     } catch (err) {

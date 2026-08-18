@@ -26,6 +26,9 @@ const ProtectedUserRoute = ({ children }) => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+  if (user.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
   return children;
 };
 
@@ -149,9 +152,11 @@ function AppContent() {
                   <a href="/#contact" style={{ color: '#94A3B8' }}>Help & FAQs</a>
                   <a href="#terms" style={{ color: '#94A3B8' }}>Terms of Service</a>
                   <a href="#privacy" style={{ color: '#94A3B8' }}>Privacy Policy</a>
-                  <Link to="/admin/login" style={{ color: '#FF8A00', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Shield style={{ width: '12px', height: '12px' }} /> Admin Portal
-                  </Link>
+                  {(!user || user.role === 'admin') && (
+                    <Link to="/admin/login" style={{ color: '#FF8A00', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Shield style={{ width: '12px', height: '12px' }} /> Admin Portal
+                    </Link>
+                  )}
                 </div>
               </div>
 

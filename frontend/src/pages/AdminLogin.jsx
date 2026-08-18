@@ -24,28 +24,53 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // If admin user is already logged in, redirect immediately without letting back button reopen login
-  if (user && user.role === 'admin') {
-    return <Navigate to="/admin" replace />;
-  }
-
+  // Restore remembered admin email on mount
   useEffect(() => {
-    if (user && user.role === 'admin') {
-      navigate('/admin', { replace: true });
+    const savedEmail = localStorage.getItem('slicecraft_remember_admin_email');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
     }
-  }, [user, navigate]);
+  }, []);
+
+  // Synchronous guards for authenticated users
+  if (user) {
+    if (user.role === 'admin') {
+      return <Navigate to="/admin" replace />;
+    } else {
+      return <Navigate to="/" replace />;
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!email.trim() || !password.trim()) {
-      setError('Please enter both your administrator email and password.');
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError('Please enter your administrator email address.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError('Please enter a valid email address (e.g. admin@slicecraft.com).');
+      return;
+    }
+
+    if (!password) {
+      setError('Please enter your password.');
       return;
     }
 
     try {
-      await adminLogin(email.trim(), password);
+      if (rememberMe) {
+        localStorage.setItem('slicecraft_remember_admin_email', trimmedEmail);
+      } else {
+        localStorage.removeItem('slicecraft_remember_admin_email');
+      }
+
+      await adminLogin(trimmedEmail, password);
       navigate('/admin', { replace: true });
     } catch (err) {
       const errMsg = err?.message || '';
@@ -54,9 +79,9 @@ export default function AdminLogin() {
         errMsg.toLowerCase().includes('failed to fetch') ||
         errMsg.toLowerCase().includes('econnrefused')
       ) {
-        setError('Unable to connect to the server. Please try again.');
+        setError('Unable to connect to the authentication server. Please try again.');
       } else {
-        setError('Invalid email or password.');
+        setError(errMsg || 'Invalid email or password.');
       }
     }
   };
@@ -175,6 +200,7 @@ export default function AdminLogin() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={loading}
               />
               <span>Remember Me</span>
             </label>
