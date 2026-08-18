@@ -116,6 +116,43 @@ export default function AdminLogin() {
             </div>
           )}
 
+          {/* Quick Demo Credentials Helper */}
+          <div
+            style={{
+              marginBottom: '14px',
+              padding: '8px 12px',
+              background: 'rgba(255, 138, 0, 0.08)',
+              border: '1px solid rgba(255, 138, 0, 0.2)',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: '0.76rem',
+              color: '#CBD5E1',
+            }}
+          >
+            <span><strong>Default Admin:</strong> admin@pizzadelivery.com</span>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('admin@pizzadelivery.com');
+                setPassword('admin123');
+              }}
+              style={{
+                background: '#FF8A00',
+                color: '#000',
+                border: 'none',
+                padding: '3px 8px',
+                borderRadius: '4px',
+                fontWeight: 700,
+                fontSize: '0.7rem',
+                cursor: 'pointer',
+              }}
+            >
+              Auto-fill Credentials
+            </button>
+          </div>
+
           {/* Form */}
           <form onSubmit={handleSubmit} noValidate>
             {/* Email Field */}
