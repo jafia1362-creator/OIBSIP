@@ -448,17 +448,17 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
       {/* 4. CUSTOM PIZZA CALL-TO-ACTION BANNER */}
       <section className="site-container scroll-reveal">
         <div className="custom-cta-banner">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="badge badge-primary" style={{ alignSelf: 'flex-start' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '16px', maxWidth: '680px' }}>
+            <div className="badge badge-primary" style={{ alignSelf: 'center' }}>
               <ChefHat style={{ width: '16px', height: '16px' }} /> Interactive Builder Studio
             </div>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#FFF', lineHeight: 1.2 }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#FFF', lineHeight: 1.2, margin: 0 }}>
               Build Your <span className="gradient-text">Dream Pizza</span>
             </h2>
-            <p style={{ fontSize: '1rem', color: '#E2E8F0', maxWidth: '520px', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '1rem', color: '#E2E8F0', maxWidth: '600px', lineHeight: 1.6, margin: 0 }}>
               Choose your base, sauce, cheese and toppings to create your perfect pizza. Watch the live price update step-by-step and track your order from our oven to your plate!
             </p>
-            <div style={{ paddingTop: '8px' }}>
+            <div style={{ paddingTop: '8px', display: 'flex', justifyContent: 'center' }}>
               <button
                 onClick={() => setIsBuilderOpen(true)}
                 className="btn-primary"

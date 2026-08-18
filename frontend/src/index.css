@@ -411,23 +411,38 @@ a {
 }
 
 .hero-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
   gap: 24px;
   padding-top: 24px;
   border-top: 1px solid var(--border-color);
   width: 100%;
-  max-width: 480px;
+}
+
+.hero-stat-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  text-align: left;
 }
 
 .hero-stat-item h4 {
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: 900;
+  line-height: 1;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .hero-stat-item p {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.2;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .hero-right {
@@ -543,15 +558,20 @@ a {
 
 /* Custom Pizza CTA Banner */
 .custom-cta-banner {
-  background: linear-gradient(135deg, rgba(247,37,79,0.2) 0%, rgba(255,138,0,0.15) 100%), #151826;
+  background: linear-gradient(135deg, rgba(247,37,79,0.22) 0%, rgba(255,138,0,0.18) 100%), #151826;
   border: 1px solid rgba(247,37,79,0.35);
   border-radius: var(--radius-xl);
-  padding: 56px 48px;
-  display: grid;
-  grid-template-columns: 1.4fr 0.8fr;
-  gap: 40px;
+  padding: 56px 40px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 36px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* How It Works Grid */

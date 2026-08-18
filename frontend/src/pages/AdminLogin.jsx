@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import {
@@ -16,13 +16,20 @@ import {
 } from 'lucide-react';
 
 export default function AdminLogin() {
-  const { adminLogin, loading } = useContext(AuthContext);
+  const { user, adminLogin, loading } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // If admin user is already logged in, redirect immediately without letting back button reopen login
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      navigate('/admin', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +42,7 @@ export default function AdminLogin() {
 
     try {
       await adminLogin(email.trim(), password);
-      navigate('/admin');
+      navigate('/admin', { replace: true });
     } catch (err) {
       const errMsg = err?.message || '';
       if (
