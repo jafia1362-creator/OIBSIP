@@ -1,19 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import {
-  ShieldCheck,
-  Lock,
-  Mail,
-  AlertCircle,
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Loader2,
-  Pizza,
-  ArrowLeft,
-  Shield
-} from 'lucide-react';
+import { ShieldCheck, Lock, Mail, AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Pizza, ArrowLeft, Shield } from 'lucide-react';
+import AuthVisualPanel from '../components/AuthVisualPanel';
 
 export default function AdminLogin() {
   const { user, adminLogin, loading } = useContext(AuthContext);
@@ -87,161 +76,166 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="admin-login-page">
-      {/* Dynamic Ambient Glow Backdrops */}
-      <div className="admin-login-glow admin-login-glow-1" />
-      <div className="admin-login-glow admin-login-glow-2" />
-      <div className="admin-login-grid-overlay" />
+    <div className="auth-split-wrapper">
+      <div className="auth-split-card animate-fade-in">
+        {/* Left Form Side */}
+        <div className="auth-form-side">
+          {/* Return Link */}
+          <Link
+            to="/"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.8rem',
+              color: '#94A3B8',
+              marginBottom: '20px',
+              fontWeight: 600,
+              textDecoration: 'none'
+            }}
+          >
+            <ArrowLeft style={{ width: '14px', height: '14px' }} /> Return to SliceCraft Storefront
+          </Link>
 
-      {/* Main Admin Card */}
-      <div className="admin-login-card animate-fade-in">
-        {/* Top SliceCraft Brand & Badge */}
-        <div className="admin-login-header">
-          <div className="admin-login-brand">
-            <div className="admin-login-logo-icon">
-              <Pizza style={{ width: '22px', height: '22px', color: '#FFFFFF' }} />
+          {/* Brand Logo Header */}
+          <Link to="/" className="auth-brand-logo">
+            <div className="auth-brand-icon" style={{ background: 'linear-gradient(135deg, #FF8A00 0%, #F7254F 100%)' }}>
+              <Pizza style={{ width: '24px', height: '24px', color: '#FFFFFF' }} />
             </div>
-            <span className="admin-login-brand-text">
+            <span className="auth-brand-text">
               Slice<span className="gradient-text">Craft</span>
             </span>
-          </div>
+          </Link>
 
-          <div className="admin-badge-row">
-            <span className="admin-login-badge">
-              <span className="live-dot" /> ADMIN PORTAL
+          {/* Header Badges */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, background: '#FF8A00', color: '#000', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              ADMIN PORTAL
             </span>
-            <span className="admin-security-pill">
-              <Shield style={{ width: '12px', height: '12px' }} /> SECURE
+            <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '3px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Shield style={{ width: '10px', height: '10px' }} /> 256-BIT ENCRYPTED
             </span>
           </div>
 
-          <div className="admin-login-icon-box">
-            <ShieldCheck style={{ width: '30px', height: '30px', color: '#FFFFFF' }} />
+          {/* Form Header */}
+          <div className="auth-form-header">
+            <h1 className="auth-form-title">
+              Administrator <span style={{ color: '#FF8A00' }}>Login</span>
+            </h1>
+            <p className="auth-form-subtitle">
+              Secure access to your SliceCraft Operations Command Center.
+            </p>
           </div>
 
-          <h1 className="admin-login-title">
-            Welcome, <span className="gradient-text">Administrator</span>
-          </h1>
-          <p className="admin-login-subtitle">
-            Secure access to your SliceCraft Operations Command Center.
-          </p>
-        </div>
-
-        {/* Inline Safe Error Alert */}
-        {error && (
-          <div className="admin-error-alert" role="alert">
-            <AlertCircle style={{ width: '18px', height: '18px', flexShrink: 0 }} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} noValidate>
-          {/* Email Input */}
-          <div className="admin-input-group">
-            <label className="admin-input-label" htmlFor="admin-email">
-              Admin Email
-            </label>
-            <div className="admin-input-wrapper">
-              <Mail className="admin-input-icon" />
-              <input
-                id="admin-email"
-                type="email"
-                required
-                autoComplete="email"
-                className="admin-input-field"
-                placeholder="admin@slicecraft.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-              />
+          {/* Inline Error Alert */}
+          {error && (
+            <div className="auth-error-alert" role="alert" style={{ marginBottom: '18px' }}>
+              <AlertCircle style={{ width: '18px', height: '18px', flexShrink: 0 }} />
+              <span>{error}</span>
             </div>
-          </div>
+          )}
 
-          {/* Password Input */}
-          <div className="admin-input-group">
-            <label className="admin-input-label" htmlFor="admin-password">
-              Admin Password
-            </label>
-            <div className="admin-input-wrapper">
-              <Lock className="admin-input-icon" />
-              <input
-                id="admin-password"
-                type={showPassword ? 'text' : 'password'}
-                required
-                autoComplete="current-password"
-                className="admin-input-field"
-                placeholder="••••••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-              />
-              <button
-                type="button"
-                className="admin-password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                title={showPassword ? 'Hide password' : 'Show password'}
-                tabIndex={-1}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? (
-                  <EyeOff style={{ width: '18px', height: '18px' }} />
-                ) : (
-                  <Eye style={{ width: '18px', height: '18px' }} />
-                )}
-              </button>
+          {/* Form */}
+          <form onSubmit={handleSubmit} noValidate>
+            {/* Email Field */}
+            <div className="auth-field-group">
+              <label className="auth-field-label" htmlFor="admin-email">
+                Admin Email Address
+              </label>
+              <div className="auth-input-box">
+                <input
+                  id="admin-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  className="auth-input"
+                  placeholder="admin@slicecraft.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                />
+                <Mail className="auth-field-icon" />
+              </div>
             </div>
-          </div>
 
-          {/* Form Options: Remember Me & Forgot Password */}
-          <div className="admin-form-options">
-            <label className="admin-remember-me">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                disabled={loading}
-              />
-              <span>Remember Me</span>
-            </label>
-            <Link to="/forgot-password" className="admin-forgot-link">
-              Forgot Password?
+            {/* Password Field */}
+            <div className="auth-field-group">
+              <label className="auth-field-label" htmlFor="admin-password">
+                Admin Password
+              </label>
+              <div className="auth-input-box">
+                <input
+                  id="admin-password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoComplete="current-password"
+                  className="auth-input"
+                  placeholder="••••••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                />
+                <Lock className="auth-field-icon" />
+                <button
+                  type="button"
+                  className="auth-pwd-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff style={{ width: '18px', height: '18px' }} /> : <Eye style={{ width: '18px', height: '18px' }} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Options Row */}
+            <div className="auth-options-row">
+              <label className="auth-checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  disabled={loading}
+                />
+                <span>Remember Me</span>
+              </label>
+              <Link to="/forgot-password" className="auth-link">
+                Forgot Password?
+              </Link>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="auth-btn-primary"
+              style={{ background: 'linear-gradient(135deg, #FF8A00 0%, #F7254F 100%)' }}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" style={{ width: '20px', height: '20px' }} />
+                  <span>Authenticating...</span>
+                </>
+              ) : (
+                <>
+                  <span>Access Admin Dashboard</span>
+                  <ShieldCheck style={{ width: '18px', height: '18px' }} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Customer Portal Link */}
+          <div style={{ marginTop: '24px', fontSize: '0.85rem', color: '#94A3B8', textAlign: 'center' }}>
+            <span>Need Customer Portal? </span>
+            <Link to="/login" className="auth-link">
+              Customer Sign In
             </Link>
           </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="admin-submit-btn"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin" style={{ width: '18px', height: '18px' }} />
-                <span>Authenticating...</span>
-              </>
-            ) : (
-              <>
-                <span>Access Admin Dashboard</span>
-                <ArrowRight style={{ width: '18px', height: '18px' }} />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* Security Seal Footer */}
-        <div className="admin-security-footer">
-          <ShieldCheck style={{ width: '15px', height: '15px', color: '#10B981', flexShrink: 0 }} />
-          <span>End-to-End Encrypted Session &bull; 256-bit AES Auth</span>
         </div>
 
-        {/* Return to Customer Portal */}
-        <div className="admin-back-to-store">
-          <Link to="/" className="admin-back-link">
-            <ArrowLeft style={{ width: '14px', height: '14px' }} />
-            <span>Return to SliceCraft Storefront</span>
-          </Link>
-        </div>
+        {/* Right Visual Side */}
+        <AuthVisualPanel />
       </div>
     </div>
   );
