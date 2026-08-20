@@ -136,15 +136,6 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
             >
               Contact
             </button>
-            {user && user.role !== 'admin' && (
-              <Link
-                to="/my-orders"
-                className={`nav-link-item ${location.pathname === '/my-orders' ? 'active' : ''}`}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#F7254F' }}
-              >
-                <ShoppingBag style={{ width: '15px', height: '15px' }} /> My Orders
-              </Link>
-            )}
           </nav>
 
           {/* Desktop Right Actions */}
