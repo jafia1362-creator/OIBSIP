@@ -56,7 +56,7 @@ function AppContent() {
         {/* Render Customer Navbar on all customer-facing storefront routes */}
         {!isAdminRoute && <Navbar openBuilder={handleOpenBuilder} isBuilderOpen={isBuilderOpen} />}
 
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: !isDedicatedLayout ? '74px' : '0px' }}>
           <Routes>
             <Route
               path="/"

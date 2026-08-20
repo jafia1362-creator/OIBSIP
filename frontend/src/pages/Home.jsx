@@ -188,7 +188,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
   return (
     <div className="home-page" style={{ display: 'flex', flexDirection: 'column', gap: '80px', paddingBottom: '60px' }}>
       {/* 1. HERO SECTION */}
-      <section style={{ position: 'relative', overflow: 'hidden' }}>
+      <section id="home" style={{ position: 'relative', overflow: 'hidden', scrollMarginTop: '90px' }}>
         <div className="site-container">
           <div className="hero-grid">
             {/* Left Content with Staggered Entrances */}

@@ -40,7 +40,13 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
     setIsMobileMenuOpen(false);
     setActiveSection(sectionId);
     if (location.pathname !== '/') {
-      navigate(`/#${sectionId}`);
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
     } else {
       const element = document.getElementById(sectionId);
       if (element) {
