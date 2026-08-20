@@ -136,6 +136,15 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
             >
               Contact
             </button>
+            {user && user.role !== 'admin' && (
+              <Link
+                to="/my-orders"
+                className={`nav-link-item ${location.pathname === '/my-orders' ? 'active' : ''}`}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#F7254F' }}
+              >
+                <ShoppingBag style={{ width: '15px', height: '15px' }} /> My Orders
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Right Actions */}
@@ -151,7 +160,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
             {user ? (
               <div className="nav-auth-group">
                 {/* CUSTOMER ONLY NAVIGATION */}
-                {user.role === 'customer' && (
+                {user.role !== 'admin' && (
                   <Link
                     to="/my-orders"
                     className="btn-secondary"
@@ -361,7 +370,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                   <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Logged in as: {user.name}</span>
                   <button onClick={() => { logout(); setIsMobileMenuOpen(false); navigate('/login', { replace: true }); }} style={{ background: 'none', border: 'none', color: '#F7254F', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
                 </div>
-                {user.role === 'customer' && (
+                {user.role !== 'admin' && (
                   <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                     <ShoppingBag style={{ width: '16px', height: '16px', color: '#F7254F' }} /> View My Orders
                   </Link>
