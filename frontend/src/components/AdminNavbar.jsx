@@ -97,21 +97,21 @@ export default function AdminNavbar({
               onClick={onRefresh}
               className="btn-secondary"
               title="Refresh Data from MongoDB"
-              style={{ padding: '7px 12px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{ padding: '6px 10px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}
             >
               <RefreshCw style={{ width: '13px', height: '13px' }} /> Sync
             </button>
           )}
 
-          <div className="admin-user-pill" style={{ padding: '5px 12px 5px 6px' }}>
+          <div className="admin-user-pill" style={{ padding: '4px 10px 4px 6px', flexShrink: 0 }}>
             <div className="admin-avatar-circle" style={{ width: '26px', height: '26px', fontSize: '0.7rem' }}>
               {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#fff' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '120px', overflow: 'hidden' }}>
+              <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.name || 'Administrator'}
               </span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.email || 'admin@slicecraft.com'}
               </span>
             </div>
@@ -119,9 +119,30 @@ export default function AdminNavbar({
 
           <button
             onClick={handleLogout}
-            className="btn-secondary"
             title="Sign out of Admin Panel"
-            style={{ padding: '7px 12px', fontSize: '0.78rem', borderColor: 'rgba(239, 68, 68, 0.4)', color: '#F87171', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{
+              padding: '6px 12px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: '9999px',
+              border: '1px solid rgba(239, 68, 68, 0.4)',
+              background: 'rgba(239, 68, 68, 0.12)',
+              color: '#F87171',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              flexShrink: 0,
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+              e.currentTarget.style.color = '#FFF';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)';
+              e.currentTarget.style.color = '#F87171';
+            }}
           >
             <LogOut style={{ width: '13px', height: '13px' }} /> Logout
           </button>
