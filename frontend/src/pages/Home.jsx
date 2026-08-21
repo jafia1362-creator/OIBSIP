@@ -103,7 +103,7 @@ function AnimatedCounter({ end, duration = 1600, decimals = 0, suffix = '' }) {
   );
 }
 
-export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
+export default function Home({ isBuilderOpen, setIsBuilderOpen, targetSection }) {
   const { API_BASE_URL } = useContext(AuthContext);
   const navigate = useNavigate();
   const [presets, setPresets] = useState(DEFAULT_SIGNATURE_PRESETS);
@@ -118,6 +118,18 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
   useEffect(() => {
     fetchPresets();
   }, []);
+
+  useEffect(() => {
+    if (targetSection) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(targetSection);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [targetSection]);
 
   // Lightweight IntersectionObserver for scroll-reveal animations with safety fallback
   useEffect(() => {

@@ -63,6 +63,26 @@ function AppContent() {
               path="/"
               element={<Home isBuilderOpen={isBuilderOpen} setIsBuilderOpen={setIsBuilderOpen} />}
             />
+            <Route
+              path="/menu"
+              element={<Home isBuilderOpen={isBuilderOpen} setIsBuilderOpen={setIsBuilderOpen} targetSection="menu" />}
+            />
+            <Route
+              path="/custom-pizza"
+              element={<Home isBuilderOpen={true} setIsBuilderOpen={setIsBuilderOpen} />}
+            />
+            <Route
+              path="/how-it-works"
+              element={<Home isBuilderOpen={isBuilderOpen} setIsBuilderOpen={setIsBuilderOpen} targetSection="how-it-works" />}
+            />
+            <Route
+              path="/about"
+              element={<Home isBuilderOpen={isBuilderOpen} setIsBuilderOpen={setIsBuilderOpen} targetSection="about" />}
+            />
+            <Route
+              path="/contact"
+              element={<Home isBuilderOpen={isBuilderOpen} setIsBuilderOpen={setIsBuilderOpen} targetSection="contact" />}
+            />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
@@ -87,6 +107,7 @@ function AppContent() {
                 </ProtectedUserRoute>
               }
             />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>
