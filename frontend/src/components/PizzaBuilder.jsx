@@ -402,24 +402,26 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
         </div>
 
         {/* Footer Summary & Navigation */}
-        <div style={{ padding: '20px 24px', borderTop: '1px solid var(--border-color)', backgroundColor: 'rgba(15, 17, 26, 0.95)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block', fontWeight: 600 }}>Calculated Custom Price</span>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
-              <span key={calculateTotal()} className="gradient-text price-pop-animation" style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{calculateTotal()}</span>
-              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
-                (Base ₹{selectedBase?.price || 0} + Sauce ₹{selectedSauce?.price || 0} + Cheese ₹{selectedCheese?.price || 0}
-                {selectedVeggies.length > 0 ? ` + Veggies ₹${selectedVeggies.reduce((s, v) => s + v.price, 0)}` : ''})
+        <div className="builder-footer-bar">
+          <div className="builder-footer-price-wrap">
+            <span className="builder-footer-label">Calculated Custom Price</span>
+            <div className="builder-footer-price-row">
+              <span key={calculateTotal()} className="gradient-text price-pop-animation builder-footer-amount">
+                ₹{calculateTotal()}
+              </span>
+              <span className="builder-footer-breakdown">
+                Base ₹{selectedBase?.price || 0} + Sauce ₹{selectedSauce?.price || 0} + Cheese ₹{selectedCheese?.price || 0}
+                {selectedVeggies.length > 0 ? ` + Veggies ₹${selectedVeggies.reduce((s, v) => s + v.price, 0)}` : ''}
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className={`builder-footer-actions ${step === 1 ? 'single-btn' : ''}`}>
             {step > 1 && (
               <button
                 onClick={() => setStep(step - 1)}
                 className="btn-secondary"
-                style={{ padding: '10px 18px', fontSize: '0.85rem' }}
+                style={{ padding: '10px 16px', fontSize: '0.85rem', justifyContent: 'center' }}
               >
                 <ChevronLeft style={{ width: '16px', height: '16px' }} /> Back
               </button>
@@ -427,9 +429,9 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
             <button
               onClick={handleNextStep}
               className="btn-primary"
-              style={{ padding: '10px 24px', fontSize: '0.85rem' }}
+              style={{ padding: '10px 20px', fontSize: '0.85rem', justifyContent: 'center' }}
             >
-              {step === 4 ? 'Review & Checkout' : 'Next Step'}
+              <span>{step === 4 ? 'Review & Checkout' : 'Next Step'}</span>
               <ChevronRight style={{ width: '16px', height: '16px' }} />
             </button>
           </div>

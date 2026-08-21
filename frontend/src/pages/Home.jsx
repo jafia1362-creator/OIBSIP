@@ -245,23 +245,23 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen, targetSection })
 
               {/* Trust Indicators with Smooth Stat Counters */}
               <div className="hero-stats hero-animate-stats">
-                <div className="hero-stat-item">
-                  <h4 style={{ color: '#FFF' }}>
+                <div className="hero-stat-card">
+                  <div className="hero-stat-val">
                     <AnimatedCounter end={5} suffix="+" />
-                  </h4>
-                  <p>Crust Bases</p>
+                  </div>
+                  <div className="hero-stat-lbl">Crust Bases</div>
                 </div>
-                <div className="hero-stat-item">
-                  <h4 style={{ color: '#F7254F' }}>
+                <div className="hero-stat-card highlight-red">
+                  <div className="hero-stat-val">
                     <AnimatedCounter end={30} suffix=" Min" />
-                  </h4>
-                  <p>Express Delivery</p>
+                  </div>
+                  <div className="hero-stat-lbl">Express Delivery</div>
                 </div>
-                <div className="hero-stat-item">
-                  <h4 style={{ color: '#FF8A00' }}>
+                <div className="hero-stat-card highlight-orange">
+                  <div className="hero-stat-val">
                     <AnimatedCounter end={4.9} decimals={1} suffix=" ★" />
-                  </h4>
-                  <p>Customer Rating</p>
+                  </div>
+                  <div className="hero-stat-lbl">Customer Rating</div>
                 </div>
               </div>
             </div>
@@ -667,40 +667,40 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen, targetSection })
 
       {/* 6. ABOUT SECTION */}
       <section id="about" className="site-container scroll-reveal" style={{ scrollMarginTop: '100px' }}>
-        <div className="glass-panel" style={{ padding: '48px', borderRadius: '28px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'center' }}>
+        <div className="glass-panel about-glass-card">
+          <div className="about-grid">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div className="badge badge-primary" style={{ alignSelf: 'flex-start' }}>
                 <HeartHandshake style={{ width: '16px', height: '16px' }} /> The SliceCraft Story
               </div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1.2 }}>
+              <h2 className="about-title">
                 Passionate About <span className="gradient-text">Authentic Flavor</span>
               </h2>
-              <p style={{ fontSize: '0.9rem', color: '#CBD5E1', lineHeight: 1.6 }}>
+              <p className="about-desc">
                 Founded with a mission to bring true artisan stone-baked pizza to food lovers, SliceCraft combines 48-hour fermented slow-rise dough with vine-ripened Italian tomato sauces and hand-selected cheeses.
               </p>
-              <p style={{ fontSize: '0.9rem', color: '#CBD5E1', lineHeight: 1.6 }}>
+              <p className="about-desc">
                 Our custom pizza builder empowers you to be your own chef. Whether you crave classic mozzarella or plant-based vegan cheese, whole-wheat crusts or fiery jalapenos, we bake every single slice to golden perfection.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingTop: '8px', fontSize: '0.8rem', fontWeight: 600 }}>
+              <div className="about-features-grid">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFF' }}>
-                  <CheckCircle2 style={{ width: '16px', height: '16px', color: '#10B981' }} /> 100% Pure Mozzarella
+                  <CheckCircle2 style={{ width: '16px', height: '16px', color: '#10B981', flexShrink: 0 }} /> 100% Pure Mozzarella
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFF' }}>
-                  <CheckCircle2 style={{ width: '16px', height: '16px', color: '#10B981' }} /> Zero Preservatives
+                  <CheckCircle2 style={{ width: '16px', height: '16px', color: '#10B981', flexShrink: 0 }} /> Zero Preservatives
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFF' }}>
-                  <CheckCircle2 style={{ width: '16px', height: '16px', color: '#10B981' }} /> 48-Hr Slow Fermented
+                  <CheckCircle2 style={{ width: '16px', height: '16px', color: '#10B981', flexShrink: 0 }} /> 48-Hr Slow Fermented
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FFF' }}>
-                  <CheckCircle2 style={{ width: '16px', height: '16px', color: '#10B981' }} /> Thermal Packaging
+                  <CheckCircle2 style={{ width: '16px', height: '16px', color: '#10B981', flexShrink: 0 }} /> Thermal Packaging
                 </div>
               </div>
             </div>
 
             <div>
-              <div style={{ borderRadius: '20px', overflow: 'hidden', height: '320px', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.6)' }}>
+              <div className="about-img-box">
                 <img
                   src="https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=800&q=80"
                   alt="Pizza Oven Craftsmanship"

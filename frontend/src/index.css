@@ -4491,6 +4491,242 @@ a {
 }
 
 /* ==========================================================================
+   MOBILE DESIGN OVERHAUL & OVERFLOW PREVENTIONS (PICS 1, 2, 3, 4)
+   ========================================================================== */
+
+/* Pic 1: Hero Stats Redesign */
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.hero-stat-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.hero-stat-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.hero-stat-card.highlight-red {
+  border-color: rgba(247, 37, 79, 0.25);
+  background: rgba(247, 37, 79, 0.06);
+}
+
+.hero-stat-card.highlight-orange {
+  border-color: rgba(255, 138, 0, 0.25);
+  background: rgba(255, 138, 0, 0.06);
+}
+
+.hero-stat-val {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #FFF;
+  line-height: 1.2;
+}
+
+.hero-stat-card.highlight-red .hero-stat-val {
+  color: #F7254F;
+}
+
+.hero-stat-card.highlight-orange .hero-stat-val {
+  color: #FF8A00;
+}
+
+.hero-stat-lbl {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  font-weight: 600;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+/* Pic 2: About Section & Page Text Overflow Fix */
+.about-glass-card {
+  padding: 48px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.about-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.about-desc {
+  font-size: 0.9rem;
+  color: #CBD5E1;
+  line-height: 1.6;
+}
+
+.about-features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding-top: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.about-img-box {
+  border-radius: 20px;
+  overflow: hidden;
+  height: 320px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+
+/* Pic 3: Pizza Builder Footer Redesign */
+.builder-footer-bar {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  background-color: rgba(15, 17, 26, 0.98);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.builder-footer-price-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.builder-footer-label {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.builder-footer-price-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.builder-footer-amount {
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.builder-footer-breakdown {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.builder-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Pic 4: Admin Portal Heading Line Height Fix */
+.admin-hero-heading {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.25;
+}
+
+@media (max-width: 768px) {
+  .hero-stats {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+  }
+  .hero-stat-card {
+    padding: 10px 4px !important;
+  }
+  .hero-stat-val {
+    font-size: 1.05rem !important;
+  }
+  .hero-stat-lbl {
+    font-size: 0.62rem !important;
+  }
+
+  .about-glass-card {
+    padding: 24px 16px !important;
+    border-radius: 20px !important;
+  }
+  .about-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .about-title {
+    font-size: 1.7rem !important;
+    line-height: 1.25 !important;
+  }
+  .about-features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .about-img-box {
+    height: 220px !important;
+  }
+
+  .builder-footer-bar {
+    padding: 14px 16px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .builder-footer-price-row {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .builder-footer-actions {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: 1fr 2fr !important;
+    gap: 10px !important;
+  }
+  .builder-footer-actions.single-btn {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-hero-heading {
+    font-size: 1.45rem !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.3px;
+  }
+}
+
+/* ==========================================================================
    CUSTOMER MY ORDERS & LIVE TRACKER COMPLETE STYLING & RESPONSIVENESS
    ========================================================================== */
 

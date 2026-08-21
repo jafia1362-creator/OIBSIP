@@ -588,7 +588,7 @@ export default function AdminDashboard() {
                         <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span> Socket.io Live
                       </span>
                     </div>
-                    <h1 style={{ fontSize: '1.85rem', fontWeight: 900, color: '#FFFFFF', margin: 0 }}>
+                    <h1 className="admin-hero-heading">
                       SliceCraft <span className="gradient-text">Operations Command Center</span>
                     </h1>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
