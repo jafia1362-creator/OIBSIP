@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, Star, Flame } from 'lucide-react';
+import { Zap, Star, Flame, Leaf, Sparkles } from 'lucide-react';
 import authPizzaImg from '../assets/auth-pizza.png';
 
 export default function AuthVisualPanel() {
@@ -7,6 +7,17 @@ export default function AuthVisualPanel() {
     <div className="auth-visual-side">
       {/* Dynamic ambient glow backdrop */}
       <div className="auth-visual-bg-glow" />
+
+      {/* Floating Ingredient Particles / Steam */}
+      <div className="auth-floating-particle p1" style={{ position: 'absolute', top: '15%', left: '10%', opacity: 0.7, color: '#10B981', animation: 'float 7s ease-in-out infinite' }}>
+        <Leaf size={22} style={{ transform: 'rotate(15deg)' }} />
+      </div>
+      <div className="auth-floating-particle p2" style={{ position: 'absolute', top: '65%', right: '12%', opacity: 0.6, color: '#FF8A00', animation: 'float 5s ease-in-out infinite 1s' }}>
+        <Flame size={20} />
+      </div>
+      <div className="auth-floating-particle p3" style={{ position: 'absolute', bottom: '15%', left: '18%', opacity: 0.5, color: '#F7254F', animation: 'float 6s ease-in-out infinite 0.5s' }}>
+        <Sparkles size={18} />
+      </div>
 
       {/* Floating Speed Badge */}
       <div className="auth-badge-speed">
@@ -47,3 +58,4 @@ export default function AuthVisualPanel() {
     </div>
   );
 }
+

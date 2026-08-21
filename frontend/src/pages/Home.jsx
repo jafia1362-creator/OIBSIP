@@ -22,6 +22,7 @@ import {
   Mail,
   ArrowRight,
   Leaf,
+  Search,
 } from 'lucide-react';
 
 const DEFAULT_SIGNATURE_PRESETS = [
@@ -107,6 +108,8 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
   const navigate = useNavigate();
   const [presets, setPresets] = useState(DEFAULT_SIGNATURE_PRESETS);
   const [loading, setLoading] = useState(false);
+  const [menuSearch, setMenuSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const [selectedPizzaForItem, setSelectedPizzaForItem] = useState(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -363,7 +366,7 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
 
       {/* 3. SIGNATURE MENU SECTION */}
       <section id="menu" className="site-container scroll-reveal" style={{ scrollMarginTop: '100px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '24px', marginBottom: '36px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '24px', marginBottom: '24px' }}>
           <div>
             <div className="badge badge-primary" style={{ marginBottom: '8px' }}>
               <Sparkles style={{ width: '14px', height: '14px' }} /> Handcrafted Delights
@@ -385,62 +388,152 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen }) {
           </button>
         </div>
 
-        {loading ? (
-          <div style={{ padding: '60px 0', textAlign: 'center', color: '#94A3B8' }}>
-            Loading artisan pizza selection...
+        {/* Menu Controls: Search Bar & Category Tabs */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
+          {/* Category Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {['All', 'Vegetarian', 'Non-Veg'].map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '9999px',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: selectedCategory === cat ? '1px solid #F7254F' : '1px solid var(--border-color)',
+                  background: selectedCategory === cat ? 'linear-gradient(135deg, rgba(247,37,79,0.2), rgba(255,138,0,0.15))' : 'rgba(255, 255, 255, 0.04)',
+                  color: selectedCategory === cat ? '#FFF' : '#94A3B8',
+                  transition: 'all 0.25s ease',
+                }}
+              >
+                {cat === 'All' ? '🍕 All Pizzas' : cat === 'Vegetarian' ? '🌱 Vegetarian' : '🍖 Non-Veg Specials'}
+              </button>
+            ))}
           </div>
-        ) : (
+
+          {/* Search Bar Input */}
+          <div style={{ position: 'relative', minWidth: '260px', width: '100%', maxWidth: '340px' }}>
+            <input
+              type="text"
+              placeholder="Search signature pizzas..."
+              value={menuSearch}
+              onChange={(e) => setMenuSearch(e.target.value)}
+              className="form-control"
+              style={{
+                paddingLeft: '38px',
+                height: '42px',
+                borderRadius: '9999px',
+                background: 'rgba(15, 17, 26, 0.9)',
+                fontSize: '0.85rem',
+              }}
+            />
+            <Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: '#64748B' }} />
+            {menuSearch && (
+              <button
+                type="button"
+                onClick={() => setMenuSearch('')}
+                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: '0.8rem' }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+
+        {loading ? (
           <div className="menu-grid">
-            {presets.map((preset, pIdx) => (
-              <div key={preset._id} className={`glass-panel glass-panel-hover menu-card stagger-${(pIdx % 3) + 1}`}>
-                {/* Image */}
-                <div className="menu-card-image">
-                  <img
-                    src={preset.image || 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80'}
-                    alt={preset.name}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '16px',
-                      right: '16px',
-                      background: 'linear-gradient(135deg, #F7254F 0%, #FF8A00 100%)',
-                      color: '#FFF',
-                      fontSize: '0.9rem',
-                      fontWeight: 900,
-                      padding: '6px 14px',
-                      borderRadius: '9999px',
-                      boxShadow: '0 4px 15px rgba(247,37,79,0.4)',
-                    }}
-                  >
-                    ₹{preset.price}
-                  </div>
-                </div>
-
-                {/* Details */}
-                <div className="menu-card-body">
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#FF8A00', fontSize: '0.8rem', fontWeight: 700 }}>
-                      <Star style={{ width: '14px', height: '14px', fill: '#FF8A00' }} />
-                      <span>4.9</span>
-                      <span style={{ color: '#64748B' }}>• (Chef's Choice)</span>
-                    </div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFF' }}>{preset.name}</h3>
-                    <p style={{ fontSize: '0.85rem', color: '#CBD5E1', lineHeight: 1.5 }}>
-                      {preset.description}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => handleOrderPreset(preset)}
-                    className="btn-primary"
-                    style={{ width: '100%', padding: '12px', fontSize: '0.9rem' }}
-                  >
-                    <ShoppingBag style={{ width: '16px', height: '16px' }} /> Quick Order Now
-                  </button>
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="glass-panel" style={{ borderRadius: '24px', overflow: 'hidden', height: '380px', animation: 'pulse 1.5s infinite alternate', background: 'rgba(255,255,255,0.03)' }}>
+                <div style={{ height: '220px', background: 'rgba(255,255,255,0.05)' }} />
+                <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ height: '20px', width: '60%', background: 'rgba(255,255,255,0.08)', borderRadius: '4px' }} />
+                  <div style={{ height: '14px', width: '90%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }} />
                 </div>
               </div>
             ))}
+          </div>
+        ) : presets.filter((p) => {
+            const matchesSearch = p.name?.toLowerCase().includes(menuSearch.toLowerCase()) || p.description?.toLowerCase().includes(menuSearch.toLowerCase());
+            if (selectedCategory === 'Vegetarian') return matchesSearch && (p.name.toLowerCase().includes('veggie') || p.name.toLowerCase().includes('margherita') || p.name.toLowerCase().includes('paneer') || p.name.toLowerCase().includes('truffle'));
+            if (selectedCategory === 'Non-Veg') return matchesSearch && (p.name.toLowerCase().includes('pepperoni') || p.name.toLowerCase().includes('chicken') || p.name.toLowerCase().includes('bbq'));
+            return matchesSearch;
+          }).length === 0 ? (
+          <div className="glass-panel" style={{ padding: '48px 24px', borderRadius: '24px', textAlign: 'center', maxWidth: '480px', margin: '0 auto' }}>
+            <Pizza style={{ width: '48px', height: '48px', color: '#F7254F', opacity: 0.5, margin: '0 auto 16px auto' }} />
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFF' }}>No matching pizzas found</h3>
+            <p style={{ fontSize: '0.85rem', color: '#94A3B8', margin: '8px 0 20px 0' }}>
+              No signature pizza matched your query "{menuSearch}". Try searching for something else or explore custom pizza builder!
+            </p>
+            <button
+              type="button"
+              onClick={() => { setMenuSearch(''); setSelectedCategory('All'); }}
+              className="btn-secondary"
+            >
+              Reset Search & Filters
+            </button>
+          </div>
+        ) : (
+          <div className="menu-grid">
+            {presets
+              .filter((p) => {
+                const matchesSearch = p.name?.toLowerCase().includes(menuSearch.toLowerCase()) || p.description?.toLowerCase().includes(menuSearch.toLowerCase());
+                if (selectedCategory === 'Vegetarian') return matchesSearch && (p.name.toLowerCase().includes('veggie') || p.name.toLowerCase().includes('margherita') || p.name.toLowerCase().includes('paneer') || p.name.toLowerCase().includes('truffle'));
+                if (selectedCategory === 'Non-Veg') return matchesSearch && (p.name.toLowerCase().includes('pepperoni') || p.name.toLowerCase().includes('chicken') || p.name.toLowerCase().includes('bbq'));
+                return matchesSearch;
+              })
+              .map((preset, pIdx) => (
+                <div key={preset._id} className={`glass-panel glass-panel-hover menu-card stagger-${(pIdx % 3) + 1}`}>
+                  {/* Image */}
+                  <div className="menu-card-image">
+                    <img
+                      src={preset.image || 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80'}
+                      alt={preset.name}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '16px',
+                        right: '16px',
+                        background: 'linear-gradient(135deg, #F7254F 0%, #FF8A00 100%)',
+                        color: '#FFF',
+                        fontSize: '0.9rem',
+                        fontWeight: 900,
+                        padding: '6px 14px',
+                        borderRadius: '9999px',
+                        boxShadow: '0 4px 15px rgba(247,37,79,0.4)',
+                      }}
+                    >
+                      ₹{preset.price}
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="menu-card-body">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#FF8A00', fontSize: '0.8rem', fontWeight: 700 }}>
+                        <Star style={{ width: '14px', height: '14px', fill: '#FF8A00' }} />
+                        <span>4.9</span>
+                        <span style={{ color: '#64748B' }}>• (Chef's Choice)</span>
+                      </div>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFF' }}>{preset.name}</h3>
+                      <p style={{ fontSize: '0.85rem', color: '#CBD5E1', lineHeight: 1.5 }}>
+                        {preset.description}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => handleOrderPreset(preset)}
+                      className="btn-primary"
+                      style={{ width: '100%', padding: '12px', fontSize: '0.9rem' }}
+                    >
+                      <ShoppingBag style={{ width: '16px', height: '16px' }} /> Quick Order Now
+                    </button>
+                  </div>
+                </div>
+              ))}
           </div>
         )}
       </section>

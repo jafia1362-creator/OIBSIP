@@ -23,8 +23,9 @@ const ProtectedAdminRoute = ({ children }) => {
 
 const ProtectedUserRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
+  const location = useLocation();
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
   if (user.role === 'admin') {
     return <Navigate to="/admin" replace />;

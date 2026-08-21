@@ -6,6 +6,7 @@ import { Pizza, ShoppingBag, ShieldCheck, LogOut, User, Sparkles, Menu as MenuIc
 export default function Navbar({ openBuilder, isBuilderOpen }) {
   const { user, logout } = useContext(AuthContext);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const navigate = useNavigate();
@@ -185,7 +186,9 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                   </>
                 )}
 
-                <div
+                <button
+                  type="button"
+                  onClick={() => setIsProfileModalOpen(true)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -196,7 +199,13 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                     border: user.role === 'admin' ? '1px solid rgba(255, 138, 0, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
                     fontSize: '0.8rem',
                     fontWeight: 600,
+                    cursor: 'pointer',
+                    color: '#FFF',
+                    transition: 'all 0.2s ease',
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(247, 37, 79, 0.4)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = user.role === 'admin' ? 'rgba(255, 138, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)')}
+                  title="Open Account Profile"
                 >
                   <User style={{ width: '14px', height: '14px', color: user.role === 'admin' ? '#FF8A00' : '#94A3B8' }} />
                   <span>{user.name?.split(' ')[0]}</span>
@@ -205,7 +214,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                       ADMIN
                     </span>
                   )}
-                </div>
+                </button>
 
                 <button
                   onClick={() => {
@@ -222,6 +231,15 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#F7254F';
+                    e.currentTarget.style.background = 'rgba(247, 37, 79, 0.12)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '#94A3B8';
+                    e.currentTarget.style.background = 'transparent';
                   }}
                   title="Sign Out"
                 >
@@ -384,6 +402,164 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                 <Link to="/admin/login" onClick={() => setIsMobileMenuOpen(false)} className="btn-orange" style={{ gridColumn: 'span 2', width: '100%', fontSize: '0.8rem' }}>Admin Portal Login</Link>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Account Profile Control Modal */}
+      {isProfileModalOpen && user && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 10000,
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(12px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+          className="animate-fade-in"
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '420px',
+              background: '#151826',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '24px',
+              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.8)',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: '20px 24px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    background: user.role === 'admin' ? 'linear-gradient(135deg, #FF8A00, #F7254F)' : 'linear-gradient(135deg, #F7254F, #FF8A00)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 900,
+                    fontSize: '1.1rem',
+                    color: '#FFF',
+                  }}
+                >
+                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#FFF', margin: 0 }}>
+                    {user.name}
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>{user.email}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsProfileModalOpen(false)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: 'none',
+                  color: '#94A3B8',
+                  borderRadius: '50%',
+                  padding: '8px',
+                  cursor: 'pointer',
+                }}
+              >
+                <X style={{ width: '18px', height: '18px' }} />
+              </button>
+            </div>
+
+            {/* Content Body */}
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div
+                style={{
+                  padding: '14px 16px',
+                  borderRadius: '14px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div>
+                  <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block', fontWeight: 700, textTransform: 'uppercase' }}>
+                    Account Role
+                  </span>
+                  <strong style={{ fontSize: '0.9rem', color: user.role === 'admin' ? '#FF8A00' : '#FFF' }}>
+                    {user.role === 'admin' ? 'Administrator' : 'Customer Account'}
+                  </strong>
+                </div>
+                <span className={`badge ${user.role === 'admin' ? 'badge-warning' : 'badge-success'}`}>
+                  {user.role === 'admin' ? 'Admin Privileges' : 'Verified Member'}
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {user.role !== 'admin' && (
+                  <Link
+                    to="/my-orders"
+                    onClick={() => setIsProfileModalOpen(false)}
+                    className="btn-secondary"
+                    style={{ width: '100%', justifyContent: 'center' }}
+                  >
+                    <ShoppingBag style={{ width: '16px', height: '16px', color: '#F7254F' }} /> View Order History & Tracking
+                  </Link>
+                )}
+
+                {user.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsProfileModalOpen(false)}
+                    className="btn-orange"
+                    style={{ width: '100%', justifyContent: 'center' }}
+                  >
+                    <ShieldCheck style={{ width: '16px', height: '16px' }} /> Open Admin Control Panel
+                  </Link>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileModalOpen(false);
+                    logout();
+                    navigate('/login', { replace: true });
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '42px',
+                    borderRadius: '9999px',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    color: '#EF4444',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    marginTop: '6px',
+                  }}
+                >
+                  <LogOut style={{ width: '16px', height: '16px' }} /> Sign Out of Account
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

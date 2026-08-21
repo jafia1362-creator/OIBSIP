@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Pizza, Lock, Mail, AlertCircle, ArrowRight, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 import AuthVisualPanel from '../components/AuthVisualPanel';
@@ -14,6 +14,9 @@ export default function Login() {
   const [error, setError] = useState('');
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const fromLocation = location.state?.from?.pathname;
 
   // Restore remembered email on mount
   useEffect(() => {
@@ -26,7 +29,8 @@ export default function Login() {
 
   // Synchronous guard for authenticated users
   if (user) {
-    return <Navigate to={user.role === 'admin' ? '/admin' : '/'} replace />;
+    const defaultTarget = user.role === 'admin' ? '/admin' : '/';
+    return <Navigate to={fromLocation || defaultTarget} replace />;
   }
 
   const handleSubmit = async (e) => {
@@ -58,11 +62,8 @@ export default function Login() {
       }
 
       const loggedUser = await login(trimmedEmail, password);
-      if (loggedUser?.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate('/', { replace: true });
-      }
+      const target = fromLocation || (loggedUser?.role === 'admin' ? '/admin' : '/');
+      navigate(target, { replace: true });
     } catch (err) {
       const errMsg = err?.message || '';
       if (
@@ -81,11 +82,8 @@ export default function Login() {
     try {
       const loggedUser = await googleLogin(account);
       setIsGoogleModalOpen(false);
-      if (loggedUser?.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate('/', { replace: true });
-      }
+      const target = fromLocation || (loggedUser?.role === 'admin' ? '/admin' : '/');
+      navigate(target, { replace: true });
     } catch (err) {
       setError(err?.message || 'Google Sign-In failed. Please try again.');
     }

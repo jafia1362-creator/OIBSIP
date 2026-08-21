@@ -11,6 +11,7 @@ export default function UserOrders() {
   const { user, API_BASE_URL } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
     fetchUserOrders();
@@ -53,12 +54,14 @@ export default function UserOrders() {
 
   const fetchUserOrders = async () => {
     setLoading(true);
+    setFetchError('');
     try {
       const res = await axios.get(`${API_BASE_URL}/orders/my-orders`, { timeout: 4000 });
       setOrders(res.data || []);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching orders:', err);
+      setFetchError(err?.response?.data?.message || 'Unable to connect to order server. Please try again.');
       setLoading(false);
     }
   };
@@ -93,7 +96,7 @@ export default function UserOrders() {
         </button>
       </div>
 
-      {/* 2. Main Orders List / Empty State */}
+      {/* 2. Main Orders List / Loading / Error / Empty State */}
       {loading ? (
         <div style={{ padding: '48px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
           <div
@@ -108,6 +111,16 @@ export default function UserOrders() {
             }}
           ></div>
           Syncing order records...
+        </div>
+      ) : fetchError ? (
+        <div className="glass-panel" style={{ padding: '32px 24px', borderRadius: '24px', textAlign: 'center', maxWidth: '520px', margin: '20px auto', border: '1px solid rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.08)' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#EF4444', marginBottom: '8px' }}>Unable to Load Orders</h3>
+          <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
+            {fetchError}
+          </p>
+          <button onClick={fetchUserOrders} className="btn-primary">
+            <RefreshCw style={{ width: '16px', height: '16px' }} /> Retry Syncing Orders
+          </button>
         </div>
       ) : orders.length === 0 ? (
         <div className="glass-panel" style={{ padding: '48px 24px', borderRadius: '24px', textAlign: 'center', maxWidth: '520px', margin: '20px auto' }}>
