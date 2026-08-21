@@ -13,12 +13,13 @@ const initialInventory = [
   { name: 'Whole Wheat Crust', category: 'base', price: 150, stockQuantity: 40, minThreshold: 15, description: 'Healthy 100% whole grain wheat base' },
   { name: 'Gluten-Free Crust', category: 'base', price: 180, stockQuantity: 25, minThreshold: 10, description: 'Special artisan gluten-free dough' },
 
-  // 5 Sauces
+  // 6 Sauces
   { name: 'Classic Tomato Sauce', category: 'sauce', price: 30, stockQuantity: 60, minThreshold: 20, description: 'Rich Italian sun-ripened tomato basil sauce' },
   { name: 'Spicy Schezwan Sauce', category: 'sauce', price: 40, stockQuantity: 55, minThreshold: 20, description: 'Fiery & zesty chilli garlic sauce' },
   { name: 'Creamy Garlic Alfredo', category: 'sauce', price: 50, stockQuantity: 50, minThreshold: 20, description: 'Rich white garlic butter cream sauce' },
   { name: 'Smoky Barbecue Sauce', category: 'sauce', price: 45, stockQuantity: 40, minThreshold: 15, description: 'Sweet & smoky hickory BBQ glaze' },
   { name: 'Fresh Basil Pesto', category: 'sauce', price: 60, stockQuantity: 35, minThreshold: 15, description: 'Aromatic basil & pine nut green pesto' },
+  { name: 'Tangy Fiery Buffalo Sauce', category: 'sauce', price: 55, stockQuantity: 45, minThreshold: 15, description: 'Zesty & tangy spicy cayenne buffalo sauce' },
 
   // Cheeses
   { name: '100% Mozzarella Cheese', category: 'cheese', price: 60, stockQuantity: 70, minThreshold: 25, description: 'Classic stretchy Italian mozzarella' },

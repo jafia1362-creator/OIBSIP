@@ -175,7 +175,24 @@ const placeOrder = async (req, res) => {
       }
     }
 
-    // 3. Check stock availability for all required ingredients
+    // 3. Check stock availability & Recalculate/validate total amount on backend
+    let calculatedBackendTotal = 0;
+    for (const item of formattedItems) {
+      let itemPrice = 0;
+      if (item.base?.name) itemPrice += Number(item.base.price || 0);
+      if (item.sauce?.name) itemPrice += Number(item.sauce.price || 0);
+      if (item.cheese?.name) itemPrice += Number(item.cheese.price || 0);
+      if (Array.isArray(item.veggies)) {
+        for (const v of item.veggies) {
+          itemPrice += Number(v.price || 0);
+        }
+      }
+      if (itemPrice === 0 && item.price) itemPrice = Number(item.price);
+      calculatedBackendTotal += itemPrice * (item.quantity || 1);
+    }
+
+    const validatedTotalAmount = calculatedBackendTotal > 0 ? calculatedBackendTotal : Number(totalAmount || 299);
+
     if (mongoose.connection.readyState === 1) {
       try {
         for (const reqItem of requiredIngredients.values()) {
@@ -201,7 +218,7 @@ const placeOrder = async (req, res) => {
       customerEmail: customerEmail || req.user?.email || 'customer@slicecraft.com',
       deliveryAddress: deliveryAddress || 'Artisan Foodie District',
       items: formattedItems,
-      totalAmount: Number(totalAmount),
+      totalAmount: validatedTotalAmount,
       paymentStatus: 'Completed',
       orderStatus: 'Order Received',
       razorpayOrderId: razorpayOrderId || `order_rzp_${Date.now()}`,
@@ -349,7 +366,7 @@ const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { orderStatus } = req.body;
 
-    const validStatuses = ['Order Received', 'In Kitchen', 'Sent to Delivery', 'Delivered', 'Cancelled'];
+    const validStatuses = ['Order Received', 'In Kitchen / Preparing', 'In Kitchen', 'Sent to Delivery', 'Delivered', 'Cancelled'];
     if (!validStatuses.includes(orderStatus)) {
       return res.status(400).json({
         message: `Invalid order status. Allowed statuses: ${validStatuses.join(', ')}`,

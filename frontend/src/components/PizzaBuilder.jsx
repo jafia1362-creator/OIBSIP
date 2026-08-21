@@ -17,6 +17,7 @@ const DEFAULT_OPTIONS = {
     { _id: 's3', name: 'Creamy Garlic Alfredo', category: 'sauce', price: 50, stockQuantity: 50, description: 'Rich white garlic butter cream sauce' },
     { _id: 's4', name: 'Smoky Barbecue Sauce', category: 'sauce', price: 45, stockQuantity: 40, description: 'Sweet & smoky hickory BBQ glaze' },
     { _id: 's5', name: 'Fresh Basil Pesto', category: 'sauce', price: 60, stockQuantity: 35, description: 'Aromatic basil & pine nut green pesto' },
+    { _id: 's6', name: 'Tangy Fiery Buffalo Sauce', category: 'sauce', price: 55, stockQuantity: 45, description: 'Zesty & tangy spicy cayenne buffalo sauce' },
   ],
   cheeses: [
     { _id: 'c1', name: '100% Mozzarella Cheese', category: 'cheese', price: 60, stockQuantity: 70, description: 'Classic stretchy Italian mozzarella' },
@@ -137,7 +138,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
             {[
               { id: 1, title: '1. Crust Base (5)' },
-              { id: 2, title: '2. Sauce (5)' },
+              { id: 2, title: '2. Sauce (6)' },
               { id: 3, title: '3. Cheese' },
               { id: 4, title: '4. Veggies' },
             ].map((s) => (
@@ -246,7 +247,7 @@ export default function PizzaBuilder({ isOpen, onClose, onProceedToOrder, API_BA
                 <div className="builder-step-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFF' }}>Choose Your Sauce Base</h3>
-                    <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Select 1 of 5 freshly prepared gourmet sauces:</p>
+                    <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Select 1 of 6 freshly prepared gourmet sauces:</p>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
                     {options.sauces.map((sauce) => {
