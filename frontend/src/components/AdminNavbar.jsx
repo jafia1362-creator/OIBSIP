@@ -82,8 +82,8 @@ export default function AdminNavbar({
                 onClick={() => handleTabSelect(item.key)}
                 className={`admin-nav-item ${activeTab === item.key ? 'active' : ''}`}
               >
-                <Icon style={{ width: '15px', height: '15px' }} />
-                {item.label}
+                <Icon style={{ width: '14px', height: '14px', flexShrink: 0 }} />
+                <span>{item.label}</span>
                 {item.badge > 0 && <span className="admin-nav-badge">{item.badge}</span>}
               </button>
             );
@@ -104,15 +104,15 @@ export default function AdminNavbar({
           )}
 
           <div className="admin-user-pill" style={{ padding: '4px 10px 4px 6px', flexShrink: 0 }}>
-            <div className="admin-avatar-circle" style={{ width: '26px', height: '26px', fontSize: '0.7rem' }}>
+            <div className="admin-avatar-circle" style={{ width: '24px', height: '24px', fontSize: '0.68rem' }}>
               {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '120px', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '100px', overflow: 'hidden' }}>
               <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user?.name || 'Administrator'}
+                {user?.name || 'Super Admin'}
               </span>
-              <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user?.email || 'admin@slicecraft.com'}
+              <span style={{ fontSize: '0.62rem', color: '#FF8A00', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                Administrator
               </span>
             </div>
           </div>
