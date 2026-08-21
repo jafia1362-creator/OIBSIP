@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import { Clock, ChefHat, Bike, CheckCircle2 } from 'lucide-react';
+import { Clock, ChefHat, Bike, CheckCircle2, Check, Radio } from 'lucide-react';
 import { SOCKET_URL } from '../config/api';
 
 const STATUS_STEPS = [
-  { id: 'Order Received', label: 'Order Received', icon: Clock },
-  { id: 'In Kitchen', label: 'In Kitchen', icon: ChefHat },
-  { id: 'Sent to Delivery', label: 'Sent to Delivery', icon: Bike },
-  { id: 'Delivered', label: 'Delivered', icon: CheckCircle2 },
+  { id: 'Order Received', label: 'Order Received', icon: Clock, altKeys: ['Order Received'] },
+  { id: 'Preparing', label: 'Preparing', icon: ChefHat, altKeys: ['In Kitchen', 'Preparing'] },
+  { id: 'Out for Delivery', label: 'Out for Delivery', icon: Bike, altKeys: ['Sent to Delivery', 'Out for Delivery'] },
+  { id: 'Delivered', label: 'Delivered', icon: CheckCircle2, altKeys: ['Delivered'] },
 ];
 
 export default function OrderTracker({ order }) {
@@ -31,44 +31,63 @@ export default function OrderTracker({ order }) {
     };
   }, [order]);
 
+  // Find 0-indexed stage position dynamically from order status data
   const getCurrentStepIndex = () => {
-    const idx = STATUS_STEPS.findIndex((s) => s.id === currentStatus);
+    const idx = STATUS_STEPS.findIndex(
+      (s) => s.id === currentStatus || s.altKeys.includes(currentStatus)
+    );
     return idx >= 0 ? idx : 0;
   };
 
   const activeIndex = getCurrentStepIndex();
-  // Calculate progress width percentage (0%, 33.3%, 66.6%, 100%)
   const progressPercent = (activeIndex / (STATUS_STEPS.length - 1)) * 100;
+
+  // Contextual status text based on progress
+  const getStatusSubtext = () => {
+    if (order?.estimatedDelivery) return `Estimated Delivery: ${order.estimatedDelivery}`;
+    if (currentStatus === 'Delivered') return 'Order successfully delivered to your doorstep!';
+    if (currentStatus === 'Sent to Delivery' || currentStatus === 'Out for Delivery')
+      return 'Your artisan pizza is hot & on the way';
+    if (currentStatus === 'In Kitchen' || currentStatus === 'Preparing')
+      return 'Chef is stone-baking your custom pizza';
+    return 'Order received & confirmed by restaurant';
+  };
+
+  // Get displayed badge label
+  const getBadgeLabel = () => {
+    const step = STATUS_STEPS[activeIndex];
+    return step ? step.label : currentStatus;
+  };
 
   return (
     <div className="tracker-box">
+      {/* Tracker Card Header */}
       <div className="tracker-header">
         <div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-            Order ID: #{order?._id?.slice(-8) || order?._id}
-          </span>
-          <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', marginTop: '2px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span className="order-id-code">
+              Order ID: #{order?._id?.slice(-8) || order?._id}
+            </span>
+            <span className="live-tracking-pill">
+              <span className="live-dot-pulse"></span> LIVE TRACKING
+            </span>
+          </div>
+          <h4 className="tracker-title">
             Live Kitchen & Delivery Tracking
           </h4>
+          <p className="tracker-subtitle">{getStatusSubtext()}</p>
         </div>
-        <span
-          style={{
-            background: 'linear-gradient(135deg, #F7254F 0%, #FF8A00 100%)',
-            color: '#fff',
-            fontWeight: 800,
-            fontSize: '0.8rem',
-            padding: '6px 14px',
-            borderRadius: '9999px',
-            boxShadow: '0 4px 15px rgba(247, 37, 79, 0.3)',
-          }}
-        >
-          {currentStatus}
-        </span>
+
+        {/* Dynamic Status Badge */}
+        <div className="current-status-badge">
+          <Radio style={{ width: '14px', height: '14px' }} />
+          <span>{getBadgeLabel()}</span>
+        </div>
       </div>
 
-      {/* Timeline Steps with Connected Progress Bar */}
+      {/* Stepper Timeline */}
       <div className="tracker-stepper-wrap">
-        {/* Background Track & Filled Line */}
+        {/* Track Line */}
         <div className="tracker-progress-track">
           <div
             className="tracker-progress-bar"
@@ -76,6 +95,7 @@ export default function OrderTracker({ order }) {
           ></div>
         </div>
 
+        {/* 4 Stage Timeline Grid */}
         <div className="tracker-steps-grid">
           {STATUS_STEPS.map((step, idx) => {
             const Icon = step.icon;
@@ -84,13 +104,22 @@ export default function OrderTracker({ order }) {
             const statusClass = isCurrent ? 'current' : isDone ? 'done' : 'pending';
 
             return (
-              <div key={step.id} className="tracker-step-item">
+              <div key={step.id} className={`tracker-step-item ${statusClass}`}>
                 <div className={`tracker-icon-circle ${statusClass}`}>
-                  <Icon style={{ width: '22px', height: '22px' }} />
+                  {isDone ? (
+                    <Check style={{ width: '20px', height: '20px', strokeWidth: 3 }} />
+                  ) : (
+                    <Icon style={{ width: '22px', height: '22px' }} />
+                  )}
                 </div>
-                <span className={`tracker-step-label ${statusClass}`}>
-                  {step.label}
-                </span>
+
+                <div className="tracker-step-info">
+                  <span className={`tracker-step-label ${statusClass}`}>
+                    {step.label}
+                  </span>
+                  {isCurrent && <span className="current-step-tag">CURRENT</span>}
+                  {isDone && <span className="done-step-tag">COMPLETED</span>}
+                </div>
               </div>
             );
           })}
@@ -99,4 +128,3 @@ export default function OrderTracker({ order }) {
     </div>
   );
 }
-
