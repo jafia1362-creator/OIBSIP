@@ -272,6 +272,10 @@ const placeOrder = async (req, res) => {
 // Get User's Orders from MongoDB with memory fallback
 const getUserOrders = async (req, res) => {
   try {
+    try {
+      await connectDB();
+    } catch (dbErr) {}
+
     let orders = [];
     if (mongoose.connection.readyState === 1) {
       try {
@@ -290,8 +294,10 @@ const getUserOrders = async (req, res) => {
           }
         }
         // If admin, query is {} (returns all recent orders so admin can track any order)
-        orders = await Order.find(query).sort({ createdAt: -1 }).maxTimeMS(4000);
-      } catch (e) {}
+        orders = await Order.find(query).sort({ createdAt: -1 }).maxTimeMS(2500);
+      } catch (e) {
+        console.warn('DB getUserOrders query timeout:', e.message);
+      }
     }
 
     if (!orders || orders.length === 0) {
@@ -313,13 +319,17 @@ const getUserOrders = async (req, res) => {
 // Admin: Get All Orders from MongoDB with memory fallback
 const getAllOrders = async (req, res) => {
   try {
+    try {
+      await connectDB();
+    } catch (dbErr) {}
+
     let orders = [];
     if (mongoose.connection.readyState === 1) {
       try {
         orders = await Order.find({})
           .populate('user', 'name email')
           .sort({ createdAt: -1 })
-          .maxTimeMS(4000);
+          .maxTimeMS(2500);
       } catch (e) {}
     }
 

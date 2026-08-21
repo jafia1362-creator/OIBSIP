@@ -54,7 +54,7 @@ export default function UserOrders() {
   const fetchUserOrders = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/orders/my-orders`);
+      const res = await axios.get(`${API_BASE_URL}/orders/my-orders`, { timeout: 4000 });
       setOrders(res.data || []);
       setLoading(false);
     } catch (err) {
