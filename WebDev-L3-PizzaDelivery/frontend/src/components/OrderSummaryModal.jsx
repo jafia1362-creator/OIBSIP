@@ -8,7 +8,7 @@ import { X, ShieldCheck, MapPin, CreditCard, CheckCircle, AlertCircle, ArrowRigh
 export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderSuccess }) {
   const { user, API_BASE_URL } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [address, setAddress] = useState('123 Artisan Street, Foodie Bay, Suite 4B');
+  const [address, setAddress] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [loading, setLoading] = useState(false);
