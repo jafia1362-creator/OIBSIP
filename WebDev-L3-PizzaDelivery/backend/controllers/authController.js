@@ -168,7 +168,7 @@ const adminLogin = async (req, res) => {
       user = await User.create({
         name: 'Super Admin',
         email: cleanEmail,
-        password: password || 'admin123',
+        password: password || 'SliceCraftAdmin2026!',
         role: 'admin',
         isVerified: true,
       });
@@ -190,8 +190,8 @@ const adminLogin = async (req, res) => {
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      if ((cleanEmail === 'admin@pizzadelivery.com' || cleanEmail === 'admin@slicecraft.com') && password === 'admin123') {
-        user.password = 'admin123';
+      if ((cleanEmail === 'admin@pizzadelivery.com' || cleanEmail === 'admin@slicecraft.com') && password === 'SliceCraftAdmin2026!') {
+        user.password = 'SliceCraftAdmin2026!';
         await user.save();
       } else {
         return res.status(401).json({ message: 'Invalid admin credentials' });

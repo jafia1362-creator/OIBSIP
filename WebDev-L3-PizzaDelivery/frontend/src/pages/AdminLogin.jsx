@@ -137,7 +137,7 @@ export default function AdminLogin() {
               type="button"
               onClick={() => {
                 setEmail('admin@pizzadelivery.com');
-                setPassword('admin123');
+                setPassword('SliceCraftAdmin2026!');
               }}
               style={{
                 background: '#FF8A00',

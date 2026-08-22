@@ -84,11 +84,11 @@ const seedDB = async () => {
       await User.create({
         name: 'Super Admin',
         email: adminEmail,
-        password: 'admin123', // Will be hashed by user schema
+        password: 'SliceCraftAdmin2026!', // Will be hashed by user schema
         role: 'admin',
         isVerified: true,
       });
-      console.log(`✅ Default Admin account created: ${adminEmail} (Password: admin123)`);
+      console.log(`✅ Default Admin account created: ${adminEmail} (Password: SliceCraftAdmin2026!)`);
     } else {
       console.log(`ℹ️ Admin account already exists: ${adminEmail}`);
     }
