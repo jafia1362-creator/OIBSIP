@@ -1787,7 +1787,8 @@ a {
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  min-height: 480px;
+  height: fit-content;
+  align-self: flex-start;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
@@ -1826,7 +1827,6 @@ a {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  flex: 1;
   overflow-y: auto;
   max-height: 640px;
 }
@@ -1965,7 +1965,6 @@ a {
   font-size: 0.8rem;
   border: 1px dashed rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
-  margin-top: 10px;
 }
 
 

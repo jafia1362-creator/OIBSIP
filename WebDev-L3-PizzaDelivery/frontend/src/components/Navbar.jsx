@@ -198,11 +198,6 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                 >
                   <User style={{ width: '14px', height: '14px', color: (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? '#FF8A00' : '#94A3B8' }} />
                   <span>{user.name?.split(' ')[0]}</span>
-                  {(user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') && (
-                    <span style={{ fontSize: '0.62rem', background: '#FF8A00', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>
-                      {(user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'SUPER ADMIN' : 'ADMIN'}
-                    </span>
-                  )}
                 </button>
 
                 <button
