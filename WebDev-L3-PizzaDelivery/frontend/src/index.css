@@ -1759,7 +1759,7 @@ a {
 
 /* Live Kanban Board */
 .kanban-board-container {
-  background: rgba(21, 24, 38, 0.45);
+  background: rgba(21, 24, 38, 0.25);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: 24px;
@@ -1772,7 +1772,7 @@ a {
 .kanban-board-grid,
 .admin-kanban-board {
   display: grid;
-  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
   align-items: start;
 }
@@ -1780,64 +1780,67 @@ a {
 @media (max-width: 1100px) {
   .kanban-board-grid,
   .admin-kanban-board {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 640px) {
   .kanban-board-grid,
   .admin-kanban-board {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .kanban-column,
 .admin-kanban-col {
-  background: transparent;
-  border: none;
-  border-radius: 0;
+  background: rgba(21, 24, 38, 0.7);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   height: auto;
   align-self: start;
-  overflow: visible;
-  box-shadow: none;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .kanban-column-header,
 .admin-kanban-header {
-  padding: 8px 4px 14px 4px;
-  border-bottom: 2px solid var(--border-color);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: transparent;
-  margin-bottom: 16px;
+  background: rgba(15, 17, 26, 0.85);
+  box-sizing: border-box;
 }
 
 /* Specific status themed bottom borders on column headers */
 .kanban-column-header.received {
-  border-bottom-color: rgba(255, 138, 0, 0.5);
+  border-bottom: 3px solid rgba(255, 138, 0, 0.8);
 }
 .kanban-column-header.kitchen {
-  border-bottom-color: rgba(96, 165, 250, 0.5);
+  border-bottom: 3px solid rgba(96, 165, 250, 0.8);
 }
 .kanban-column-header.delivery {
-  border-bottom-color: rgba(168, 85, 247, 0.5);
+  border-bottom: 3px solid rgba(168, 85, 247, 0.8);
 }
 .kanban-column-header.delivered {
-  border-bottom-color: rgba(52, 211, 153, 0.5);
+  border-bottom: 3px solid rgba(52, 211, 153, 0.8);
 }
 
 .kanban-title,
 .admin-kanban-header-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
+  gap: 6px;
+  font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .kanban-count-pill {
@@ -1849,12 +1852,13 @@ a {
 
 .kanban-column-body,
 .admin-kanban-body {
-  padding: 0;
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
   max-height: 640px;
+  box-sizing: border-box;
 }
 
 .kanban-card,
@@ -1862,12 +1866,15 @@ a {
   background: #1A1E30;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  justify-content: space-between;
+  min-height: 190px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
   transition: var(--transition);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .kanban-card:hover,
@@ -1882,6 +1889,8 @@ a {
   align-items: center;
   justify-content: space-between;
   font-size: 0.75rem;
+  margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .kanban-order-id {
@@ -1899,19 +1908,33 @@ a {
   font-weight: 800;
   color: #FFFFFF;
   font-size: 0.92rem;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kanban-items-summary {
   font-size: 0.78rem;
   color: var(--text-secondary);
   line-height: 1.4;
+  margin-bottom: 12px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 40px;
 }
 
 .kanban-card-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: auto;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .btn-kanban-view {
@@ -1985,12 +2008,18 @@ a {
 }
 
 .kanban-empty {
-  padding: 36px 14px;
+  height: 130px;
+  background: rgba(15, 17, 26, 0.4);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
   text-align: center;
   color: var(--text-muted);
   font-size: 0.8rem;
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 

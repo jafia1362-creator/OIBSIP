@@ -1003,9 +1003,11 @@ export default function AdminDashboard() {
                           </div>
                           <div className="kanban-customer-name">{order.customerName}</div>
                           <div className="kanban-items-summary">Total: ₹{order.totalAmount} &bull; Paid</div>
-                          <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view" style={{ width: '100%', marginTop: '6px' }}>
-                            <Eye style={{ width: '13px', height: '13px' }} /> View Order Summary
-                          </button>
+                          <div className="kanban-card-actions">
+                            <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view" style={{ flex: 1 }}>
+                              <Eye style={{ width: '13px', height: '13px' }} /> View Order Summary
+                            </button>
+                          </div>
                         </div>
                       ))}
                     {orders.filter((o) => o.orderStatus === 'Delivered').length === 0 && (
