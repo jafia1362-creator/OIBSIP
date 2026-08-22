@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { User, Mail, Lock, CheckCircle, AlertCircle, ArrowRight, Pizza, Eye, EyeOff, Loader2, Phone, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { User, Mail, Lock, CheckCircle, AlertCircle, ArrowRight, Pizza, Eye, EyeOff, Loader2, Phone, ArrowLeft, ShieldCheck, MapPin } from 'lucide-react';
 import AuthVisualPanel from '../components/AuthVisualPanel';
 import GoogleAuthModal from '../components/GoogleAuthModal';
 
@@ -10,6 +10,7 @@ export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
@@ -99,7 +100,7 @@ export default function Register() {
     }
 
     try {
-      const res = await register(trimmedName, trimmedEmail, password, trimmedPhone);
+      const res = await register(trimmedName, trimmedEmail, password, trimmedPhone, address.trim());
       setSuccessMsg(res.message || 'Registration successful! Your account is active and verified.');
     } catch (err) {
       const errMsg = err?.message || '';
@@ -237,6 +238,45 @@ export default function Register() {
                       disabled={loading}
                     />
                     <Mail className="auth-field-icon" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 1.5: Phone Number & Default Delivery Address */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="auth-field-group">
+                  <label className="auth-field-label" htmlFor="register-phone">
+                    Phone Number <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>(Optional)</span>
+                  </label>
+                  <div className="auth-input-box">
+                    <input
+                      id="register-phone"
+                      type="tel"
+                      className="auth-input"
+                      placeholder="e.g. +91 9876543210"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      disabled={loading}
+                    />
+                    <Phone className="auth-field-icon" style={{ width: '16px', height: '16px' }} />
+                  </div>
+                </div>
+
+                <div className="auth-field-group">
+                  <label className="auth-field-label" htmlFor="register-address">
+                    Default Delivery Address <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>(Optional)</span>
+                  </label>
+                  <div className="auth-input-box">
+                    <input
+                      id="register-address"
+                      type="text"
+                      className="auth-input"
+                      placeholder="e.g. Suite 4B, Foodie Bay"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      disabled={loading}
+                    />
+                    <MapPin className="auth-field-icon" style={{ width: '16px', height: '16px' }} />
                   </div>
                 </div>
               </div>

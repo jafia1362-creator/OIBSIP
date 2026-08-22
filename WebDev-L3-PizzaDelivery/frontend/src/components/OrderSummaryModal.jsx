@@ -20,6 +20,7 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
       if (user) {
         setCustomerName(user.name || '');
         setCustomerEmail(user.email || '');
+        setAddress(user.address || '');
       }
     } else {
       document.body.style.overflow = 'unset';

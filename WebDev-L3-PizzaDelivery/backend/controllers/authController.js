@@ -13,7 +13,7 @@ const generateToken = (id, role = 'user') => {
 // Register User
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, phone, address } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -32,6 +32,7 @@ const registerUser = async (req, res) => {
       email,
       password, // hashed automatically by userSchema pre-save hook
       phone: phone || '',
+      address: address || '',
       role: 'user',
       isVerified: true,
       verificationToken,
@@ -143,6 +144,8 @@ const loginUser = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role || 'user',
+      phone: user.phone || '',
+      address: user.address || '',
       token: generateToken(user._id, user.role || 'user'),
     });
   } catch (error) {
