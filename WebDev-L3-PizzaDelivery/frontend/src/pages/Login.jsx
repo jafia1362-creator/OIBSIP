@@ -29,7 +29,8 @@ export default function Login() {
 
   // Synchronous guard for authenticated users
   if (user) {
-    const defaultTarget = user.role === 'admin' ? '/admin' : '/';
+    const isUserAdmin = user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com';
+    const defaultTarget = isUserAdmin ? '/admin' : '/';
     return <Navigate to={fromLocation || defaultTarget} replace />;
   }
 
@@ -62,7 +63,8 @@ export default function Login() {
       }
 
       const loggedUser = await login(trimmedEmail, password);
-      const target = fromLocation || (loggedUser?.role === 'admin' ? '/admin' : '/');
+      const isUserAdmin = loggedUser?.role === 'admin' || loggedUser?.role === 'super_admin' || loggedUser?.email === 'admin@pizzadelivery.com';
+      const target = fromLocation || (isUserAdmin ? '/admin' : '/');
       navigate(target, { replace: true });
     } catch (err) {
       const errMsg = err?.message || '';
@@ -82,7 +84,8 @@ export default function Login() {
     try {
       const loggedUser = await googleLogin(account);
       setIsGoogleModalOpen(false);
-      const target = fromLocation || (loggedUser?.role === 'admin' ? '/admin' : '/');
+      const isUserAdmin = loggedUser?.role === 'admin' || loggedUser?.role === 'super_admin' || loggedUser?.email === 'admin@pizzadelivery.com';
+      const target = fromLocation || (isUserAdmin ? '/admin' : '/');
       navigate(target, { replace: true });
     } catch (err) {
       setError(err?.message || 'Google Sign-In failed. Please try again.');

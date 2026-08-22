@@ -9,19 +9,25 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
   const { user, API_BASE_URL } = useContext(AuthContext);
   const navigate = useNavigate();
   const [address, setAddress] = useState('123 Artisan Street, Foodie Bay, Suite 4B');
+  const [customerName, setCustomerName] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      if (user) {
+        setCustomerName(user.name || '');
+        setCustomerEmail(user.email || '');
+      }
     } else {
       document.body.style.overflow = 'unset';
     }
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isOpen, user]);
 
   if (!isOpen || !pizzaItem) return null;
 
@@ -68,8 +74,8 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
             });
           },
           prefill: {
-            name: user?.name || 'Customer Name',
-            email: user?.email || 'customer@example.com',
+            name: customerName || user?.name || 'Customer Name',
+            email: customerEmail || user?.email || 'customer@example.com',
           },
           theme: {
             color: '#F7254F',
@@ -104,8 +110,8 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
       const res = await axios.post(
         `${API_BASE_URL}/orders/place-order`,
         {
-          customerName: user?.name || 'Customer',
-          customerEmail: user?.email || 'customer@example.com',
+          customerName: customerName || user?.name || 'Customer',
+          customerEmail: customerEmail || user?.email || 'customer@example.com',
           deliveryAddress: address,
           items: [pizzaItem],
           totalAmount,
@@ -193,6 +199,48 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
               )}
             </div>
           </div>
+
+          {/* Admin ordering indicator banner */}
+          {user && (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') && (
+            <div style={{ padding: '10px 12px', background: 'rgba(255, 138, 0, 0.12)', border: '1px solid rgba(255, 138, 0, 0.25)', borderRadius: '10px', color: '#FF8A00', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ShieldCheck style={{ width: '15px', height: '15px', flexShrink: 0 }} />
+              <span><strong>Admin Test Order Mode:</strong> Feel free to edit the customer name/email fields below to test under dummy customer profiles.</span>
+            </div>
+          )}
+
+          {/* Customer Name & Email Inputs */}
+          {user && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#CBD5E1' }}>
+                  Customer Name
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Enter name..."
+                  style={{ marginTop: '4px' }}
+                  required
+                />
+              </div>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#CBD5E1' }}>
+                  Customer Email
+                </label>
+                <input
+                  type="email"
+                  className="form-control"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  placeholder="Enter email..."
+                  style={{ marginTop: '4px' }}
+                  required
+                />
+              </div>
+            </div>
+          )}
 
           {/* Delivery Address Input */}
           <div className="form-group" style={{ margin: 0 }}>

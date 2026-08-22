@@ -22,7 +22,8 @@ export default function Register() {
 
   // Synchronous guard for authenticated users
   if (user) {
-    return <Navigate to={user.role === 'admin' ? '/admin' : '/'} replace />;
+    const isUserAdmin = user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com';
+    return <Navigate to={isUserAdmin ? '/admin' : '/'} replace />;
   }
 
   // Calculate Password Strength
@@ -118,7 +119,8 @@ export default function Register() {
     try {
       const loggedUser = await googleLogin(account);
       setIsGoogleModalOpen(false);
-      if (loggedUser?.role === 'admin') {
+      const isUserAdmin = loggedUser?.role === 'admin' || loggedUser?.role === 'super_admin' || loggedUser?.email === 'admin@pizzadelivery.com';
+      if (isUserAdmin) {
         navigate('/admin', { replace: true });
       } else {
         navigate('/', { replace: true });

@@ -5,6 +5,8 @@ import { Pizza, ShoppingBag, ShieldCheck, LogOut, User, Sparkles, Menu as MenuIc
 
 export default function Navbar({ openBuilder, isBuilderOpen }) {
   const { user, logout } = useContext(AuthContext);
+  const isAdmin = user && (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com');
+  const isSuperAdmin = user && (user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -152,7 +154,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
             {user ? (
               <div className="nav-auth-group">
                 {/* CUSTOMER ONLY NAVIGATION */}
-                {!user.role || (user.role !== 'admin' && user.role !== 'super_admin' && user.email !== 'admin@pizzadelivery.com') ? (
+                {!isAdmin ? (
                   <Link
                     to="/my-orders"
                     className="btn-secondary"
@@ -164,14 +166,14 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                 ) : null}
 
                 {/* ADMIN & SUPER ADMIN NAVIGATION */}
-                {(user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') && (
+                {isAdmin && (
                   <Link
                     to="/admin"
                     className="btn-orange"
                     style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                   >
                     <ShieldCheck style={{ width: '15px', height: '15px' }} />
-                    <span>{(user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'Super Admin' : 'Admin Panel'}</span>
+                    <span>Admin Panel</span>
                   </Link>
                 )}
 
@@ -184,8 +186,8 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                     gap: '6px',
                     padding: '6px 12px',
                     borderRadius: '9999px',
-                    background: (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'rgba(255, 138, 0, 0.12)' : 'rgba(255, 255, 255, 0.06)',
-                    border: (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? '1px solid rgba(255, 138, 0, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                    background: isAdmin ? 'rgba(255, 138, 0, 0.12)' : 'rgba(255, 255, 255, 0.06)',
+                    border: isAdmin ? '1px solid rgba(255, 138, 0, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
                     fontSize: '0.8rem',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -193,11 +195,11 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                     transition: 'all 0.2s ease',
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(247, 37, 79, 0.4)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'rgba(255, 138, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = isAdmin ? 'rgba(255, 138, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)')}
                   title="Open Account Profile"
                 >
-                  <User style={{ width: '14px', height: '14px', color: (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? '#FF8A00' : '#94A3B8' }} />
-                  <span>{user.name?.split(' ')[0]}</span>
+                  <User style={{ width: '14px', height: '14px', color: isAdmin ? '#FF8A00' : '#94A3B8' }} />
+                  <span>{isAdmin ? 'Profile' : user.name?.split(' ')[0]}</span>
                 </button>
 
                 <button
@@ -375,7 +377,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                   </button>
                 </div>
 
-                {!user.role || (user.role !== 'admin' && user.role !== 'super_admin' && user.email !== 'admin@pizzadelivery.com') ? (
+                {!isAdmin ? (
                   <Link
                     to="/my-orders"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -386,11 +388,11 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                   </Link>
                 ) : null}
 
-                {(user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') && (
+                {isAdmin && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div style={{ padding: '8px 12px', background: 'rgba(255, 138, 0, 0.15)', borderRadius: '10px', border: '1px solid rgba(255, 138, 0, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: '0.78rem', color: '#FF8A00', fontWeight: 800 }}>
-                        {(user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? '👑 SUPER ADMIN CONTROLS' : '🛡️ ADMIN CONTROLS'}
+                        {isSuperAdmin ? '👑 SUPER ADMIN CONTROLS' : '🛡️ ADMIN CONTROLS'}
                       </span>
                       <span style={{ fontSize: '0.62rem', background: '#FF8A00', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 900 }}>ACTIVE</span>
                     </div>
@@ -401,7 +403,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                       style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px' }}
                     >
                       <ShieldCheck style={{ width: '16px', height: '16px' }} />
-                      <span>{(user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'Open Super Admin Panel' : 'Open Admin Operations Panel'}</span>
+                      <span>{isSuperAdmin ? 'Open Super Admin Panel' : 'Open Admin Operations Panel'}</span>
                     </Link>
                   </div>
                 )}
@@ -511,17 +513,17 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                   <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block', fontWeight: 700, textTransform: 'uppercase' }}>
                     Account Role
                   </span>
-                  <strong style={{ fontSize: '0.9rem', color: user.role === 'admin' ? '#FF8A00' : '#FFF' }}>
-                    {user.role === 'admin' ? 'Administrator' : 'Customer Account'}
+                  <strong style={{ fontSize: '0.9rem', color: isAdmin ? '#FF8A00' : '#FFF' }}>
+                    {isSuperAdmin ? 'Super Administrator' : isAdmin ? 'Administrator' : 'Customer Account'}
                   </strong>
                 </div>
-                <span className={`badge ${user.role === 'admin' ? 'badge-warning' : 'badge-success'}`}>
-                  {user.role === 'admin' ? 'Admin Privileges' : 'Verified Member'}
+                <span className={`badge ${isAdmin ? 'badge-warning' : 'badge-success'}`}>
+                  {isSuperAdmin ? 'Super Admin' : isAdmin ? 'Admin Privileges' : 'Verified Member'}
                 </span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {user.role !== 'admin' && (
+                {!isAdmin && (
                   <Link
                     to="/my-orders"
                     onClick={() => setIsProfileModalOpen(false)}
@@ -532,7 +534,7 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                   </Link>
                 )}
 
-                {user.role === 'admin' && (
+                {isAdmin && (
                   <Link
                     to="/admin"
                     onClick={() => setIsProfileModalOpen(false)}

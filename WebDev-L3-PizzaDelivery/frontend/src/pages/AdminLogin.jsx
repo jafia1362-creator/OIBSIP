@@ -24,7 +24,8 @@ export default function AdminLogin() {
 
   // Synchronous guards for authenticated users
   if (user) {
-    if (user.role === 'admin') {
+    const isUserAdmin = user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com';
+    if (isUserAdmin) {
       return <Navigate to="/admin" replace />;
     } else {
       return <Navigate to="/" replace />;
