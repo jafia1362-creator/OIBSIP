@@ -780,49 +780,49 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen, targetSection })
 
       {/* 8. CONTACT & LOCATION SECTION */}
       <section id="contact" className="site-container scroll-reveal" style={{ scrollMarginTop: '100px' }}>
-        <div className="glass-panel" style={{ padding: '48px', borderRadius: '28px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }}>
+        <div className="glass-panel contact-glass-card">
+          <div className="contact-grid">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div className="badge badge-primary" style={{ alignSelf: 'flex-start' }}>
                 <PhoneCall style={{ width: '16px', height: '16px' }} /> Get in Touch
               </div>
-              <h2 style={{ fontSize: '2.25rem', fontWeight: 900 }}>
+              <h2 className="contact-title" style={{ fontWeight: 900 }}>
                 Have a Question or <span className="gradient-text">Bulk Order?</span>
               </h2>
-              <p style={{ fontSize: '0.9rem', color: '#CBD5E1', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '0.9rem', color: '#CBD5E1', lineHeight: 1.6, wordBreak: 'break-word' }}>
                 Our kitchen and support team are available 7 days a week to ensure your pizza cravings are fulfilled promptly.
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px', fontSize: '0.85rem', color: '#FFF' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ padding: '8px', borderRadius: '8px', background: 'rgba(247,37,79,0.15)', color: '#F7254F' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ padding: '8px', borderRadius: '8px', background: 'rgba(247,37,79,0.15)', color: '#F7254F', flexShrink: 0 }}>
                     <PhoneCall style={{ width: '18px', height: '18px' }} />
                   </div>
-                  <span>+1 (800) 754-2327 (Toll Free Order Hotline)</span>
+                  <span style={{ wordBreak: 'break-word' }}>+1 (800) 754-2327 (Toll Free Order Hotline)</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ padding: '8px', borderRadius: '8px', background: 'rgba(255,138,0,0.15)', color: '#FF8A00' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ padding: '8px', borderRadius: '8px', background: 'rgba(255,138,0,0.15)', color: '#FF8A00', flexShrink: 0 }}>
                     <Mail style={{ width: '18px', height: '18px' }} />
                   </div>
-                  <span>support@slicecraftpizza.com</span>
+                  <span style={{ wordBreak: 'break-all' }}>support@slicecraftpizza.com</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ padding: '8px', borderRadius: '8px', background: 'rgba(16,185,129,0.15)', color: '#10B981' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ padding: '8px', borderRadius: '8px', background: 'rgba(16,185,129,0.15)', color: '#10B981', flexShrink: 0 }}>
                     <MapPin style={{ width: '18px', height: '18px' }} />
                   </div>
-                  <span>452 Artisan Boulevard, Gourmet District, Suite 100</span>
+                  <span style={{ wordBreak: 'break-word' }}>452 Artisan Boulevard, Gourmet District, Suite 100</span>
                 </div>
               </div>
             </div>
 
-            <div style={{ padding: '28px', borderRadius: '20px', background: 'rgba(10,12,19,0.7)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="contact-hours-card">
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFF' }}>Kitchen Operating Hours</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem', color: '#CBD5E1' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--border-color)', gap: '10px', flexWrap: 'wrap' }}>
                   <span>Monday – Friday:</span>
                   <span style={{ fontWeight: 700, color: '#FFF' }}>10:00 AM – 11:30 PM</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--border-color)', gap: '10px', flexWrap: 'wrap' }}>
                   <span>Saturday – Sunday:</span>
                   <span style={{ fontWeight: 800, color: '#F7254F' }}>10:00 AM – 01:00 AM (Late Night)</span>
                 </div>

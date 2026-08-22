@@ -5159,6 +5159,65 @@ a {
   }
 }
 
+/* ==========================================================================
+   CONTACT SECTION RESPONSIVE FIX (EQUAL LEFT & RIGHT PADDING ON MOBILE)
+   ========================================================================== */
+
+.contact-glass-card {
+  padding: 48px;
+  border-radius: 28px;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contact-title {
+  font-size: 2.25rem;
+  line-height: 1.2;
+}
+
+.contact-hours-card {
+  padding: 28px;
+  border-radius: 20px;
+  background: rgba(10, 12, 19, 0.7);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-glass-card {
+    padding: 24px 18px !important;
+    border-radius: 20px !important;
+  }
+  .contact-title {
+    font-size: 1.6rem !important;
+    line-height: 1.25 !important;
+  }
+  .contact-hours-card {
+    padding: 20px 14px !important;
+  }
+}
+
 
 
 
