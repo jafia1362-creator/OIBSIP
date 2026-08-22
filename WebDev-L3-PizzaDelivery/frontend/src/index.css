@@ -1929,7 +1929,8 @@ a {
 
 .kanban-card-actions {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
   margin-top: auto;
   flex-shrink: 0;
@@ -1937,7 +1938,16 @@ a {
   box-sizing: border-box;
 }
 
+.kanban-card-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .btn-kanban-view {
+  flex: 1;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
@@ -1951,6 +1961,7 @@ a {
   justify-content: center;
   gap: 4px;
   transition: var(--transition);
+  min-width: 0;
 }
 
 .btn-kanban-view:hover {
@@ -1959,8 +1970,31 @@ a {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.btn-kanban-action {
+.btn-kanban-cancel {
   flex: 1;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #F87171;
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transition: var(--transition);
+  min-width: 0;
+}
+
+.btn-kanban-cancel:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.btn-kanban-action {
+  width: 100%;
   border-radius: var(--radius-sm);
   padding: 6px 12px;
   font-size: 0.75rem;

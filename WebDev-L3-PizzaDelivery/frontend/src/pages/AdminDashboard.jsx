@@ -946,38 +946,17 @@ export default function AdminDashboard() {
                             {order.items?.length || 1} Pizza(s) &bull; ₹{order.totalAmount}
                           </div>
                           <div className="kanban-card-actions">
-                            <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
-                              <Eye style={{ width: '13px', height: '13px' }} /> View
-                            </button>
-                            <button
-                              onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
-                              className="btn-kanban-cancel"
-                              style={{
-                                background: 'rgba(239, 68, 68, 0.08)',
-                                border: '1px solid rgba(239, 68, 68, 0.25)',
-                                color: '#F87171',
-                                borderRadius: '4px',
-                                padding: '6px 8px',
-                                fontSize: '0.72rem',
-                                fontWeight: 800,
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '3px',
-                                transition: 'all 0.2s',
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.18)';
-                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
-                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
-                              }}
-                            >
-                              <X style={{ width: '12px', height: '12px' }} /> Cancel
-                            </button>
+                            <div className="kanban-card-actions-row">
+                              <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
+                                <Eye style={{ width: '13px', height: '13px' }} /> View
+                              </button>
+                              <button
+                                onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
+                                className="btn-kanban-cancel"
+                              >
+                                <X style={{ width: '12px', height: '12px' }} /> Cancel
+                              </button>
+                            </div>
                             <button
                               onClick={() => handleUpdateOrderStatus(order._id, 'In Kitchen')}
                               className="btn-kanban-action btn-to-kitchen"
@@ -1019,38 +998,17 @@ export default function AdminDashboard() {
                             {order.items?.length || 1} Pizza(s) &bull; ₹{order.totalAmount}
                           </div>
                           <div className="kanban-card-actions">
-                            <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
-                              <Eye style={{ width: '13px', height: '13px' }} /> View
-                            </button>
-                            <button
-                              onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
-                              className="btn-kanban-cancel"
-                              style={{
-                                background: 'rgba(239, 68, 68, 0.08)',
-                                border: '1px solid rgba(239, 68, 68, 0.25)',
-                                color: '#F87171',
-                                borderRadius: '4px',
-                                padding: '6px 8px',
-                                fontSize: '0.72rem',
-                                fontWeight: 800,
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '3px',
-                                transition: 'all 0.2s',
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.18)';
-                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
-                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
-                              }}
-                            >
-                              <X style={{ width: '12px', height: '12px' }} /> Cancel
-                            </button>
+                            <div className="kanban-card-actions-row">
+                              <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
+                                <Eye style={{ width: '13px', height: '13px' }} /> View
+                              </button>
+                              <button
+                                onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
+                                className="btn-kanban-cancel"
+                              >
+                                <X style={{ width: '12px', height: '12px' }} /> Cancel
+                              </button>
+                            </div>
                             <button
                               onClick={() => handleUpdateOrderStatus(order._id, 'Sent to Delivery')}
                               className="btn-kanban-action btn-to-delivery"
@@ -1092,38 +1050,17 @@ export default function AdminDashboard() {
                             📍 {order.deliveryAddress}
                           </div>
                           <div className="kanban-card-actions">
-                            <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
-                              <Eye style={{ width: '13px', height: '13px' }} /> View
-                            </button>
-                            <button
-                              onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
-                              className="btn-kanban-cancel"
-                              style={{
-                                background: 'rgba(239, 68, 68, 0.08)',
-                                border: '1px solid rgba(239, 68, 68, 0.25)',
-                                color: '#F87171',
-                                borderRadius: '4px',
-                                padding: '6px 8px',
-                                fontSize: '0.72rem',
-                                fontWeight: 800,
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '3px',
-                                transition: 'all 0.2s',
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.18)';
-                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
-                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
-                              }}
-                            >
-                              <X style={{ width: '12px', height: '12px' }} /> Cancel
-                            </button>
+                            <div className="kanban-card-actions-row">
+                              <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
+                                <Eye style={{ width: '13px', height: '13px' }} /> View
+                              </button>
+                              <button
+                                onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
+                                className="btn-kanban-cancel"
+                              >
+                                <X style={{ width: '12px', height: '12px' }} /> Cancel
+                              </button>
+                            </div>
                             <button
                               onClick={() => handleUpdateOrderStatus(order._id, 'Delivered')}
                               className="btn-kanban-action btn-to-delivered"
