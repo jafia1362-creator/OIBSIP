@@ -28,6 +28,7 @@ export default function OrderSummaryModal({ isOpen, onClose, pizzaItem, onOrderS
   const totalAmount = pizzaItem.totalPrice;
 
   const handleRazorpayCheckout = async () => {
+    if (loading) return;
     if (!user) {
       setError('Please sign in or register first to place an order.');
       return;

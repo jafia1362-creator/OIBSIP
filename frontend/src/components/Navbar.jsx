@@ -152,38 +152,27 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
             {user ? (
               <div className="nav-auth-group">
                 {/* CUSTOMER ONLY NAVIGATION */}
-                {user.role !== 'admin' && (
+                {!user.role || (user.role !== 'admin' && user.role !== 'super_admin' && user.email !== 'admin@pizzadelivery.com') ? (
                   <Link
                     to="/my-orders"
                     className="btn-secondary"
-                    style={{ padding: '8px 16px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                   >
                     <ShoppingBag style={{ width: '15px', height: '15px', color: '#F7254F' }} />
                     <span>My Orders</span>
                   </Link>
-                )}
+                ) : null}
 
-                {/* ADMIN ONLY NAVIGATION */}
-                {user.role === 'admin' && (
-                  <>
-                    <Link
-                      to="/admin"
-                      className="btn-secondary"
-                      style={{ padding: '8px 16px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                    >
-                      <ShoppingBag style={{ width: '15px', height: '15px', color: '#FF8A00' }} />
-                      <span>Orders</span>
-                    </Link>
-
-                    <Link
-                      to="/admin"
-                      className="btn-orange"
-                      style={{ padding: '8px 16px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                    >
-                      <ShieldCheck style={{ width: '15px', height: '15px' }} />
-                      <span>Admin Panel</span>
-                    </Link>
-                  </>
+                {/* ADMIN & SUPER ADMIN NAVIGATION */}
+                {(user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') && (
+                  <Link
+                    to="/admin"
+                    className="btn-orange"
+                    style={{ padding: '7px 14px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <ShieldCheck style={{ width: '15px', height: '15px' }} />
+                    <span>{(user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'Super Admin' : 'Admin Panel'}</span>
+                  </Link>
                 )}
 
                 <button
@@ -192,11 +181,11 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    padding: '6px 14px',
+                    gap: '6px',
+                    padding: '6px 12px',
                     borderRadius: '9999px',
-                    background: user.role === 'admin' ? 'rgba(255, 138, 0, 0.12)' : 'rgba(255, 255, 255, 0.06)',
-                    border: user.role === 'admin' ? '1px solid rgba(255, 138, 0, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                    background: (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'rgba(255, 138, 0, 0.12)' : 'rgba(255, 255, 255, 0.06)',
+                    border: (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? '1px solid rgba(255, 138, 0, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
                     fontSize: '0.8rem',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -204,14 +193,14 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
                     transition: 'all 0.2s ease',
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(247, 37, 79, 0.4)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = user.role === 'admin' ? 'rgba(255, 138, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'rgba(255, 138, 0, 0.3)' : 'rgba(255, 255, 255, 0.1)')}
                   title="Open Account Profile"
                 >
-                  <User style={{ width: '14px', height: '14px', color: user.role === 'admin' ? '#FF8A00' : '#94A3B8' }} />
+                  <User style={{ width: '14px', height: '14px', color: (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? '#FF8A00' : '#94A3B8' }} />
                   <span>{user.name?.split(' ')[0]}</span>
-                  {user.role === 'admin' && (
-                    <span style={{ fontSize: '0.65rem', background: '#FF8A00', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 800 }}>
-                      ADMIN
+                  {(user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') && (
+                    <span style={{ fontSize: '0.62rem', background: '#FF8A00', color: '#000', padding: '1px 5px', borderRadius: '4px', fontWeight: 900 }}>
+                      {(user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'SUPER ADMIN' : 'ADMIN'}
                     </span>
                   )}
                 </button>
@@ -376,23 +365,50 @@ export default function Navbar({ openBuilder, isBuilderOpen }) {
             {user ? (
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Logged in as: {user.name}</span>
-                  <button onClick={() => { logout(); setIsMobileMenuOpen(false); navigate('/login', { replace: true }); }} style={{ background: 'none', border: 'none', color: '#F7254F', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                    Logged in as: <strong style={{ color: '#FFF' }}>{user.name}</strong>
+                  </span>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMobileMenuOpen(false);
+                      navigate('/login', { replace: true });
+                    }}
+                    style={{ background: 'none', border: 'none', color: '#F7254F', fontWeight: 700, cursor: 'pointer', fontSize: '0.82rem' }}
+                  >
+                    Logout
+                  </button>
                 </div>
-                {user.role !== 'admin' && (
-                  <Link to="/my-orders" onClick={() => setIsMobileMenuOpen(false)} className="btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+
+                {!user.role || (user.role !== 'admin' && user.role !== 'super_admin' && user.email !== 'admin@pizzadelivery.com') ? (
+                  <Link
+                    to="/my-orders"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="btn-secondary"
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                  >
                     <ShoppingBag style={{ width: '16px', height: '16px', color: '#F7254F' }} /> View My Orders
                   </Link>
-                )}
-                {user.role === 'admin' && (
-                  <>
-                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                      <ShoppingBag style={{ width: '16px', height: '16px', color: '#FF8A00' }} /> Manage Customer Orders
+                ) : null}
+
+                {(user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ padding: '8px 12px', background: 'rgba(255, 138, 0, 0.15)', borderRadius: '10px', border: '1px solid rgba(255, 138, 0, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#FF8A00', fontWeight: 800 }}>
+                        {(user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? '👑 SUPER ADMIN CONTROLS' : '🛡️ ADMIN CONTROLS'}
+                      </span>
+                      <span style={{ fontSize: '0.62rem', background: '#FF8A00', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 900 }}>ACTIVE</span>
+                    </div>
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="btn-orange"
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px' }}
+                    >
+                      <ShieldCheck style={{ width: '16px', height: '16px' }} />
+                      <span>{(user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com') ? 'Open Super Admin Panel' : 'Open Admin Operations Panel'}</span>
                     </Link>
-                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="btn-orange" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                      <ShieldCheck style={{ width: '16px', height: '16px' }} /> Open Admin Panel
-                    </Link>
-                  </>
+                  </div>
                 )}
               </>
             ) : (

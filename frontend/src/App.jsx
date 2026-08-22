@@ -15,7 +15,8 @@ import { Pizza, Heart, Mail, Phone, MapPin, Instagram, Twitter, Facebook, Youtub
 
 const ProtectedAdminRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
-  if (!user || user.role !== 'admin') {
+  const isAdmin = user && (user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com');
+  if (!isAdmin) {
     return <Navigate to="/admin/login" replace />;
   }
   return children;
@@ -27,7 +28,8 @@ const ProtectedUserRoute = ({ children }) => {
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  if (user.role === 'admin') {
+  const isAdmin = user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com';
+  if (isAdmin) {
     return <Navigate to="/admin" replace />;
   }
   return children;

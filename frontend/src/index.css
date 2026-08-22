@@ -4439,7 +4439,7 @@ a {
 .nav-menu-desktop {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 .nav-link-item {
@@ -4447,10 +4447,11 @@ a {
   border: none;
   color: #94A3B8;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   cursor: pointer;
   text-decoration: none;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .nav-link-item:hover,
@@ -4461,14 +4462,14 @@ a {
 .nav-actions-desktop {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
 .nav-auth-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .nav-mobile-toggle {
@@ -4478,7 +4479,19 @@ a {
   flex-shrink: 0;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1366px) {
+  .nav-menu-desktop {
+    gap: 14px;
+  }
+  .nav-link-item {
+    font-size: 0.84rem;
+  }
+  .nav-actions-desktop {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 1180px) {
   .nav-menu-desktop {
     display: none !important;
   }
