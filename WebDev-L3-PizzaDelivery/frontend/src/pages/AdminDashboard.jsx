@@ -847,169 +847,171 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <div className="kanban-board-grid" style={{ alignItems: 'start' }}>
-              {/* Column 1: Received */}
-              <div className="kanban-column" style={{ alignSelf: 'start', height: 'auto' }}>
-                <div className="kanban-column-header">
-                  <div className="kanban-title" style={{ color: '#FF8A00' }}>
-                    <Clock style={{ width: '16px', height: '16px' }} /> 1. RECEIVED
+            <div className="kanban-board-container">
+              <div className="kanban-board-grid">
+                {/* Column 1: Received */}
+                <div className="kanban-column">
+                  <div className="kanban-column-header received">
+                    <div className="kanban-title" style={{ color: '#FF8A00' }}>
+                      <Clock style={{ width: '16px', height: '16px' }} /> 1. RECEIVED
+                    </div>
+                    <span className="kanban-count-pill" style={{ background: 'rgba(255, 138, 0, 0.15)', color: '#FF8A00' }}>
+                      {orders.filter((o) => o.orderStatus === 'Order Received').length}
+                    </span>
                   </div>
-                  <span className="kanban-count-pill" style={{ background: 'rgba(255, 138, 0, 0.15)', color: '#FF8A00' }}>
-                    {orders.filter((o) => o.orderStatus === 'Order Received').length}
-                  </span>
+                  <div className="kanban-column-body">
+                    {orders
+                      .filter((o) => o.orderStatus === 'Order Received')
+                      .map((order) => (
+                        <div key={order._id} className="kanban-card">
+                          <div className="kanban-card-top">
+                            <span className="kanban-order-id">#{order._id?.slice(-8) || order._id}</span>
+                            <span className="kanban-order-time">
+                              {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <div className="kanban-customer-name">{order.customerName || 'SliceCraft Customer'}</div>
+                          <div className="kanban-items-summary">
+                            {order.items?.length || 1} Pizza(s) &bull; ₹{order.totalAmount}
+                          </div>
+                          <div className="kanban-card-actions">
+                            <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
+                              <Eye style={{ width: '13px', height: '13px' }} /> View
+                            </button>
+                            <button
+                              onClick={() => handleUpdateOrderStatus(order._id, 'In Kitchen')}
+                              className="btn-kanban-action btn-to-kitchen"
+                            >
+                              To Kitchen <ArrowRight style={{ width: '13px', height: '13px' }} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    {orders.filter((o) => o.orderStatus === 'Order Received').length === 0 && (
+                      <div className="kanban-empty">No pending orders.</div>
+                    )}
+                  </div>
                 </div>
-                <div className="kanban-column-body">
-                  {orders
-                    .filter((o) => o.orderStatus === 'Order Received')
-                    .map((order) => (
-                      <div key={order._id} className="kanban-card">
-                        <div className="kanban-card-top">
-                          <span className="kanban-order-id">#{order._id?.slice(-8) || order._id}</span>
-                          <span className="kanban-order-time">
-                            {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                        <div className="kanban-customer-name">{order.customerName || 'SliceCraft Customer'}</div>
-                        <div className="kanban-items-summary">
-                          {order.items?.length || 1} Pizza(s) &bull; ₹{order.totalAmount}
-                        </div>
-                        <div className="kanban-card-actions">
-                          <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
-                            <Eye style={{ width: '13px', height: '13px' }} /> View
-                          </button>
-                          <button
-                            onClick={() => handleUpdateOrderStatus(order._id, 'In Kitchen')}
-                            className="btn-kanban-action btn-to-kitchen"
-                          >
-                            To Kitchen <ArrowRight style={{ width: '13px', height: '13px' }} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  {orders.filter((o) => o.orderStatus === 'Order Received').length === 0 && (
-                    <div className="kanban-empty">No pending orders.</div>
-                  )}
-                </div>
-              </div>
 
-              {/* Column 2: In Kitchen */}
-              <div className="kanban-column" style={{ alignSelf: 'start', height: 'auto' }}>
-                <div className="kanban-column-header">
-                  <div className="kanban-title" style={{ color: '#60A5FA' }}>
-                    <ChefHat style={{ width: '16px', height: '16px' }} /> 2. IN KITCHEN
+                {/* Column 2: In Kitchen */}
+                <div className="kanban-column">
+                  <div className="kanban-column-header kitchen">
+                    <div className="kanban-title" style={{ color: '#60A5FA' }}>
+                      <ChefHat style={{ width: '16px', height: '16px' }} /> 2. IN KITCHEN
+                    </div>
+                    <span className="kanban-count-pill" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA' }}>
+                      {orders.filter((o) => o.orderStatus === 'In Kitchen').length}
+                    </span>
                   </div>
-                  <span className="kanban-count-pill" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA' }}>
-                    {orders.filter((o) => o.orderStatus === 'In Kitchen').length}
-                  </span>
+                  <div className="kanban-column-body">
+                    {orders
+                      .filter((o) => o.orderStatus === 'In Kitchen')
+                      .map((order) => (
+                        <div key={order._id} className="kanban-card" style={{ borderLeft: '3px solid #60A5FA' }}>
+                          <div className="kanban-card-top">
+                            <span className="kanban-order-id">#{order._id?.slice(-8) || order._id}</span>
+                            <span className="kanban-order-time">
+                              {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <div className="kanban-customer-name">{order.customerName}</div>
+                          <div className="kanban-items-summary">
+                            {order.items?.length || 1} Pizza(s) &bull; ₹{order.totalAmount}
+                          </div>
+                          <div className="kanban-card-actions">
+                            <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
+                              <Eye style={{ width: '13px', height: '13px' }} /> View
+                            </button>
+                            <button
+                              onClick={() => handleUpdateOrderStatus(order._id, 'Sent to Delivery')}
+                              className="btn-kanban-action btn-to-delivery"
+                            >
+                              Dispatch <Bike style={{ width: '13px', height: '13px' }} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    {orders.filter((o) => o.orderStatus === 'In Kitchen').length === 0 && (
+                      <div className="kanban-empty">Kitchen is clear.</div>
+                    )}
+                  </div>
                 </div>
-                <div className="kanban-column-body">
-                  {orders
-                    .filter((o) => o.orderStatus === 'In Kitchen')
-                    .map((order) => (
-                      <div key={order._id} className="kanban-card" style={{ borderLeft: '3px solid #60A5FA' }}>
-                        <div className="kanban-card-top">
-                          <span className="kanban-order-id">#{order._id?.slice(-8) || order._id}</span>
-                          <span className="kanban-order-time">
-                            {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                        <div className="kanban-customer-name">{order.customerName}</div>
-                        <div className="kanban-items-summary">
-                          {order.items?.length || 1} Pizza(s) &bull; ₹{order.totalAmount}
-                        </div>
-                        <div className="kanban-card-actions">
-                          <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
-                            <Eye style={{ width: '13px', height: '13px' }} /> View
-                          </button>
-                          <button
-                            onClick={() => handleUpdateOrderStatus(order._id, 'Sent to Delivery')}
-                            className="btn-kanban-action btn-to-delivery"
-                          >
-                            Dispatch <Bike style={{ width: '13px', height: '13px' }} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  {orders.filter((o) => o.orderStatus === 'In Kitchen').length === 0 && (
-                    <div className="kanban-empty">Kitchen is clear.</div>
-                  )}
-                </div>
-              </div>
 
-              {/* Column 3: Out for Delivery */}
-              <div className="kanban-column" style={{ alignSelf: 'start', height: 'auto' }}>
-                <div className="kanban-column-header">
-                  <div className="kanban-title" style={{ color: '#C084FC' }}>
-                    <Bike style={{ width: '16px', height: '16px' }} /> 3. OUT FOR DELIVERY
+                {/* Column 3: Out for Delivery */}
+                <div className="kanban-column">
+                  <div className="kanban-column-header delivery">
+                    <div className="kanban-title" style={{ color: '#C084FC' }}>
+                      <Bike style={{ width: '16px', height: '16px' }} /> 3. OUT FOR DELIVERY
+                    </div>
+                    <span className="kanban-count-pill" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#C084FC' }}>
+                      {orders.filter((o) => o.orderStatus === 'Sent to Delivery').length}
+                    </span>
                   </div>
-                  <span className="kanban-count-pill" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#C084FC' }}>
-                    {orders.filter((o) => o.orderStatus === 'Sent to Delivery').length}
-                  </span>
+                  <div className="kanban-column-body">
+                    {orders
+                      .filter((o) => o.orderStatus === 'Sent to Delivery')
+                      .map((order) => (
+                        <div key={order._id} className="kanban-card" style={{ borderLeft: '3px solid #C084FC' }}>
+                          <div className="kanban-card-top">
+                            <span className="kanban-order-id">#{order._id?.slice(-8) || order._id}</span>
+                            <span className="kanban-order-time">
+                              {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <div className="kanban-customer-name">{order.customerName}</div>
+                          <div className="kanban-items-summary" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            📍 {order.deliveryAddress}
+                          </div>
+                          <div className="kanban-card-actions">
+                            <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
+                              <Eye style={{ width: '13px', height: '13px' }} /> View
+                            </button>
+                            <button
+                              onClick={() => handleUpdateOrderStatus(order._id, 'Delivered')}
+                              className="btn-kanban-action btn-to-delivered"
+                            >
+                              Delivered <Check style={{ width: '13px', height: '13px' }} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    {orders.filter((o) => o.orderStatus === 'Sent to Delivery').length === 0 && (
+                      <div className="kanban-empty">No couriers currently en-route.</div>
+                    )}
+                  </div>
                 </div>
-                <div className="kanban-column-body">
-                  {orders
-                    .filter((o) => o.orderStatus === 'Sent to Delivery')
-                    .map((order) => (
-                      <div key={order._id} className="kanban-card" style={{ borderLeft: '3px solid #C084FC' }}>
-                        <div className="kanban-card-top">
-                          <span className="kanban-order-id">#{order._id?.slice(-8) || order._id}</span>
-                          <span className="kanban-order-time">
-                            {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                        <div className="kanban-customer-name">{order.customerName}</div>
-                        <div className="kanban-items-summary" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          📍 {order.deliveryAddress}
-                        </div>
-                        <div className="kanban-card-actions">
-                          <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
-                            <Eye style={{ width: '13px', height: '13px' }} /> View
-                          </button>
-                          <button
-                            onClick={() => handleUpdateOrderStatus(order._id, 'Delivered')}
-                            className="btn-kanban-action btn-to-delivered"
-                          >
-                            Delivered <Check style={{ width: '13px', height: '13px' }} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  {orders.filter((o) => o.orderStatus === 'Sent to Delivery').length === 0 && (
-                    <div className="kanban-empty">No couriers currently en-route.</div>
-                  )}
-                </div>
-              </div>
 
-              {/* Column 4: Delivered */}
-              <div className="kanban-column" style={{ alignSelf: 'start', height: 'auto' }}>
-                <div className="kanban-column-header">
-                  <div className="kanban-title" style={{ color: '#34D399' }}>
-                    <CheckCircle2 style={{ width: '16px', height: '16px' }} /> 4. DELIVERED
+                {/* Column 4: Delivered */}
+                <div className="kanban-column">
+                  <div className="kanban-column-header delivered">
+                    <div className="kanban-title" style={{ color: '#34D399' }}>
+                      <CheckCircle2 style={{ width: '16px', height: '16px' }} /> 4. DELIVERED
+                    </div>
+                    <span className="kanban-count-pill" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399' }}>
+                      {orders.filter((o) => o.orderStatus === 'Delivered').length}
+                    </span>
                   </div>
-                  <span className="kanban-count-pill" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399' }}>
-                    {orders.filter((o) => o.orderStatus === 'Delivered').length}
-                  </span>
-                </div>
-                <div className="kanban-column-body">
-                  {orders
-                    .filter((o) => o.orderStatus === 'Delivered')
-                    .slice(0, 10)
-                    .map((order) => (
-                      <div key={order._id} className="kanban-card" style={{ opacity: 0.85, borderLeft: '3px solid #34D399' }}>
-                        <div className="kanban-card-top">
-                          <span className="kanban-order-id">#{order._id?.slice(-8) || order._id}</span>
-                          <span style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 700 }}>Completed ✓</span>
+                  <div className="kanban-column-body">
+                    {orders
+                      .filter((o) => o.orderStatus === 'Delivered')
+                      .slice(0, 10)
+                      .map((order) => (
+                        <div key={order._id} className="kanban-card" style={{ opacity: 0.85, borderLeft: '3px solid #34D399' }}>
+                          <div className="kanban-card-top">
+                            <span className="kanban-order-id">#{order._id?.slice(-8) || order._id}</span>
+                            <span style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 700 }}>Completed ✓</span>
+                          </div>
+                          <div className="kanban-customer-name">{order.customerName}</div>
+                          <div className="kanban-items-summary">Total: ₹{order.totalAmount} &bull; Paid</div>
+                          <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view" style={{ width: '100%', marginTop: '6px' }}>
+                            <Eye style={{ width: '13px', height: '13px' }} /> View Order Summary
+                          </button>
                         </div>
-                        <div className="kanban-customer-name">{order.customerName}</div>
-                        <div className="kanban-items-summary">Total: ₹{order.totalAmount} &bull; Paid</div>
-                        <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view" style={{ width: '100%', marginTop: '6px' }}>
-                          <Eye style={{ width: '13px', height: '13px' }} /> View Order Summary
-                        </button>
-                      </div>
-                    ))}
-                  {orders.filter((o) => o.orderStatus === 'Delivered').length === 0 && (
-                    <div className="kanban-empty">No completed orders yet.</div>
-                  )}
+                      ))}
+                    {orders.filter((o) => o.orderStatus === 'Delivered').length === 0 && (
+                      <div className="kanban-empty">No completed orders yet.</div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
