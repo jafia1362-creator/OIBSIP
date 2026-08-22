@@ -1862,6 +1862,7 @@ a {
 }
 
 .kanban-card,
+.admin-kanban-col .kanban-card,
 .admin-kanban-card {
   background: #1A1E30;
   border: 1px solid var(--border-color);
@@ -1870,7 +1871,7 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 190px;
+  min-height: 230px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
   transition: var(--transition);
   box-sizing: border-box;
