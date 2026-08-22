@@ -104,7 +104,7 @@ function AnimatedCounter({ end, duration = 1600, decimals = 0, suffix = '' }) {
 }
 
 export default function Home({ isBuilderOpen, setIsBuilderOpen, targetSection }) {
-  const { API_BASE_URL } = useContext(AuthContext);
+  const { user, API_BASE_URL } = useContext(AuthContext);
   const navigate = useNavigate();
   const [presets, setPresets] = useState(DEFAULT_SIGNATURE_PRESETS);
   const [loading, setLoading] = useState(false);
@@ -168,6 +168,17 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen, targetSection })
   };
 
   const handleOrderPreset = (preset) => {
+    if (!user) {
+      alert("Please sign in or register to place your order.");
+      navigate('/login', { state: { from: { pathname: '/' } } });
+      return;
+    }
+    const isAdmin = user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com';
+    if (isAdmin) {
+      alert("Administrators cannot place orders. Please log in with a customer account.");
+      return;
+    }
+
     const pizzaItem = {
       base: { name: 'Thin Crust Base', price: 120 },
       sauce: { name: 'Classic Tomato Sauce', price: 30 },
@@ -181,6 +192,18 @@ export default function Home({ isBuilderOpen, setIsBuilderOpen, targetSection })
   };
 
   const handleProceedFromBuilder = (customPizzaItem) => {
+    if (!user) {
+      alert("Please sign in or register to place your order.");
+      setIsBuilderOpen(false);
+      navigate('/login', { state: { from: { pathname: '/' } } });
+      return;
+    }
+    const isAdmin = user.role === 'admin' || user.role === 'super_admin' || user.email === 'admin@pizzadelivery.com';
+    if (isAdmin) {
+      alert("Administrators cannot place orders. Please log in with a customer account.");
+      return;
+    }
+
     setIsBuilderOpen(false);
     setSelectedPizzaForItem(customPizzaItem);
     setIsCheckoutOpen(true);
