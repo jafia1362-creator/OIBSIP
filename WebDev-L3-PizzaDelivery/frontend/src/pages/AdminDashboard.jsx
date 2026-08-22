@@ -847,9 +847,9 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <div className="kanban-board-grid">
+            <div className="kanban-board-grid" style={{ alignItems: 'start' }}>
               {/* Column 1: Received */}
-              <div className="kanban-column">
+              <div className="kanban-column" style={{ alignSelf: 'start', height: 'auto' }}>
                 <div className="kanban-column-header">
                   <div className="kanban-title" style={{ color: '#FF8A00' }}>
                     <Clock style={{ width: '16px', height: '16px' }} /> 1. RECEIVED
@@ -893,7 +893,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Column 2: In Kitchen */}
-              <div className="kanban-column">
+              <div className="kanban-column" style={{ alignSelf: 'start', height: 'auto' }}>
                 <div className="kanban-column-header">
                   <div className="kanban-title" style={{ color: '#60A5FA' }}>
                     <ChefHat style={{ width: '16px', height: '16px' }} /> 2. IN KITCHEN
@@ -937,7 +937,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Column 3: Out for Delivery */}
-              <div className="kanban-column">
+              <div className="kanban-column" style={{ alignSelf: 'start', height: 'auto' }}>
                 <div className="kanban-column-header">
                   <div className="kanban-title" style={{ color: '#C084FC' }}>
                     <Bike style={{ width: '16px', height: '16px' }} /> 3. OUT FOR DELIVERY
@@ -981,7 +981,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Column 4: Delivered */}
-              <div className="kanban-column">
+              <div className="kanban-column" style={{ alignSelf: 'start', height: 'auto' }}>
                 <div className="kanban-column-header">
                   <div className="kanban-title" style={{ color: '#34D399' }}>
                     <CheckCircle2 style={{ width: '16px', height: '16px' }} /> 4. DELIVERED
