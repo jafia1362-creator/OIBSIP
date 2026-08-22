@@ -92,6 +92,12 @@ export default function AdminDashboard() {
   const [editingItem, setEditingItem] = useState(null);
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
 
+  // Cancellation Modal States
+  const [cancellingOrder, setCancellingOrder] = useState(null);
+  const [cancellationReason, setCancellationReason] = useState('Out of stock');
+  const [cancellationNote, setCancellationNote] = useState('');
+  const [isCancellationSubmitting, setIsCancellationSubmitting] = useState(false);
+
   // Edit Item Form State
   const [editStockQuantity, setEditStockQuantity] = useState(0);
   const [editThreshold, setEditThreshold] = useState(20);
@@ -235,6 +241,16 @@ export default function AdminDashboard() {
 
   // Update Order Status
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    if (newStatus === 'Cancelled') {
+      const orderToCancel = orders.find((o) => o._id === orderId);
+      if (orderToCancel) {
+        setCancellingOrder(orderToCancel);
+        setCancellationReason('Out of stock');
+        setCancellationNote('');
+        return;
+      }
+    }
+
     try {
       await axios.put(
         `${API_BASE_URL}/orders/admin/status/${orderId}`,
@@ -254,6 +270,61 @@ export default function AdminDashboard() {
       fetchAnalytics();
     } catch (err) {
       addToast(`Failed to update status: ${err.response?.data?.message || err.message}`, 'error');
+    }
+  };
+
+  // Confirm Cancellation from Modal
+  const handleConfirmCancellation = async (e) => {
+    e.preventDefault();
+    if (!cancellingOrder) return;
+    setIsCancellationSubmitting(true);
+    try {
+      const res = await axios.put(
+        `${API_BASE_URL}/orders/admin/status/${cancellingOrder._id}`,
+        {
+          orderStatus: 'Cancelled',
+          cancellation_reason: cancellationReason,
+          cancellation_note: cancellationNote,
+        },
+        getAuthHeader()
+      );
+
+      // Update local orders list state
+      setOrders((prev) =>
+        prev.map((o) =>
+          o._id === cancellingOrder._id
+            ? {
+                ...o,
+                orderStatus: 'Cancelled',
+                cancellation_reason: cancellationReason,
+                cancellation_note: cancellationNote,
+                cancelled_at: res.data.order?.cancelled_at || new Date(),
+                cancelled_by: res.data.order?.cancelled_by || 'Admin',
+              }
+            : o
+        )
+      );
+
+      // Update selected order details state
+      if (selectedOrder && selectedOrder._id === cancellingOrder._id) {
+        setSelectedOrder((prev) => ({
+          ...prev,
+          orderStatus: 'Cancelled',
+          cancellation_reason: cancellationReason,
+          cancellation_note: cancellationNote,
+          cancelled_at: res.data.order?.cancelled_at || new Date(),
+          cancelled_by: res.data.order?.cancelled_by || 'Admin',
+        }));
+      }
+
+      addToast(`Order #${cancellingOrder._id.slice(-8)} cancelled successfully.`, 'success');
+      setCancellingOrder(null);
+      fetchAnalytics();
+      fetchInventory();
+    } catch (err) {
+      addToast(`Failed to cancel order: ${err.response?.data?.message || err.message}`, 'error');
+    } finally {
+      setIsCancellationSubmitting(false);
     }
   };
 
@@ -879,6 +950,39 @@ export default function AdminDashboard() {
                               <Eye style={{ width: '13px', height: '13px' }} /> View
                             </button>
                             <button
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to cancel this order?')) {
+                                  handleUpdateOrderStatus(order._id, 'Cancelled');
+                                }
+                              }}
+                              className="btn-kanban-cancel"
+                              style={{
+                                background: 'rgba(239, 68, 68, 0.08)',
+                                border: '1px solid rgba(239, 68, 68, 0.25)',
+                                color: '#F87171',
+                                borderRadius: '4px',
+                                padding: '6px 8px',
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '3px',
+                                transition: 'all 0.2s',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.18)';
+                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+                              }}
+                            >
+                              <X style={{ width: '12px', height: '12px' }} /> Cancel
+                            </button>
+                            <button
                               onClick={() => handleUpdateOrderStatus(order._id, 'In Kitchen')}
                               className="btn-kanban-action btn-to-kitchen"
                             >
@@ -923,6 +1027,39 @@ export default function AdminDashboard() {
                               <Eye style={{ width: '13px', height: '13px' }} /> View
                             </button>
                             <button
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to cancel this order?')) {
+                                  handleUpdateOrderStatus(order._id, 'Cancelled');
+                                }
+                              }}
+                              className="btn-kanban-cancel"
+                              style={{
+                                background: 'rgba(239, 68, 68, 0.08)',
+                                border: '1px solid rgba(239, 68, 68, 0.25)',
+                                color: '#F87171',
+                                borderRadius: '4px',
+                                padding: '6px 8px',
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '3px',
+                                transition: 'all 0.2s',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.18)';
+                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+                              }}
+                            >
+                              <X style={{ width: '12px', height: '12px' }} /> Cancel
+                            </button>
+                            <button
                               onClick={() => handleUpdateOrderStatus(order._id, 'Sent to Delivery')}
                               className="btn-kanban-action btn-to-delivery"
                             >
@@ -965,6 +1102,39 @@ export default function AdminDashboard() {
                           <div className="kanban-card-actions">
                             <button onClick={() => setSelectedOrder(order)} className="btn-kanban-view">
                               <Eye style={{ width: '13px', height: '13px' }} /> View
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to cancel this order?')) {
+                                  handleUpdateOrderStatus(order._id, 'Cancelled');
+                                }
+                              }}
+                              className="btn-kanban-cancel"
+                              style={{
+                                background: 'rgba(239, 68, 68, 0.08)',
+                                border: '1px solid rgba(239, 68, 68, 0.25)',
+                                color: '#F87171',
+                                borderRadius: '4px',
+                                padding: '6px 8px',
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '3px',
+                                transition: 'all 0.2s',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.18)';
+                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+                                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+                              }}
+                            >
+                              <X style={{ width: '12px', height: '12px' }} /> Cancel
                             </button>
                             <button
                               onClick={() => handleUpdateOrderStatus(order._id, 'Delivered')}
@@ -1825,27 +1995,86 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Status Update Actions */}
-              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#FFF' }}>Update Order Status:</div>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {ORDER_STATUSES.map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => handleUpdateOrderStatus(selectedOrder._id, st)}
-                      className={`btn-secondary ${selectedOrder.orderStatus === st ? 'active' : ''}`}
-                      style={{
-                        padding: '6px 12px',
-                        fontSize: '0.75rem',
-                        borderColor: selectedOrder.orderStatus === st ? '#FF8A00' : 'var(--border-color)',
-                        color: selectedOrder.orderStatus === st ? '#FF8A00' : '#FFF',
-                      }}
-                    >
-                      {st}
-                    </button>
-                  ))}
+              {/* Status Update Actions / Cancellation Info */}
+              {selectedOrder.orderStatus === 'Cancelled' ? (
+                <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#F87171', textTransform: 'uppercase' }}>
+                    Cancelled Order Details
+                  </div>
+                  <div style={{ fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)' }}>Status: </span>
+                      <strong style={{ color: '#F87171' }}>Cancelled</strong>
+                    </div>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)' }}>Reason: </span>
+                      <strong style={{ color: '#FFF' }}>{selectedOrder.cancellation_reason || 'Not specified'}</strong>
+                    </div>
+                    {selectedOrder.cancellation_note && (
+                      <div>
+                        <span style={{ color: 'var(--text-muted)' }}>Notes: </span>
+                        <strong style={{ color: '#FFF' }}>{selectedOrder.cancellation_note}</strong>
+                      </div>
+                    )}
+                    {selectedOrder.cancelled_at && (
+                      <div>
+                        <span style={{ color: 'var(--text-muted)' }}>Cancelled At: </span>
+                        <strong style={{ color: '#FFF' }}>{new Date(selectedOrder.cancelled_at).toLocaleString()}</strong>
+                      </div>
+                    )}
+                    {selectedOrder.cancelled_by && (
+                      <div>
+                        <span style={{ color: 'var(--text-muted)' }}>Cancelled By: </span>
+                        <strong style={{ color: '#FFF' }}>{selectedOrder.cancelled_by}</strong>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#FFF' }}>Update Order Status:</div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {ORDER_STATUSES.filter((st) => st !== 'Cancelled').map((st) => (
+                      <button
+                        key={st}
+                        onClick={() => handleUpdateOrderStatus(selectedOrder._id, st)}
+                        className={`btn-secondary ${selectedOrder.orderStatus === st ? 'active' : ''}`}
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: '0.75rem',
+                          borderColor: selectedOrder.orderStatus === st ? '#FF8A00' : 'var(--border-color)',
+                          color: selectedOrder.orderStatus === st ? '#FF8A00' : '#FFF',
+                        }}
+                      >
+                        {st}
+                      </button>
+                    ))}
+                    {selectedOrder.orderStatus !== 'Delivered' && (
+                      <button
+                        onClick={() => handleUpdateOrderStatus(selectedOrder._id, 'Cancelled')}
+                        className="btn-secondary"
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: '0.75rem',
+                          borderColor: 'rgba(239, 68, 68, 0.4)',
+                          color: '#F87171',
+                          background: 'rgba(239, 68, 68, 0.05)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                          e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.05)';
+                          e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                        }}
+                      >
+                        Cancel Order
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -2183,6 +2412,99 @@ export default function AdminDashboard() {
                 </button>
                 <button type="submit" className="btn-primary" style={{ padding: '8px 20px' }}>
                   Save User Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================
+          CANCELLATION CONFIRMATION MODAL
+          ======================================================== */}
+      {cancellingOrder && (
+        <div className="admin-modal-overlay" onClick={() => setCancellingOrder(null)}>
+          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px', border: '1px solid rgba(239, 68, 68, 0.4)' }}>
+            <div className="admin-modal-header" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertCircle style={{ width: '22px', height: '22px', color: '#F87171' }} />
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#FFF', margin: 0 }}>
+                  Cancel Order
+                </h3>
+              </div>
+              <button onClick={() => setCancellingOrder(null)} className="admin-modal-close">
+                <X style={{ width: '18px', height: '18px' }} />
+              </button>
+            </div>
+            <form onSubmit={handleConfirmCancellation} className="admin-modal-body space-y-4" style={{ paddingTop: '16px' }}>
+              <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '8px', padding: '12px', fontSize: '0.85rem' }}>
+                <div style={{ marginBottom: '4px' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Order ID: </span>
+                  <strong style={{ color: '#FFF' }}>#{cancellingOrder._id}</strong>
+                </div>
+                <div>
+                  <span style={{ color: 'var(--text-muted)' }}>Customer Name: </span>
+                  <strong style={{ color: '#FFF' }}>{cancellingOrder.customerName || 'Guest User'}</strong>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>
+                  Cancellation Reason <span style={{ color: '#F87171' }}>*</span>
+                </label>
+                <select
+                  value={cancellationReason}
+                  onChange={(e) => setCancellationReason(e.target.value)}
+                  className="admin-select"
+                  style={{ width: '100%' }}
+                  required
+                >
+                  <option value="Out of stock">Out of stock</option>
+                  <option value="Kitchen unavailable">Kitchen unavailable</option>
+                  <option value="Restaurant closed">Restaurant closed</option>
+                  <option value="Delivery unavailable">Delivery unavailable</option>
+                  <option value="Payment issue">Payment issue</option>
+                  <option value="Customer request">Customer request</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>
+                  Additional Notes (Optional)
+                </label>
+                <textarea
+                  value={cancellationNote}
+                  onChange={(e) => setCancellationNote(e.target.value)}
+                  placeholder="e.g., Shortage of ingredients, customer was notified."
+                  className="input-field"
+                  style={{ minHeight: '80px', resize: 'vertical', fontFamily: 'inherit', fontSize: '0.85rem', padding: '10px' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <button
+                  type="button"
+                  onClick={() => setCancellingOrder(null)}
+                  className="btn-secondary"
+                  style={{ padding: '8px 16px' }}
+                  disabled={isCancellationSubmitting}
+                >
+                  Keep Order
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  style={{
+                    padding: '8px 20px',
+                    background: '#EF4444',
+                    borderColor: '#EF4444',
+                    color: '#FFF',
+                    fontWeight: 700,
+                  }}
+                  disabled={isCancellationSubmitting}
+                >
+                  {isCancellationSubmitting ? 'Processing...' : 'Confirm Cancellation'}
                 </button>
               </div>
             </form>

@@ -360,11 +360,54 @@ const getAllOrders = async (req, res) => {
   }
 };
 
+// Helper to replenish ingredient stocks when an order is cancelled
+const replenishOrderStock = async (order) => {
+  try {
+    const requiredIngredients = [];
+    if (Array.isArray(order.items)) {
+      for (const item of order.items) {
+        const qty = item.quantity || 1;
+        if (item.base?.name) {
+          requiredIngredients.push({ name: item.base.name, category: 'base', qty });
+        }
+        if (item.sauce?.name) {
+          requiredIngredients.push({ name: item.sauce.name, category: 'sauce', qty });
+        }
+        if (item.cheese?.name) {
+          requiredIngredients.push({ name: item.cheese.name, category: 'cheese', qty });
+        }
+        if (Array.isArray(item.veggies)) {
+          for (const veg of item.veggies) {
+            if (veg?.name) {
+              requiredIngredients.push({ name: veg.name, category: 'veggie', qty });
+            }
+          }
+        }
+      }
+    }
+
+    if (mongoose.connection.readyState === 1) {
+      for (const reqItem of requiredIngredients) {
+        try {
+          await Inventory.findOneAndUpdate(
+            { name: reqItem.name, category: reqItem.category },
+            { $inc: { stockQuantity: reqItem.qty } }
+          ).maxTimeMS(2000);
+        } catch (err) {
+          console.warn(`Failed to replenish stock for ${reqItem.name}:`, err.message);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error in replenishOrderStock:', err);
+  }
+};
+
 // Admin: Update Order Status
 const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { orderStatus } = req.body;
+    const { orderStatus, cancellation_reason, cancellation_note } = req.body;
 
     const validStatuses = ['Order Received', 'In Kitchen / Preparing', 'In Kitchen', 'Sent to Delivery', 'Delivered', 'Cancelled'];
     if (!validStatuses.includes(orderStatus)) {
@@ -373,12 +416,48 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
+    let oldStatus = '';
+    let existingOrder = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        existingOrder = await Order.findById(id).maxTimeMS(2000);
+        if (existingOrder) {
+          oldStatus = existingOrder.orderStatus;
+        }
+      } catch (e) {}
+    } else {
+      existingOrder = memoryOrders.find((o) => o._id === id || String(o._id).includes(id));
+      if (existingOrder) {
+        oldStatus = existingOrder.orderStatus;
+      }
+    }
+
+    // Backend validation rules for Cancellation
+    if (orderStatus === 'Cancelled') {
+      if (!cancellation_reason) {
+        return res.status(400).json({ message: 'Cancellation reason is required.' });
+      }
+      if (oldStatus === 'Delivered') {
+        return res.status(400).json({ message: 'Cannot cancel an already delivered order.' });
+      }
+      if (oldStatus === 'Cancelled') {
+        return res.status(400).json({ message: 'Order is already cancelled.' });
+      }
+    }
+
     let updatedOrder = null;
     if (mongoose.connection.readyState === 1) {
       try {
+        const updateFields = { orderStatus };
+        if (orderStatus === 'Cancelled') {
+          updateFields.cancellation_reason = cancellation_reason;
+          updateFields.cancellation_note = cancellation_note || '';
+          updateFields.cancelled_at = new Date();
+          updateFields.cancelled_by = req.user ? `${req.user.name || 'Admin'} (${req.user.email})` : 'Admin';
+        }
         updatedOrder = await Order.findByIdAndUpdate(
           id,
-          { orderStatus },
+          updateFields,
           { new: true }
         ).maxTimeMS(3000);
       } catch (e) {}
@@ -388,6 +467,12 @@ const updateOrderStatus = async (req, res) => {
       const idx = memoryOrders.findIndex((o) => o._id === id || String(o._id).includes(id));
       if (idx !== -1) {
         memoryOrders[idx].orderStatus = orderStatus;
+        if (orderStatus === 'Cancelled') {
+          memoryOrders[idx].cancellation_reason = cancellation_reason;
+          memoryOrders[idx].cancellation_note = cancellation_note || '';
+          memoryOrders[idx].cancelled_at = new Date();
+          memoryOrders[idx].cancelled_by = req.user ? `${req.user.name || 'Admin'} (${req.user.email})` : 'Admin';
+        }
         memoryOrders[idx].updatedAt = new Date();
         updatedOrder = memoryOrders[idx];
       }
@@ -397,11 +482,24 @@ const updateOrderStatus = async (req, res) => {
       updatedOrder = { _id: id, orderStatus, updatedAt: new Date() };
     }
 
+    // Trigger stock replenishment if status transitioned to Cancelled
+    if (orderStatus === 'Cancelled' && oldStatus !== 'Cancelled') {
+      await replenishOrderStock(updatedOrder);
+      const io = req.app.get('socketio');
+      if (io) {
+        io.emit('stock_updated');
+      }
+    }
+
     const io = req.app.get('socketio');
     if (io) {
       io.emit('order_status_updated', {
         orderId: updatedOrder._id,
         orderStatus: updatedOrder.orderStatus,
+        cancellation_reason: updatedOrder.cancellation_reason,
+        cancellation_note: updatedOrder.cancellation_note,
+        cancelled_at: updatedOrder.cancelled_at,
+        cancelled_by: updatedOrder.cancelled_by,
         updatedAt: updatedOrder.updatedAt,
       });
     }
@@ -409,6 +507,103 @@ const updateOrderStatus = async (req, res) => {
     res.json({ message: 'Order status updated successfully', order: updatedOrder });
   } catch (error) {
     console.error('updateOrderStatus error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Customer: Cancel Order (Only allowed if status is still 'Order Received')
+const cancelOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cancellation_reason, cancellation_note } = req.body;
+
+    if (!cancellation_reason) {
+      return res.status(400).json({ message: 'Cancellation reason is required.' });
+    }
+
+    let order = null;
+    try {
+      await connectDB();
+    } catch (dbErr) {}
+
+    if (mongoose.connection.readyState === 1) {
+      order = await Order.findById(id).maxTimeMS(3000);
+    }
+
+    if (!order) {
+      const memoryOrder = memoryOrders.find((o) => o._id === id || String(o._id).includes(id));
+      if (memoryOrder) {
+        order = memoryOrder;
+      }
+    }
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found.' });
+    }
+
+    // Security check: only order owner or admin can cancel
+    const isOwner = req.user && (String(order.user) === String(req.user._id) || order.customerEmail === req.user.email);
+    if (!isOwner && req.user?.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to cancel this order.' });
+    }
+
+    if (order.orderStatus === 'Delivered') {
+      return res.status(400).json({ message: 'Cannot cancel an already delivered order.' });
+    }
+    if (order.orderStatus === 'Cancelled') {
+      return res.status(400).json({ message: 'Order is already cancelled.' });
+    }
+    if (order.orderStatus !== 'Order Received') {
+      return res.status(400).json({ message: `Cannot cancel order at "${order.orderStatus}" stage.` });
+    }
+
+    let updatedOrder = null;
+    const cancelled_by = req.user ? `${req.user.name || 'Customer'} (${req.user.email})` : 'Customer';
+    const cancelled_at = new Date();
+
+    if (mongoose.connection.readyState === 1) {
+      updatedOrder = await Order.findByIdAndUpdate(
+        id,
+        { 
+          orderStatus: 'Cancelled',
+          cancellation_reason,
+          cancellation_note: cancellation_note || '',
+          cancelled_at,
+          cancelled_by
+        },
+        { new: true }
+      ).maxTimeMS(3000);
+    } else {
+      order.orderStatus = 'Cancelled';
+      order.cancellation_reason = cancellation_reason;
+      order.cancellation_note = cancellation_note || '';
+      order.cancelled_at = cancelled_at;
+      order.cancelled_by = cancelled_by;
+      order.updatedAt = new Date();
+      updatedOrder = order;
+    }
+
+    // Replenish stock
+    await replenishOrderStock(updatedOrder);
+
+    // Broadcast live updates
+    const io = req.app.get('socketio');
+    if (io) {
+      io.emit('order_status_updated', {
+        orderId: updatedOrder._id,
+        orderStatus: updatedOrder.orderStatus,
+        cancellation_reason: updatedOrder.cancellation_reason,
+        cancellation_note: updatedOrder.cancellation_note,
+        cancelled_at: updatedOrder.cancelled_at,
+        cancelled_by: updatedOrder.cancelled_by,
+        updatedAt: updatedOrder.updatedAt,
+      });
+      io.emit('stock_updated');
+    }
+
+    res.json({ message: 'Order cancelled successfully', order: updatedOrder });
+  } catch (error) {
+    console.error('cancelOrder error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -504,4 +699,5 @@ module.exports = {
   getAllOrders,
   updateOrderStatus,
   getAdminAnalytics,
+  cancelOrder,
 };

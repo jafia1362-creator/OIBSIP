@@ -31,6 +31,10 @@ const orderSchema = new mongoose.Schema(
     },
     razorpayOrderId: { type: String },
     razorpayPaymentId: { type: String },
+    cancellation_reason: { type: String },
+    cancellation_note: { type: String },
+    cancelled_at: { type: Date },
+    cancelled_by: { type: String },
   },
   { timestamps: true }
 );

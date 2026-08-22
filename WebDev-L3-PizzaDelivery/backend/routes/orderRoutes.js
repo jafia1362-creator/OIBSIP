@@ -7,12 +7,14 @@ const {
   getAllOrders,
   updateOrderStatus,
   getAdminAnalytics,
+  cancelOrder,
 } = require('../controllers/orderController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 router.post('/razorpay-order', protect, createRazorpayOrder);
 router.post('/place-order', protect, placeOrder);
 router.get('/my-orders', protect, getUserOrders);
+router.put('/cancel/:id', protect, cancelOrder);
 router.get('/admin/all-orders', protect, admin, getAllOrders);
 router.put('/admin/status/:id', protect, admin, updateOrderStatus);
 router.get('/admin/analytics', protect, admin, getAdminAnalytics);
