@@ -950,11 +950,7 @@ export default function AdminDashboard() {
                               <Eye style={{ width: '13px', height: '13px' }} /> View
                             </button>
                             <button
-                              onClick={() => {
-                                if (window.confirm('Are you sure you want to cancel this order?')) {
-                                  handleUpdateOrderStatus(order._id, 'Cancelled');
-                                }
-                              }}
+                              onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
                               className="btn-kanban-cancel"
                               style={{
                                 background: 'rgba(239, 68, 68, 0.08)',
@@ -1027,11 +1023,7 @@ export default function AdminDashboard() {
                               <Eye style={{ width: '13px', height: '13px' }} /> View
                             </button>
                             <button
-                              onClick={() => {
-                                if (window.confirm('Are you sure you want to cancel this order?')) {
-                                  handleUpdateOrderStatus(order._id, 'Cancelled');
-                                }
-                              }}
+                              onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
                               className="btn-kanban-cancel"
                               style={{
                                 background: 'rgba(239, 68, 68, 0.08)',
@@ -1104,11 +1096,7 @@ export default function AdminDashboard() {
                               <Eye style={{ width: '13px', height: '13px' }} /> View
                             </button>
                             <button
-                              onClick={() => {
-                                if (window.confirm('Are you sure you want to cancel this order?')) {
-                                  handleUpdateOrderStatus(order._id, 'Cancelled');
-                                }
-                              }}
+                              onClick={() => handleUpdateOrderStatus(order._id, 'Cancelled')}
                               className="btn-kanban-cancel"
                               style={{
                                 background: 'rgba(239, 68, 68, 0.08)',
