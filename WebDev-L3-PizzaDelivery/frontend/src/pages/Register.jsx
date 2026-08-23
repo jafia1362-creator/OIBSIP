@@ -264,7 +264,7 @@ export default function Register() {
 
                 <div className="auth-field-group">
                   <label className="auth-field-label" htmlFor="register-address">
-                    Default Delivery Address <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>(Optional)</span>
+                    Delivery Address <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>(Optional)</span>
                   </label>
                   <div className="auth-input-box">
                     <input

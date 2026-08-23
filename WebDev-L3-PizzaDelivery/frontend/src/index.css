@@ -3807,6 +3807,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 18px;
 }
 
 .auth-input-box {
